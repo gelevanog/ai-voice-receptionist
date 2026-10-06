@@ -304,7 +304,7 @@ async def simulate_call(
                           call_id=f"sim_{scenario.id}_{int(time.time())}")  # fmt: skip
     await preload(speech, caller_tts)
     feeder = LineFeeder(session, scenario.channel, rng)
-    caller = Caller(scenario, caller_llm, max_turns=7)
+    caller = Caller(scenario, caller_llm, max_turns=6)
     result = SimResult(scenario=scenario, summary={}, check={})
     started = time.monotonic()
     feeder.start()

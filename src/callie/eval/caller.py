@@ -13,6 +13,7 @@ from callie.eval.scenarios import Scenario
 from callie.llm.base import ChatModel, JsonDict, ProviderError, TextDelta
 
 END = "[END]"
+_FAREWELL = re.compile(r"\b(bye|goodbye|good bye|have a (?:good|great|nice|wonderful) (?:day|one|evening)|take care)\b", re.I)
 
 
 def caller_system_prompt(scenario: Scenario) -> str:
@@ -26,8 +27,9 @@ def caller_system_prompt(scenario: Scenario) -> str:
         "How to reply: one or two short sentences, the way people talk on the phone. No lists, no stage "
         "directions, no quotation marks, no emojis. Say phone numbers digit by digit with pauses, like "
         '"five five five, two one four, eight eight three nine". If Callie reads details back and they are '
-        "correct, confirm with a short yes. When your goal is done, or Callie says goodbye, say a short goodbye "
-        f"and end your message with {END}. Never say that you are an AI or that this is a test."
+        "correct, confirm with a short yes. You are the caller, not the receptionist: never offer to book, check or "
+        "confirm anything yourself. Only when your goal is done and Callie asks if there is anything else, or says "
+        f"goodbye, say a short goodbye and end that message with {END}. Never say that you are an AI or a test."
     )
 
 
@@ -85,8 +87,11 @@ class Caller:
         except ProviderError as exc:
             self.errors.append(str(exc)[:200])
             return "Sorry, I have to go. Bye.", True
-        ended = END in text
-        text = clean_caller_text(text)
+        # Small models sometimes write [END] as soon as they *think* the goal is reached ("please hold while I
+        # confirm"); the call only ends on an actual farewell, as a real caller would hang up.
+        text_clean = clean_caller_text(text)
+        ended = END in text and bool(_FAREWELL.search(text_clean))
+        text = text_clean
         self.said(text + (f" {END}" if ended else ""))
         return text or "Okay.", ended
 
