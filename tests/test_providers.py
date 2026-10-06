@@ -100,7 +100,9 @@ class TestStreaming:
             chat = openrouter(lambda r, s=status: httpx.Response(s, json={"error": {"message": "nope"}}))
             with pytest.raises(error):
                 await drain(chat)
-        empty = openrouter(lambda r: httpx.Response(200, content=sse({"choices": [{"delta": {}, "finish_reason": "length"}]})))
+        empty = openrouter(
+            lambda r: httpx.Response(200, content=sse({"choices": [{"delta": {}, "finish_reason": "length"}]}))
+        )
         with pytest.raises(ProviderError, match="max_tokens"):
             await drain(empty)
 
@@ -125,7 +127,9 @@ class FlakyModel:
     def is_remote(self) -> bool:
         return self.remote
 
-    async def stream(self, messages: list[JsonDict], tools: list[JsonDict], *, max_tokens: int, temperature: float) -> AsyncIterator[LLMEvent]:
+    async def stream(
+        self, messages: list[JsonDict], tools: list[JsonDict], *, max_tokens: int, temperature: float
+    ) -> AsyncIterator[LLMEvent]:
         self.calls += 1
         if self.calls <= self.failures:
             raise RetryableError("rate limited", retry_after=0.0)
@@ -164,12 +168,19 @@ def test_anthropic_conversion() -> None:
         {"role": "tool", "tool_call_id": "t1", "content": '{"status": "ok"}'},
         {"role": "assistant", "content": "I have Tuesday at 3 PM."},
     ]  # fmt: skip
-    tools = [{"type": "function", "function": {"name": "check_availability", "description": "d", "parameters": {"type": "object"}}}]
+    tools = [
+        {
+            "type": "function",
+            "function": {"name": "check_availability", "description": "d", "parameters": {"type": "object"}},
+        }
+    ]
     system, converted, converted_tools = to_anthropic(messages, tools)
     assert system == "Be brief."
     assert converted[0]["role"] == "user"  # a conversation must start with the caller
     assert converted[-2]["content"][0] == {"type": "tool_result", "tool_use_id": "t1", "content": '{"status": "ok"}'}
-    assert any(b.get("type") == "tool_use" and b["input"] == {"when": "Tuesday"} for m in converted for b in m["content"])
+    assert any(
+        b.get("type") == "tool_use" and b["input"] == {"when": "Tuesday"} for m in converted for b in m["content"]
+    )
     assert converted_tools[0]["input_schema"] == {"type": "object"} and converted_tools[0]["eager_input_streaming"]
 
 

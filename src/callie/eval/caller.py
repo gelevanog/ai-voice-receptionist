@@ -13,7 +13,9 @@ from callie.eval.scenarios import Scenario
 from callie.llm.base import ChatModel, JsonDict, ProviderError, TextDelta
 
 END = "[END]"
-_FAREWELL = re.compile(r"\b(bye|goodbye|good bye|have a (?:good|great|nice|wonderful) (?:day|one|evening)|take care)\b", re.I)
+_FAREWELL = re.compile(
+    r"\b(bye|goodbye|good bye|have a (?:good|great|nice|wonderful) (?:day|one|evening)|take care)\b", re.I
+)
 
 
 def caller_system_prompt(scenario: Scenario) -> str:

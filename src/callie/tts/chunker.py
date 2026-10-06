@@ -67,26 +67,21 @@ class SentenceChunker:
 
     def _take(self) -> str | None:
         text = self._buffer
-        for match in _BOUNDARY.finditer(text):
-            if not match.group(3) and match.end() == len(text):
-                return None  # may continue ("Dr" + "." + " Patel"), wait for more text
-            before = text[: match.start()]
-            last_word = re.split(r"\s+", before.strip())[-1].lower().rstrip(".") if before.strip() else ""
-            if match.group(1) == "." and (
-                last_word in _ABBREVIATIONS
-                or (re.search(r"\d$", before) and text[match.end() - len(match.group(3)) :][:1].isdigit())
-            ):
-                continue
-            if match.group(1) == "." and len(last_word) == 1 and last_word.isalpha():
-                continue  # initials: "J. Smith"
-            return self._emit(match.end())
+        boundary = self._sentence_end(text)
+        if boundary == -1:
+            return None  # a "." at the very end may still be "Dr." + " Patel": wait for more text
         words = text.split()
         if self._emitted == 0 and len(words) >= self.first_chunk_min_words:
+            # The first chunk may end at an earlier comma or colon: the first audio is what the caller waits for.
             for comma in re.finditer(r"[,;:]\s", text):
+                if boundary is not None and comma.start() >= boundary:
+                    break
                 head = text[: comma.start()]
                 minimum = 2 if comma.group(0).startswith(":") else self.first_chunk_min_words - 2
                 if len(head.split()) >= minimum and not re.search(r"\d$", head):
                     return self._emit(comma.end())
+        if boundary is not None:
+            return self._emit(boundary)
         if len(words) > self.max_words:
             split_at: int | None = None
             for found in re.finditer(r"[,;]\s", text):
@@ -95,6 +90,20 @@ class SentenceChunker:
                     break
             if split_at is not None:
                 return self._emit(split_at)
+        return None
+
+    def _sentence_end(self, text: str) -> int | None:
+        """End index of the first complete sentence; None if there is none; -1 if it is undecidable yet."""
+        for match in _BOUNDARY.finditer(text):
+            if not match.group(3) and match.end() == len(text):
+                return -1
+            before = text[: match.start()]
+            last_word = re.split(r"\s+", before.strip())[-1].lower().rstrip(".") if before.strip() else ""
+            if match.group(1) == "." and last_word in _ABBREVIATIONS:
+                continue
+            if match.group(1) == "." and len(last_word) == 1 and last_word.isalpha():
+                continue  # initials: "J. Smith"
+            return match.end()
         return None
 
     def _emit(self, end: int) -> str | None:

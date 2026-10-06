@@ -87,6 +87,7 @@ def normalize_for_wer(text: str) -> list[str]:
     text = re.sub(r"\b([ap])\.\s?m\.?", r"\1m", text)
     text = re.sub(r"(\d)\s*(am|pm)\b", r"\1 \2", text)
     text = re.sub(r"(\d):(\d\d)", r"\1 \2", text)
+    text = re.sub(r"\$\s?(\d[\d,]*(?:\.\d+)?)", r"\1 dollars", text)
     text = text.replace("$", " dollars ").replace("%", " percent ")
     text = re.sub(r"(\d),(\d)", r"\1\2", text)
     text = re.sub(r"[^\w\s'-]", " ", text)

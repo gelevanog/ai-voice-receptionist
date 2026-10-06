@@ -44,7 +44,9 @@ class TestBookingGate:
         box.ctx.turn += 1
         first = box.execute("book_appointment", {**args, "confirmed": False})
         assert first.data["status"] == "needs_confirmation"
-        assert "Jane Doe" in (first.say or "") and "4 5 6 7" in (first.say or "") and "Is that right?" in (first.say or "")
+        assert (
+            "Jane Doe" in (first.say or "") and "4 5 6 7" in (first.say or "") and "Is that right?" in (first.say or "")
+        )
         box.ctx.turn += 1
         box.register_reply(affirmed=True, declined=False)
         done = box.execute("book_appointment", {**args, "confirmed": True})
@@ -54,7 +56,13 @@ class TestBookingGate:
     def test_confirmed_true_without_a_yes_is_refused(self, runtime: Runtime) -> None:
         box = toolbox(runtime)
         slot = offer(box)["slots"][0]["slot_id"]
-        args = {"service": "cleaning", "slot_id": slot, "patient_name": "Jane Doe", "phone": "5551234567", "confirmed": True}
+        args = {
+            "service": "cleaning",
+            "slot_id": slot,
+            "patient_name": "Jane Doe",
+            "phone": "5551234567",
+            "confirmed": True,
+        }
         result = box.execute("book_appointment", args)  # skipped the read-back entirely
         assert result.data["status"] == "needs_confirmation" and box.ctx.outcome.booked == []
         box.ctx.turn += 1
@@ -75,7 +83,12 @@ class TestBookingGate:
     def test_changed_details_need_a_new_read_back(self, runtime: Runtime) -> None:
         box = toolbox(runtime)
         slots = offer(box)["slots"]
-        args = {"service": "cleaning", "slot_id": slots[0]["slot_id"], "patient_name": "Jane Doe", "phone": "5551234567"}
+        args = {
+            "service": "cleaning",
+            "slot_id": slots[0]["slot_id"],
+            "patient_name": "Jane Doe",
+            "phone": "5551234567",
+        }
         box.ctx.turn += 1
         box.execute("book_appointment", {**args, "confirmed": False})
         box.ctx.turn += 1
@@ -107,13 +120,17 @@ class TestBookingGate:
     def test_caller_id_supplies_the_phone(self, runtime: Runtime) -> None:
         box = toolbox(runtime, caller_phone="+15558821190")
         slot = offer(box)["slots"][0]["slot_id"]
-        result = box.execute("book_appointment", {"service": "cleaning", "slot_id": slot, "patient_name": "Ann Lee", "confirmed": False})
+        result = box.execute(
+            "book_appointment", {"service": "cleaning", "slot_id": slot, "patient_name": "Ann Lee", "confirmed": False}
+        )
         assert "1 1 9 0" in (result.say or "")
 
     def test_missing_phone_is_asked_for(self, runtime: Runtime) -> None:
         box = toolbox(runtime)
         slot = offer(box)["slots"][0]["slot_id"]
-        result = box.execute("book_appointment", {"service": "cleaning", "slot_id": slot, "patient_name": "Ann Lee", "confirmed": False})
+        result = box.execute(
+            "book_appointment", {"service": "cleaning", "slot_id": slot, "patient_name": "Ann Lee", "confirmed": False}
+        )
         assert result.data["status"] == "need_phone"
 
 
@@ -141,17 +158,25 @@ class TestOtherTools:
         existing = runtime.calendar.book(cleaning, datetime(2026, 10, 8, 10, tzinfo=NY), "Sofia Rossi", "+15553492216")
         box = toolbox(runtime)
         box.ctx.turn = 1
-        found = box.execute("find_appointment", {"patient_name": "Sophia Rossi", "purpose": "reschedule"})  # STT spelling
+        found = box.execute(
+            "find_appointment", {"patient_name": "Sophia Rossi", "purpose": "reschedule"}
+        )  # STT spelling
         assert found.data["status"] == "found"
         box.ctx.turn = 2
-        offered = box.execute("check_availability", {"service": "cleaning", "when": "Friday morning", "appointment_id": existing.id})
+        offered = box.execute(
+            "check_availability", {"service": "cleaning", "when": "Friday morning", "appointment_id": existing.id}
+        )
         slot = offered.data["slots"][0]["slot_id"]
         box.ctx.turn = 3
-        read_back = box.execute("reschedule_appointment", {"appointment_id": existing.id, "slot_id": slot, "confirmed": False})
+        read_back = box.execute(
+            "reschedule_appointment", {"appointment_id": existing.id, "slot_id": slot, "confirmed": False}
+        )
         assert "from Thursday, October 8th at 10 AM" in (read_back.say or "")
         box.ctx.turn = 4
         box.register_reply(affirmed=True, declined=False)
-        moved = box.execute("reschedule_appointment", {"appointment_id": existing.id, "slot_id": slot, "confirmed": True})
+        moved = box.execute(
+            "reschedule_appointment", {"appointment_id": existing.id, "slot_id": slot, "confirmed": True}
+        )
         assert moved.data["status"] == "rescheduled"
         box.ctx.turn = 5
         cancel = box.execute("find_appointment", {"patient_name": "Rossi", "purpose": "cancel"})
@@ -256,7 +281,9 @@ class ScriptedLLM:
     def is_remote(self) -> bool:
         return False
 
-    async def stream(self, messages: list[JsonDict], tools: list[JsonDict], *, max_tokens: int, temperature: float) -> AsyncIterator[LLMEvent]:
+    async def stream(
+        self, messages: list[JsonDict], tools: list[JsonDict], *, max_tokens: int, temperature: float
+    ) -> AsyncIterator[LLMEvent]:
         for event in self.turns.pop(0):
             yield event
 
@@ -268,12 +295,25 @@ async def collect(agent: Agent, text: str) -> list[Any]:
 class TestAgentStreaming:
     async def test_sentences_are_released_as_they_complete(self, runtime: Runtime) -> None:
         tokens = ["Sure", ", we're ", "open on ", "Saturday mornings. ", "Anything ", "else?"]
-        agent = runtime.new_agent(runtime.new_context(), ScriptedLLM([[*(TextDelta(t) for t in tokens), Completed("stop")]]))
+        agent = runtime.new_agent(
+            runtime.new_context(), ScriptedLLM([[*(TextDelta(t) for t in tokens), Completed("stop")]])
+        )
         events = await collect(agent, "Are you open on Saturday?")
-        assert [e.text for e in events if isinstance(e, Sentence)] == ["Sure, we're open on Saturday mornings.", "Anything else?"]
+        assert [e.text for e in events if isinstance(e, Sentence)] == [
+            "Sure, we're open on Saturday mornings.",
+            "Anything else?",
+        ]
 
     async def test_medical_advice_is_replaced(self, runtime: Runtime) -> None:
-        llm = ScriptedLLM([[TextDelta("You should take 400 mg of ibuprofen. "), TextDelta("Want to book a visit?"), Completed("stop")]])
+        llm = ScriptedLLM(
+            [
+                [
+                    TextDelta("You should take 400 mg of ibuprofen. "),
+                    TextDelta("Want to book a visit?"),
+                    Completed("stop"),
+                ]
+            ]
+        )
         agent = runtime.new_agent(runtime.new_context(), llm)
         sentences = [e.text for e in await collect(agent, "Should I take ibuprofen?") if isinstance(e, Sentence)]
         assert "ibuprofen" not in " ".join(sentences) and "not able to give medical advice" in sentences[0]
@@ -287,7 +327,9 @@ class TestAgentStreaming:
 
     async def test_tool_say_ends_the_turn_and_history_is_consistent(self, runtime: Runtime) -> None:
         call = ToolCall("c1", "check_availability", {"service": "cleaning", "when": "next Tuesday after lunch"})
-        agent = runtime.new_agent(runtime.new_context(), ScriptedLLM([[TextDelta("Let me check. "), call, Completed("tool_calls")]]))
+        agent = runtime.new_agent(
+            runtime.new_context(), ScriptedLLM([[TextDelta("Let me check. "), call, Completed("tool_calls")]])
+        )
         events = await collect(agent, "Cleaning next Tuesday after lunch?")
         sentences = [e for e in events if isinstance(e, Sentence)]
         assert sentences[0].text == "Let me check." and sentences[1].source == "tool"
@@ -301,7 +343,9 @@ class TestAgentStreaming:
         assert any(isinstance(e, ToolEvent) and e.result.name == "end_call" for e in events)
 
     async def test_interrupted_answer_keeps_only_what_was_heard(self, runtime: Runtime) -> None:
-        llm = ScriptedLLM([[TextDelta("Our office is at 418 Linden Street. Parking is behind the building."), Completed("stop")]])
+        llm = ScriptedLLM(
+            [[TextDelta("Our office is at 418 Linden Street. Parking is behind the building."), Completed("stop")]]
+        )
         agent = runtime.new_agent(runtime.new_context(), llm)
         await collect(agent, "Where are you?")
         agent.note_interrupted("Our office is at 418")

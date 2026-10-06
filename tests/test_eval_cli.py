@@ -67,7 +67,7 @@ def test_cli_text_call_books_with_the_fake_model(monkeypatch: pytest.MonkeyPatch
 
     get_settings.cache_clear()
     result = runner.invoke(app, ["call", "I'd like a cleaning next Tuesday after lunch", "The 3 PM one",
-                                 "Jane Doe, 555 123 4567", "Yes", "No, that's all, thanks"])  # fmt: skip
+                                 "My name is Jane Doe, 555 123 4567", "Yes", "No, that's all, thanks"])  # fmt: skip
     get_settings.cache_clear()
     assert result.exit_code == 0, result.output
     assert "Just to confirm" in result.output and "outcome: booked" in result.output
