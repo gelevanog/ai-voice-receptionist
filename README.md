@@ -11,6 +11,10 @@
 ![mypy strict](https://img.shields.io/badge/mypy-strict-2a6db2)
 ![License: MIT](https://img.shields.io/badge/License-MIT-green)
 
+https://github.com/user-attachments/assets/4b9bc781-1140-4ad4-aa0f-0fbc8b5dc779
+
+<sub>70-second walkthrough with voiceover and an excerpt of a real browser call. Can't play it? [Download the MP4](docs/demo.mp4).</sub>
+
 ![The live call page during a real browser call: transcript, tool calls and the per-turn latency waterfall](docs/screenshots/live-call.png)
 
 <sub>A real browser call, placed in headless Chrome with a synthetic caller voice as the microphone: Silero VAD, faster-whisper `base.en` and Kokoro-82M on CPU, the free model `inclusionai/ling-3.0-flash-sante:free` deciding. Callie offers only the times the calendar returned, reads the booking back, and the plain "yes" is executed by a rule without another model call (turn #4, 1.27 s voice to voice). Names and numbers are masked in the live transcript. [Full page](docs/screenshots/live-call-full.png).</sub>
