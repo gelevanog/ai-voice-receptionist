@@ -1,0 +1,67 @@
+# The demo business: a fictional dental clinic. Every name, number and address here is made up.
+# Copy this file, edit it and point CALLIE_CLINIC_FILE at it to run Callie for another business.
+name: Brightside Dental
+assistant_name: Callie
+timezone: America/New_York
+phone: "(555) 010-2040"
+address: "418 Linden Street, Suite 2, Millbrook"
+emergency_line: "911"
+
+# Opening hours, local time. The front desk takes transfers during these hours only.
+hours:
+  mon: [["08:00", "12:00"], ["13:00", "17:00"]]
+  tue: [["08:00", "12:00"], ["13:00", "17:00"]]
+  wed: [["08:00", "12:00"], ["13:00", "19:00"]]
+  thu: [["08:00", "12:00"], ["13:00", "17:00"]]
+  fri: [["08:00", "12:00"], ["13:00", "16:00"]]
+  sat: [["09:00", "13:00"]]
+  sun: []
+holidays: ["2026-11-26", "2026-12-25", "2027-01-01"]
+
+slot_minutes: 30
+min_notice_minutes: 120
+booking_horizon_days: 60
+max_offered_slots: 3
+
+resources:
+  - id: hygienist
+    name: Sam, our hygienist
+  - id: dentist
+    name: Dr. Patel
+
+services:
+  - id: cleaning
+    name: cleaning and checkup
+    aliases: [cleaning, checkup, check up, check-up, hygiene, teeth cleaning, cleaning appointment, routine visit]
+    minutes: 60
+    resource: hygienist
+  - id: kids_cleaning
+    name: children's cleaning
+    aliases: [kids cleaning, child cleaning, children's cleaning, my son, my daughter, pediatric]
+    minutes: 45
+    resource: hygienist
+  - id: new_patient_exam
+    name: new patient exam with x-rays
+    aliases: [new patient, exam, x-rays, x rays, first visit, examination]
+    minutes: 60
+    resource: dentist
+  - id: filling
+    name: filling
+    aliases: [filling, cavity, fillings]
+    minutes: 60
+    resource: dentist
+  - id: whitening
+    name: teeth whitening
+    aliases: [whitening, bleaching, whiter teeth]
+    minutes: 90
+    resource: dentist
+  - id: emergency_visit
+    name: urgent visit for tooth pain
+    aliases: [toothache, tooth ache, tooth pain, broken tooth, chipped tooth, cracked tooth, lost filling, urgent]
+    minutes: 30
+    resource: dentist
+  - id: consultation
+    name: crown or implant consultation
+    aliases: [consultation, crown, implant, veneers, consult]
+    minutes: 30
+    resource: dentist
