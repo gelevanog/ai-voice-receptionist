@@ -57,6 +57,20 @@ Failures:
 Barge-in reaction in the scenarios: {'events': 2, 'reaction_ms': {'n': 2, 'p50': 265.0, 'p95': 277.6, 'mean': 265.0, 'max': 279}}.
 In-pipeline WER per call: {'n': 22, 'p50': 0.076, 'p95': 0.342, 'mean': 0.098, 'max': 0.352}.
 
+## Barge-in benchmark
+
+Reaction time {'n': 40, 'p50': 270.5, 'p95': 326.1, 'mean': 276.825, 'max': 330}; interruptions handled 20/20 (100%); backchannels handled 18/20 (90%); false interruptions 2.
+
+## STT word error rate
+
+94 utterances, 1421 words. Synthetic caller speech (Piper libritts_r voices), LLM-written lines; not real callers.
+
+| Model | clean | phone | phone + noise | latency p50 / p95 s |
+|---|---|---|---|---|
+| tiny.en | 12.3% | 12.7% | 25.4% | 0.214 / 0.247 |
+| base.en | 11.2% | 11.7% | 20.0% | 0.341 / 0.411 |
+| small.en | 10.1% | 10.4% | 15.7% | 0.977 / 1.222 |
+
 ## API calls
 
-367 real requests; all requested ids `:free`: True; all served ids `:free`: True. By tag {'smoke': 12, 'agent': 176, 'caller': 178, 'debug': 1}, by status {'ok': 295, 'error': 12, 'retryable_error': 60}.
+389 real requests; all requested ids `:free`: True; all served ids `:free`: True. By tag {'smoke': 12, 'agent': 198, 'caller': 178, 'debug': 1}, by status {'ok': 317, 'error': 12, 'retryable_error': 60}.

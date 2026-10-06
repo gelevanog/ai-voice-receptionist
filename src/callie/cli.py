@@ -145,7 +145,7 @@ def eval_run(
     """Simulated callers end to end through audio; writes results/<tag>.json and the call recordings."""
     from callie.eval.run import run_e2e
 
-    settings = _settings(provider=provider, model=model, fallbacks=fallback)
+    settings = _settings(provider=provider, model=model, fallbacks=fallback).model_copy(update={"llm_cache": True})
     asyncio.run(
         run_e2e(
             settings,

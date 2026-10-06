@@ -227,9 +227,9 @@ class Agent:
             first_token: float | None = None
             completed: Completed | None = None
             stats.llm_calls += 1
-            stream = self.llm.stream(
-                self.messages, self.specs, max_tokens=self.max_tokens, temperature=self.temperature
-            )
+            # On the last step the model must answer in words: no tools, so it cannot loop on lookups.
+            tools = self.specs if _step < self.max_steps - 1 else []
+            stream = self.llm.stream(self.messages, tools, max_tokens=self.max_tokens, temperature=self.temperature)
             iterator = stream.__aiter__()
             pending_first: asyncio.Future[Any] | None = None
             try:

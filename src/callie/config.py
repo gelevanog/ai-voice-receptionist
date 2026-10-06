@@ -73,6 +73,7 @@ class Settings(BaseSettings):
     google_access_token: str = ""
 
     # --- budget for real API calls ---------------------------------------------------------------------------
+    llm_cache: bool = False  # replay identical requests from disk (the evaluation turns it on to save calls)
     llm_cache_dir: Path = Path(".cache/llm")
     llm_ledger: Path | None = Path("results/calls.jsonl")
     llm_max_calls: int = 420

@@ -605,6 +605,226 @@
    }
   ]
  },
+ "wer": {
+  "date": "2026-10-06T14:14:35+00:00",
+  "utterances": 94,
+  "words": 1421,
+  "note": "Synthetic caller speech (Piper libritts_r voices), LLM-written lines; not real callers.",
+  "models": {
+   "tiny.en": {
+    "clean": 0.1227,
+    "phone": 0.1268,
+    "phone_noisy": 0.2543,
+    "latency_s": {
+     "n": 282,
+     "p50": 0.214,
+     "p95": 0.247,
+     "mean": 0.209,
+     "max": 0.396
+    }
+   },
+   "base.en": {
+    "clean": 0.1123,
+    "examples_clean": [
+     {
+      "ref": "Hi, I'd like to book a cleaning for next Tuesday afternoon, please.",
+      "hyp": "Hi, I'd like to book a cleaning for next Tuesday afternoon, please."
+     },
+     {
+      "ref": "I'd like the 2:30 PM appointment next Tuesday.",
+      "hyp": "I'd like the 230-PAM appointment next Tuesday."
+     },
+     {
+      "ref": "That works for me, I'll go ahead and book the 2:30 PM appointment on Tuesday, October 13th.",
+      "hyp": "That works for me. I'll go ahead and book the 230-PAM appointment on Tuesday, October 13th."
+     },
+     {
+      "ref": "My name is Maria Gonzalez and my phone number is five five five two one four eight eight three nine.",
+      "hyp": "My name is Maria Gonzalez, and my phone number is 555-214-8839."
+     },
+     {
+      "ref": "Yes, that's correct.",
+      "hyp": "Yes, that's correct."
+     },
+     {
+      "ref": "That sounds perfect, thank you! Have a great day",
+      "hyp": "That sounds perfect. Thank you. Have a great day."
+     },
+     {
+      "ref": "Hello, I need a filling, do you have this Thursday at two thirty?",
+      "hyp": "Hello, I need a filling. Do you have this Thursday at 2.30?"
+     },
+     {
+      "ref": "Yes, that works for me. Thank you.",
+      "hyp": "Yes, that works for me. Thank you."
+     },
+     {
+      "ref": "Yes, my name is Daniel Okafor and my phone number is five five five three zero one seven seven four two.",
+      "hyp": "Yes my name is Daniel Akafur, and my phone number is 555-350-1742."
+     },
+     {
+      "ref": "That's correct, thank you.",
+      "hyp": "That's correct, thank you."
+     },
+     {
+      "ref": "That's all I need, thank you. Have a great day.",
+      "hyp": "That's all I need. Thank you. Have a great day."
+     },
+     {
+      "ref": "Hey, can I get a cleaning the day after tomorrow, sometime after lunch?",
+      "hyp": "Hey, can I get a cleaning the day after tomorrow, sometime after lunch?"
+     }
+    ],
+    "phone": 0.1171,
+    "examples_phone": [
+     {
+      "ref": "Hi, I'd like to book a cleaning for next Tuesday afternoon, please.",
+      "hyp": "Hi, I'd like to book a cleaning for next Tuesday afternoon, please."
+     },
+     {
+      "ref": "I'd like the 2:30 PM appointment next Tuesday.",
+      "hyp": "I'd like the 230-PAM appointment next Tuesday."
+     },
+     {
+      "ref": "That works for me, I'll go ahead and book the 2:30 PM appointment on Tuesday, October 13th.",
+      "hyp": "That works for me. I'll go ahead and book the 230 panel appointment on Tuesday, October 13th."
+     },
+     {
+      "ref": "My name is Maria Gonzalez and my phone number is five five five two one four eight eight three nine.",
+      "hyp": "My name is Maria Gonzalez, and my phone number is 555-214-8839."
+     },
+     {
+      "ref": "Yes, that's correct.",
+      "hyp": "Yes, that's correct."
+     },
+     {
+      "ref": "That sounds perfect, thank you! Have a great day",
+      "hyp": "That sounds perfect. Thank you. Have a great day."
+     },
+     {
+      "ref": "Hello, I need a filling, do you have this Thursday at two thirty?",
+      "hyp": "Hello, I need a filling. Do you have this Thursday at 2.30?"
+     },
+     {
+      "ref": "Yes, that works for me. Thank you.",
+      "hyp": "Yes, that works for me. Thank you."
+     },
+     {
+      "ref": "Yes, my name is Daniel Okafor and my phone number is five five five three zero one seven seven four two.",
+      "hyp": "Yes, my name is Daniel Akifer, and my phone number is 555-350-1742."
+     },
+     {
+      "ref": "That's correct, thank you.",
+      "hyp": "That's correct. Thank you."
+     },
+     {
+      "ref": "That's all I need, thank you. Have a great day.",
+      "hyp": "That's all I need. Thank you. Have a great day."
+     },
+     {
+      "ref": "Hey, can I get a cleaning the day after tomorrow, sometime after lunch?",
+      "hyp": "Hey, can I get a cleaning the day after tomorrow, sometime after lunch?"
+     }
+    ],
+    "phone_noisy": 0.2003,
+    "examples_phone_noisy": [
+     {
+      "ref": "Hi, I'd like to book a cleaning for next Tuesday afternoon, please.",
+      "hyp": "Hi. I'd like to book a cleaning for next Tuesday afternoon. Please."
+     },
+     {
+      "ref": "I'd like the 2:30 PM appointment next Tuesday.",
+      "hyp": "I'd like the 230-cam appointment next Tuesday."
+     },
+     {
+      "ref": "That works for me, I'll go ahead and book the 2:30 PM appointment on Tuesday, October 13th.",
+      "hyp": "That works for me. I'll go ahead and book the 230 panel appointment on Tuesday, October 13th."
+     },
+     {
+      "ref": "My name is Maria Gonzalez and my phone number is five five five two one four eight eight three nine.",
+      "hyp": "My name is Maria Gonzalez and my phone number is 555-214-8839."
+     },
+     {
+      "ref": "Yes, that's correct.",
+      "hyp": "Yes, that's correct."
+     },
+     {
+      "ref": "That sounds perfect, thank you! Have a great day",
+      "hyp": "That sounds perfect. Thank you. Have a great day."
+     },
+     {
+      "ref": "Hello, I need a filling, do you have this Thursday at two thirty?",
+      "hyp": "Hello. I need a filling. Do you have a Thursday at 2.30?"
+     },
+     {
+      "ref": "Yes, that works for me. Thank you.",
+      "hyp": "Yes, that works for me. Thank you."
+     },
+     {
+      "ref": "Yes, my name is Daniel Okafor and my phone number is five five five three zero one seven seven four two.",
+      "hyp": "Yes, my name is Daniel Oliver, and my phone number is 555-30-17702."
+     },
+     {
+      "ref": "That's correct, thank you.",
+      "hyp": "That's correct, thank you."
+     },
+     {
+      "ref": "That's all I need, thank you. Have a great day.",
+      "hyp": "That's all I need, thank you. Have a great day."
+     },
+     {
+      "ref": "Hey, can I get a cleaning the day after tomorrow, sometime after lunch?",
+      "hyp": "Can I get a cleaning the day after tomorrow, sometime after lunch?"
+     }
+    ],
+    "latency_s": {
+     "n": 282,
+     "p50": 0.341,
+     "p95": 0.411,
+     "mean": 0.338,
+     "max": 0.779
+    }
+   },
+   "small.en": {
+    "clean": 0.1012,
+    "phone": 0.104,
+    "phone_noisy": 0.1566,
+    "latency_s": {
+     "n": 282,
+     "p50": 0.977,
+     "p95": 1.222,
+     "mean": 0.999,
+     "max": 1.516
+    }
+   }
+  }
+ },
+ "bargein": {
+  "date": "2026-10-06T14:38:24+00:00",
+  "trials": 40,
+  "settings": {
+   "barge_in_min_speech_ms": 250,
+   "hard_interrupt_ms": 1200,
+   "vad": "silero",
+   "stt": "base.en"
+  },
+  "reaction_ms": {
+   "n": 40,
+   "p50": 270.5,
+   "p95": 326.1,
+   "mean": 276.825,
+   "max": 330
+  },
+  "interruptions_handled": [
+   20,
+   20
+  ],
+  "backchannels_handled": [
+   18,
+   20
+  ],
+  "false_interruptions": 2
+ },
  "smoke_models": {
   "date": "2026-10-06T12:12:21+00:00",
   "free_models": [
@@ -753,16 +973,92 @@
    }
   ]
  },
+ "tts_bench": {
+  "date": "2026-10-06T14:38:40+00:00",
+  "cpu_count": 16,
+  "load_avg_1m": 1.486328125,
+  "sentences": 8,
+  "engines": {
+   "kokoro-82m fp32 (agent voice)": {
+    "per_sentence_s": {
+     "n": 16,
+     "p50": 1.027,
+     "p95": 1.459,
+     "mean": 0.993,
+     "max": 1.485
+    },
+    "real_time_factor": 0.213
+   },
+   "kokoro-82m int8": {
+    "per_sentence_s": {
+     "n": 16,
+     "p50": 4.335,
+     "p95": 5.979,
+     "mean": 4.178,
+     "max": 5.98
+    },
+    "real_time_factor": 0.9
+   },
+   "piper libritts_r medium (caller voices)": {
+    "per_sentence_s": {
+     "n": 16,
+     "p50": 0.107,
+     "p95": 0.152,
+     "mean": 0.106,
+     "max": 0.168
+    },
+    "real_time_factor": 0.026
+   }
+  },
+  "agent_voice_intelligibility": {
+   "stt": "faster-whisper/base.en/int8",
+   "wer": 0.0096,
+   "examples": [
+    {
+     "ref": "Thanks for calling Brightside Dental.",
+     "hyp": "Thanks for calling Brightside Dental."
+    },
+    {
+     "ref": "I have Tuesday, October 13th at 2:30 PM, 3 PM or 3:30 PM.",
+     "hyp": "I have Tuesday, October 13th at 2.30 PM, 3 PM or 3.30 PM."
+    },
+    {
+     "ref": "Just to confirm: a cleaning and checkup for Maria Gonzalez on Tuesday, October 13th at 2:30 PM.",
+     "hyp": "Just to confirm, a cleaning and checkup for Maria Gonzalez on Tuesday, October 13th at 2.30 PM."
+    },
+    {
+     "ref": "I'll text the confirmation to the number ending in 8 8 3 9. Is that right?",
+     "hyp": "I'll text the confirmation to the number ending in 8-8-3-9. Is that right?"
+    },
+    {
+     "ref": "We are in network with Delta Dental, Cigna, MetLife, Aetna and Guardian PPO plans.",
+     "hyp": "We are in network with Delta Dental, Cigna, MetLife, Aetna and Guardian PPO plans."
+    },
+    {
+     "ref": "If this is life-threatening, please hang up and call 911.",
+     "hyp": "If this is life-threatening, please hang up and call 911."
+    },
+    {
+     "ref": "Our office is at 418 Linden Street, on the second floor above the pharmacy.",
+     "hyp": "Our office is at 418 Linden Street on the second floor above the pharmacy."
+    },
+    {
+     "ref": "Without insurance, a cleaning and checkup is $120.",
+     "hyp": "Without insurance, a cleaning and checkup is $1.120."
+    }
+   ]
+  }
+ },
  "calls": {
-  "calls": 367,
+  "calls": 389,
   "by_tag": {
    "smoke": 12,
-   "agent": 176,
+   "agent": 198,
    "caller": 178,
    "debug": 1
   },
   "by_status": {
-   "ok": 295,
+   "ok": 317,
    "error": 12,
    "retryable_error": 60
   },
@@ -772,7 +1068,7 @@
    "google/gemma-4-26b-a4b-it:free": 8,
    "google/gemma-4-31b-it:free": 4,
    "liquid/lfm-2.5-2.6b:free": 171,
-   "inclusionai/ling-3.0-flash-sante:free": 171,
+   "inclusionai/ling-3.0-flash-sante:free": 193,
    "dots-studio/dots-3-note-preview:free": 1,
    "apodex/apodex-1.1-mini:free": 4,
    "nvidia/nemotron-3-super-120b-a12b:free": 6
@@ -780,7 +1076,7 @@
   "served_models": {
    "nvidia/nemotron-3.5-lightning:free": 1,
    "liquid/lfm-2.5-2.6b:free": 132,
-   "inclusionai/ling-3.0-flash-sante:free": 156,
+   "inclusionai/ling-3.0-flash-sante:free": 178,
    "apodex/apodex-1.1-mini:free": 1,
    "nvidia/nemotron-3-super-120b-a12b:free": 6
   },
@@ -795,10 +1091,10 @@
     "max": 18.08
    },
    "agent": {
-    "n": 161,
-    "p50": 2.88,
-    "p95": 4.79,
-    "mean": 3.092,
+    "n": 183,
+    "p50": 2.81,
+    "p95": 4.779,
+    "mean": 3.037,
     "max": 13.02
    },
    "caller": {
@@ -809,9 +1105,9 @@
     "max": 37.33
    }
   },
-  "input_tokens": 467967,
-  "output_tokens": 65351,
+  "input_tokens": 525159,
+  "output_tokens": 66774,
   "first": "2026-10-06T12:12:39+00:00",
-  "last": "2026-10-06T14:12:59+00:00"
+  "last": "2026-10-06T14:50:22+00:00"
  }
 }

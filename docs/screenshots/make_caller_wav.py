@@ -18,12 +18,12 @@ from callie.config import Settings
 from callie.tts import PiperTTS
 
 LINES = [
-    (9.0, "Hi, I'd like to book a cleaning for next Tuesday afternoon, please."),
-    (14.0, "The three o'clock one, please."),
-    (12.0, "It's Jane Doe, and my number is five five five, one two three, four five six seven."),
-    (16.0, "Yes, that's right."),
-    (12.0, "Do you take Delta Dental?"),
-    (13.0, "No, that's all. Thank you, bye!"),
+    (12.0, "Hi, I'd like to book a cleaning for next Tuesday afternoon, please."),
+    (19.0, "The three o'clock one, please."),
+    (14.0, "It's Jane Doe, and my number is five five five, one two three, four five six seven."),
+    (21.0, "Yes, that's right."),
+    (14.0, "Do you take Delta Dental?"),
+    (16.0, "No, that's all. Thank you, bye!"),
 ]
 
 

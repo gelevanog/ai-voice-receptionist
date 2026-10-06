@@ -1,0 +1,95 @@
+{
+ "title": "Demo call 1: booking a cleaning, then an insurance question",
+ "lines": [
+  {
+   "start": 1.7,
+   "end": 9.8,
+   "speaker": "Callie",
+   "text": "Thanks for calling Brightside Dental. I'm Callie, the clinic's AI assistant, and this call may be recorded. How can I help you today?"
+  },
+  {
+   "start": 12.0,
+   "end": 15.2,
+   "speaker": "Caller",
+   "text": "Hi, I'd like to book a cleaning for next Tuesday afternoon, please."
+  },
+  {
+   "start": 18.3,
+   "end": 26.5,
+   "speaker": "Callie",
+   "text": "One moment. I have Tuesday, October 13th at 2, 30 p.m., 3 p.m. or 3, 3 p.m. Which would you prefer?"
+  },
+  {
+   "start": 34.2,
+   "end": 35.6,
+   "speaker": "Caller",
+   "text": "The three o'clock one, please."
+  },
+  {
+   "start": 38.6,
+   "end": 44.4,
+   "speaker": "Callie",
+   "text": "Let me check. Yes, Tuesday, October 13th at 3 p.m. is open. Would you like me to book it?"
+  },
+  {
+   "start": 49.5,
+   "end": 54.3,
+   "speaker": "Caller",
+   "text": "It's Jane Doe, and my number is 555-123-4567."
+  },
+  {
+   "start": 57.4,
+   "end": 59.7,
+   "speaker": "Callie",
+   "text": "Sure, one second, just to confirm."
+  },
+  {
+   "start": 60.5,
+   "end": 71.1,
+   "speaker": "Callie",
+   "text": "a cleaning and check-up for Jane Doe on Tuesday, October 13th at 3 p.m. And I'll text the confirmation to the number ending in 4567. Is that right?"
+  },
+  {
+   "start": 75.2,
+   "end": 76.1,
+   "speaker": "Caller",
+   "text": "Yes, that's right."
+  },
+  {
+   "start": 77.3,
+   "end": 84.4,
+   "speaker": "Callie",
+   "text": "You're all set for Tuesday, October 13 at 3pm. I've sent you a confirmation text. Is there anything else I can help you with?"
+  },
+  {
+   "start": 90.0,
+   "end": 91.2,
+   "speaker": "Caller",
+   "text": "Do you take Delta Dental?"
+  },
+  {
+   "start": 94.2,
+   "end": 95.2,
+   "speaker": "Callie",
+   "text": "ONE MOMENT"
+  },
+  {
+   "start": 97.8,
+   "end": 104.6,
+   "speaker": "Callie",
+   "text": "Yes, we're in network with Delta Dental. Please bring your insurance card to your first visit. Is there anything else I can help with?"
+  },
+  {
+   "start": 107.2,
+   "end": 108.9,
+   "speaker": "Caller",
+   "text": "No, that's all. Thank you. Bye"
+  },
+  {
+   "start": 110.2,
+   "end": 114.1,
+   "speaker": "Callie",
+   "text": "Thanks for calling Bright Side Dental. Have a great day. Goodbye."
+  }
+ ]
+}

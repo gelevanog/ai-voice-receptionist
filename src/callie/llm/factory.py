@@ -77,7 +77,7 @@ def build_chat_model(
     return ResilientChat(
         models,
         ledger=shared_ledger(settings),
-        cache=DiskCache(settings.llm_cache_dir),
+        cache=DiskCache(settings.llm_cache_dir) if settings.llm_cache else None,
         throttle=Throttle(settings.llm_min_seconds_between_requests),
         max_retries=settings.llm_max_retries,
         tag=tag,

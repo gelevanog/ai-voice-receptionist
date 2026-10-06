@@ -1,0 +1,468 @@
+{
+ "date": "2026-10-06T14:38:24+00:00",
+ "trials": 40,
+ "settings": {
+  "barge_in_min_speech_ms": 250,
+  "hard_interrupt_ms": 1200,
+  "vad": "silero",
+  "stt": "base.en"
+ },
+ "reaction_ms": {
+  "n": 40,
+  "p50": 270.5,
+  "p95": 326.1,
+  "mean": 276.825,
+  "max": 330
+ },
+ "interruptions_handled": [
+  20,
+  20
+ ],
+ "backchannels_handled": [
+  18,
+  20
+ ],
+ "false_interruptions": 2,
+ "records": [
+  {
+   "kind": "interruption",
+   "text": "Sorry to interrupt, do you take my insurance?",
+   "offset_s": 1.68,
+   "reaction_ms": 261,
+   "session_reaction_ms": 249,
+   "result": "interrupted",
+   "answer_fully_heard": false,
+   "stt": "Sorry to interrupt, do you take my insurance?",
+   "correct": true
+  },
+  {
+   "kind": "interruption",
+   "text": "Actually, I just need the address.",
+   "offset_s": 1.65,
+   "reaction_ms": 324,
+   "session_reaction_ms": 249,
+   "result": "interrupted",
+   "answer_fully_heard": false,
+   "stt": "Actually, I just need the address.",
+   "correct": true
+  },
+  {
+   "kind": "backchannel",
+   "text": "Right.",
+   "offset_s": 1.58,
+   "reaction_ms": 293,
+   "session_reaction_ms": 269,
+   "result": "backchannel_resumed",
+   "answer_fully_heard": false,
+   "stt": "Right.",
+   "correct": true
+  },
+  {
+   "kind": "interruption",
+   "text": "Wait, wait, hold on a second.",
+   "offset_s": 1.49,
+   "reaction_ms": 326,
+   "session_reaction_ms": 248,
+   "result": "interrupted",
+   "answer_fully_heard": false,
+   "stt": "Wait, wait, hold on a second.",
+   "correct": true
+  },
+  {
+   "kind": "backchannel",
+   "text": "Uh-huh.",
+   "offset_s": 2.0,
+   "reaction_ms": 286,
+   "session_reaction_ms": 248,
+   "result": "backchannel_resumed",
+   "answer_fully_heard": false,
+   "stt": "Uh-huh.",
+   "correct": true
+  },
+  {
+   "kind": "backchannel",
+   "text": "Okay.",
+   "offset_s": 2.09,
+   "reaction_ms": 233,
+   "session_reaction_ms": 248,
+   "result": "backchannel_resumed",
+   "answer_fully_heard": false,
+   "stt": "Okay.",
+   "correct": true
+  },
+  {
+   "kind": "interruption",
+   "text": "Wait, wait, hold on a second.",
+   "offset_s": 0.85,
+   "reaction_ms": 307,
+   "session_reaction_ms": 248,
+   "result": "interrupted",
+   "answer_fully_heard": false,
+   "stt": "Wait, wait, hold on a second.",
+   "correct": true
+  },
+  {
+   "kind": "interruption",
+   "text": "Sorry, can I ask something else?",
+   "offset_s": 1.48,
+   "reaction_ms": 328,
+   "session_reaction_ms": 251,
+   "result": "interrupted",
+   "answer_fully_heard": false,
+   "stt": "Sorry, can I ask something else?",
+   "correct": true
+  },
+  {
+   "kind": "backchannel",
+   "text": "Yeah.",
+   "offset_s": 1.46,
+   "reaction_ms": 258,
+   "session_reaction_ms": 268,
+   "result": "backchannel_resumed",
+   "answer_fully_heard": false,
+   "stt": "Yeah.",
+   "correct": true
+  },
+  {
+   "kind": "backchannel",
+   "text": "Okay.",
+   "offset_s": 2.24,
+   "reaction_ms": 259,
+   "session_reaction_ms": 248,
+   "result": "backchannel_resumed",
+   "answer_fully_heard": false,
+   "stt": "Okay.",
+   "correct": true
+  },
+  {
+   "kind": "backchannel",
+   "text": "Right.",
+   "offset_s": 1.16,
+   "reaction_ms": 280,
+   "session_reaction_ms": 268,
+   "result": "backchannel_resumed",
+   "answer_fully_heard": false,
+   "stt": "Right.",
+   "correct": true
+  },
+  {
+   "kind": "interruption",
+   "text": "Sorry, can I ask something else?",
+   "offset_s": 1.6,
+   "reaction_ms": 243,
+   "session_reaction_ms": 268,
+   "result": "interrupted",
+   "answer_fully_heard": false,
+   "stt": "Sorry, can I ask something else?",
+   "correct": true
+  },
+  {
+   "kind": "backchannel",
+   "text": "Uh-huh.",
+   "offset_s": 1.51,
+   "reaction_ms": 232,
+   "session_reaction_ms": 248,
+   "result": "backchannel_resumed",
+   "answer_fully_heard": false,
+   "stt": "Uh-huh.",
+   "correct": true
+  },
+  {
+   "kind": "interruption",
+   "text": "Sorry to interrupt, do you take my insurance?",
+   "offset_s": 2.12,
+   "reaction_ms": 309,
+   "session_reaction_ms": 249,
+   "result": "interrupted",
+   "answer_fully_heard": false,
+   "stt": "Sorry to interrupt. Do you take my insurance?",
+   "correct": true
+  },
+  {
+   "kind": "interruption",
+   "text": "Sorry to interrupt, do you take my insurance?",
+   "offset_s": 1.37,
+   "reaction_ms": 326,
+   "session_reaction_ms": 269,
+   "result": "interrupted",
+   "answer_fully_heard": false,
+   "stt": "Sorry to interrupt. Do you take my insurance?",
+   "correct": true
+  },
+  {
+   "kind": "interruption",
+   "text": "Sorry, can I ask something else?",
+   "offset_s": 1.37,
+   "reaction_ms": 263,
+   "session_reaction_ms": 268,
+   "result": "interrupted",
+   "answer_fully_heard": false,
+   "stt": "Sorry, can I ask something else?",
+   "correct": true
+  },
+  {
+   "kind": "backchannel",
+   "text": "Uh-huh.",
+   "offset_s": 2.09,
+   "reaction_ms": 247,
+   "session_reaction_ms": 248,
+   "result": "backchannel_resumed",
+   "answer_fully_heard": false,
+   "stt": "Uh-huh.",
+   "correct": true
+  },
+  {
+   "kind": "backchannel",
+   "text": "Okay.",
+   "offset_s": 1.03,
+   "reaction_ms": 258,
+   "session_reaction_ms": 269,
+   "result": "backchannel_resumed",
+   "answer_fully_heard": false,
+   "stt": "Okay.",
+   "correct": true
+  },
+  {
+   "kind": "backchannel",
+   "text": "Yeah.",
+   "offset_s": 0.82,
+   "reaction_ms": 230,
+   "session_reaction_ms": 249,
+   "result": "backchannel_resumed",
+   "answer_fully_heard": false,
+   "stt": "Yeah.",
+   "correct": true
+  },
+  {
+   "kind": "interruption",
+   "text": "Wait, wait, hold on a second.",
+   "offset_s": 2.15,
+   "reaction_ms": 325,
+   "session_reaction_ms": 269,
+   "result": "interrupted",
+   "answer_fully_heard": false,
+   "stt": "Wait, wait, hold on a second.",
+   "correct": true
+  },
+  {
+   "kind": "backchannel",
+   "text": "Okay.",
+   "offset_s": 1.96,
+   "reaction_ms": 238,
+   "session_reaction_ms": 247,
+   "result": "backchannel_resumed",
+   "answer_fully_heard": false,
+   "stt": "Okay.",
+   "correct": true
+  },
+  {
+   "kind": "interruption",
+   "text": "Actually, I just need the address.",
+   "offset_s": 1.56,
+   "reaction_ms": 277,
+   "session_reaction_ms": 249,
+   "result": "interrupted",
+   "answer_fully_heard": false,
+   "stt": "Actually, I just need the address.",
+   "correct": true
+  },
+  {
+   "kind": "interruption",
+   "text": "Actually, I just need the address.",
+   "offset_s": 2.47,
+   "reaction_ms": 247,
+   "session_reaction_ms": 249,
+   "result": "interrupted",
+   "answer_fully_heard": false,
+   "stt": "Actually, I just need the address.",
+   "correct": true
+  },
+  {
+   "kind": "interruption",
+   "text": "Hang on, I think I need to cancel instead.",
+   "offset_s": 1.51,
+   "reaction_ms": 266,
+   "session_reaction_ms": 249,
+   "result": "interrupted",
+   "answer_fully_heard": false,
+   "stt": "Hang on, I think I need to cancel instead.",
+   "correct": true
+  },
+  {
+   "kind": "interruption",
+   "text": "Hang on, I think I need to cancel instead.",
+   "offset_s": 1.0,
+   "reaction_ms": 281,
+   "session_reaction_ms": 268,
+   "result": "interrupted",
+   "answer_fully_heard": false,
+   "stt": "Hang on. I think I need to cancel instead.",
+   "correct": true
+  },
+  {
+   "kind": "interruption",
+   "text": "Hang on, I think I need to cancel instead.",
+   "offset_s": 2.48,
+   "reaction_ms": 280,
+   "session_reaction_ms": 248,
+   "result": "interrupted",
+   "answer_fully_heard": false,
+   "stt": "Hang on, I think I need to cancel instead.",
+   "correct": true
+  },
+  {
+   "kind": "interruption",
+   "text": "Sorry to interrupt, do you take my insurance?",
+   "offset_s": 1.26,
+   "reaction_ms": 309,
+   "session_reaction_ms": 251,
+   "result": "interrupted",
+   "answer_fully_heard": false,
+   "stt": "Sorry to interrupt, do you take my insurance?",
+   "correct": true
+  },
+  {
+   "kind": "interruption",
+   "text": "Sorry, can I ask something else?",
+   "offset_s": 2.5,
+   "reaction_ms": 267,
+   "session_reaction_ms": 268,
+   "result": "interrupted",
+   "answer_fully_heard": false,
+   "stt": "Sorry, can I ask something else?",
+   "correct": true
+  },
+  {
+   "kind": "backchannel",
+   "text": "Mm-hmm.",
+   "offset_s": 1.16,
+   "reaction_ms": 261,
+   "session_reaction_ms": 249,
+   "result": "backchannel_resumed",
+   "answer_fully_heard": false,
+   "stt": "Mm-hmm.",
+   "correct": true
+  },
+  {
+   "kind": "interruption",
+   "text": "Hang on, I think I need to cancel instead.",
+   "offset_s": 2.49,
+   "reaction_ms": 246,
+   "session_reaction_ms": 248,
+   "result": "interrupted",
+   "answer_fully_heard": false,
+   "stt": "Hang on. I think I need to cancel instead.",
+   "correct": true
+  },
+  {
+   "kind": "backchannel",
+   "text": "Mm-hmm.",
+   "offset_s": 0.87,
+   "reaction_ms": 241,
+   "session_reaction_ms": 248,
+   "result": "interrupted",
+   "answer_fully_heard": false,
+   "stt": "And then, home.",
+   "correct": false
+  },
+  {
+   "kind": "backchannel",
+   "text": "Mm-hmm.",
+   "offset_s": 1.16,
+   "reaction_ms": 274,
+   "session_reaction_ms": 269,
+   "result": "interrupted",
+   "answer_fully_heard": false,
+   "stt": "And then, hum.",
+   "correct": false
+  },
+  {
+   "kind": "backchannel",
+   "text": "Right.",
+   "offset_s": 0.82,
+   "reaction_ms": 310,
+   "session_reaction_ms": 268,
+   "result": "backchannel_resumed",
+   "answer_fully_heard": false,
+   "stt": "Right.",
+   "correct": true
+  },
+  {
+   "kind": "interruption",
+   "text": "Wait, wait, hold on a second.",
+   "offset_s": 2.21,
+   "reaction_ms": 253,
+   "session_reaction_ms": 248,
+   "result": "interrupted",
+   "answer_fully_heard": false,
+   "stt": "Wait, wait, hold on a second.",
+   "correct": true
+  },
+  {
+   "kind": "interruption",
+   "text": "Actually, I just need the address.",
+   "offset_s": 0.92,
+   "reaction_ms": 309,
+   "session_reaction_ms": 271,
+   "result": "interrupted",
+   "answer_fully_heard": false,
+   "stt": "Actually, I just need the address.",
+   "correct": true
+  },
+  {
+   "kind": "backchannel",
+   "text": "Uh-huh.",
+   "offset_s": 1.15,
+   "reaction_ms": 237,
+   "session_reaction_ms": 249,
+   "result": "backchannel_resumed",
+   "answer_fully_heard": false,
+   "stt": "Uh-huh.",
+   "correct": true
+  },
+  {
+   "kind": "backchannel",
+   "text": "Yeah.",
+   "offset_s": 0.83,
+   "reaction_ms": 309,
+   "session_reaction_ms": 271,
+   "result": "backchannel_resumed",
+   "answer_fully_heard": false,
+   "stt": "Yeah.",
+   "correct": true
+  },
+  {
+   "kind": "backchannel",
+   "text": "Yeah.",
+   "offset_s": 1.43,
+   "reaction_ms": 309,
+   "session_reaction_ms": 248,
+   "result": "backchannel_resumed",
+   "answer_fully_heard": false,
+   "stt": "Yeah.",
+   "correct": true
+  },
+  {
+   "kind": "backchannel",
+   "text": "Mm-hmm.",
+   "offset_s": 1.02,
+   "reaction_ms": 241,
+   "session_reaction_ms": 250,
+   "result": "backchannel_resumed",
+   "answer_fully_heard": false,
+   "stt": "Mm-hmm.",
+   "correct": true
+  },
+  {
+   "kind": "backchannel",
+   "text": "Right.",
+   "offset_s": 2.22,
+   "reaction_ms": 330,
+   "session_reaction_ms": 249,
+   "result": "backchannel_resumed",
+   "answer_fully_heard": false,
+   "stt": "Right.",
+   "correct": true
+  }
+ ]
+}

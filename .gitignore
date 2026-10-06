@@ -24,6 +24,7 @@ data/*.db
 data/*.db-*
 data/recordings/
 data/eval/
+data/*.wav
 
 # Tooling
 .pytest_cache/
@@ -36,3 +37,4 @@ report.xml
 .vscode/
 .DS_Store
 node_modules/
+data/*.wav

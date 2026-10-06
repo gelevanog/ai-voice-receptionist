@@ -4,7 +4,7 @@
 {% set ts = e.task_success %}
 {% set llm = e.latency_ms.llm_turns %}
 <div class="note">Run {{ e.run.started[:16].replace("T", " ") }} UTC · agent <code>{{ e.run.agent_llm }}</code> · caller <code>{{ e.run.caller }}</code> ·
-  STT <code>{{ e.run.stt }}</code> · TTS <code>{{ e.run.tts_agent }}</code> · {{ e.run.cpu_count }} CPU cores, load average {{ e.run.load_avg_1m.mean }} (max {{ e.run.load_avg_1m.max }}).
+  STT <code>{{ e.run.stt }}</code> · TTS <code>{{ e.run.tts_agent }}</code> · {{ e.run.cpu_count }} CPU cores, load average {{ "%.1f"|format(e.run.load_avg_1m.mean) }} (max {{ "%.1f"|format(e.run.load_avg_1m.max) }}).
   Scenarios and callers are simulated: an AI wrote the scenarios, an LLM plays the caller, a synthetic voice speaks.</div>
 <div class="tiles">
   <div class="tile"><div class="tile-label">Task success</div><div class="tile-value">{{ ts.passed }}/{{ ts.total }}</div><div class="tile-sub">calendar state and escalation checked in the database</div></div>

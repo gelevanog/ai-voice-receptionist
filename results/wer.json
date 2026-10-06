@@ -1,0 +1,194 @@
+{
+ "date": "2026-10-06T14:14:35+00:00",
+ "utterances": 94,
+ "words": 1421,
+ "note": "Synthetic caller speech (Piper libritts_r voices), LLM-written lines; not real callers.",
+ "models": {
+  "tiny.en": {
+   "clean": 0.1227,
+   "phone": 0.1268,
+   "phone_noisy": 0.2543,
+   "latency_s": {
+    "n": 282,
+    "p50": 0.214,
+    "p95": 0.247,
+    "mean": 0.209,
+    "max": 0.396
+   }
+  },
+  "base.en": {
+   "clean": 0.1123,
+   "examples_clean": [
+    {
+     "ref": "Hi, I'd like to book a cleaning for next Tuesday afternoon, please.",
+     "hyp": "Hi, I'd like to book a cleaning for next Tuesday afternoon, please."
+    },
+    {
+     "ref": "I'd like the 2:30 PM appointment next Tuesday.",
+     "hyp": "I'd like the 230-PAM appointment next Tuesday."
+    },
+    {
+     "ref": "That works for me, I'll go ahead and book the 2:30 PM appointment on Tuesday, October 13th.",
+     "hyp": "That works for me. I'll go ahead and book the 230-PAM appointment on Tuesday, October 13th."
+    },
+    {
+     "ref": "My name is Maria Gonzalez and my phone number is five five five two one four eight eight three nine.",
+     "hyp": "My name is Maria Gonzalez, and my phone number is 555-214-8839."
+    },
+    {
+     "ref": "Yes, that's correct.",
+     "hyp": "Yes, that's correct."
+    },
+    {
+     "ref": "That sounds perfect, thank you! Have a great day",
+     "hyp": "That sounds perfect. Thank you. Have a great day."
+    },
+    {
+     "ref": "Hello, I need a filling, do you have this Thursday at two thirty?",
+     "hyp": "Hello, I need a filling. Do you have this Thursday at 2.30?"
+    },
+    {
+     "ref": "Yes, that works for me. Thank you.",
+     "hyp": "Yes, that works for me. Thank you."
+    },
+    {
+     "ref": "Yes, my name is Daniel Okafor and my phone number is five five five three zero one seven seven four two.",
+     "hyp": "Yes my name is Daniel Akafur, and my phone number is 555-350-1742."
+    },
+    {
+     "ref": "That's correct, thank you.",
+     "hyp": "That's correct, thank you."
+    },
+    {
+     "ref": "That's all I need, thank you. Have a great day.",
+     "hyp": "That's all I need. Thank you. Have a great day."
+    },
+    {
+     "ref": "Hey, can I get a cleaning the day after tomorrow, sometime after lunch?",
+     "hyp": "Hey, can I get a cleaning the day after tomorrow, sometime after lunch?"
+    }
+   ],
+   "phone": 0.1171,
+   "examples_phone": [
+    {
+     "ref": "Hi, I'd like to book a cleaning for next Tuesday afternoon, please.",
+     "hyp": "Hi, I'd like to book a cleaning for next Tuesday afternoon, please."
+    },
+    {
+     "ref": "I'd like the 2:30 PM appointment next Tuesday.",
+     "hyp": "I'd like the 230-PAM appointment next Tuesday."
+    },
+    {
+     "ref": "That works for me, I'll go ahead and book the 2:30 PM appointment on Tuesday, October 13th.",
+     "hyp": "That works for me. I'll go ahead and book the 230 panel appointment on Tuesday, October 13th."
+    },
+    {
+     "ref": "My name is Maria Gonzalez and my phone number is five five five two one four eight eight three nine.",
+     "hyp": "My name is Maria Gonzalez, and my phone number is 555-214-8839."
+    },
+    {
+     "ref": "Yes, that's correct.",
+     "hyp": "Yes, that's correct."
+    },
+    {
+     "ref": "That sounds perfect, thank you! Have a great day",
+     "hyp": "That sounds perfect. Thank you. Have a great day."
+    },
+    {
+     "ref": "Hello, I need a filling, do you have this Thursday at two thirty?",
+     "hyp": "Hello, I need a filling. Do you have this Thursday at 2.30?"
+    },
+    {
+     "ref": "Yes, that works for me. Thank you.",
+     "hyp": "Yes, that works for me. Thank you."
+    },
+    {
+     "ref": "Yes, my name is Daniel Okafor and my phone number is five five five three zero one seven seven four two.",
+     "hyp": "Yes, my name is Daniel Akifer, and my phone number is 555-350-1742."
+    },
+    {
+     "ref": "That's correct, thank you.",
+     "hyp": "That's correct. Thank you."
+    },
+    {
+     "ref": "That's all I need, thank you. Have a great day.",
+     "hyp": "That's all I need. Thank you. Have a great day."
+    },
+    {
+     "ref": "Hey, can I get a cleaning the day after tomorrow, sometime after lunch?",
+     "hyp": "Hey, can I get a cleaning the day after tomorrow, sometime after lunch?"
+    }
+   ],
+   "phone_noisy": 0.2003,
+   "examples_phone_noisy": [
+    {
+     "ref": "Hi, I'd like to book a cleaning for next Tuesday afternoon, please.",
+     "hyp": "Hi. I'd like to book a cleaning for next Tuesday afternoon. Please."
+    },
+    {
+     "ref": "I'd like the 2:30 PM appointment next Tuesday.",
+     "hyp": "I'd like the 230-cam appointment next Tuesday."
+    },
+    {
+     "ref": "That works for me, I'll go ahead and book the 2:30 PM appointment on Tuesday, October 13th.",
+     "hyp": "That works for me. I'll go ahead and book the 230 panel appointment on Tuesday, October 13th."
+    },
+    {
+     "ref": "My name is Maria Gonzalez and my phone number is five five five two one four eight eight three nine.",
+     "hyp": "My name is Maria Gonzalez and my phone number is 555-214-8839."
+    },
+    {
+     "ref": "Yes, that's correct.",
+     "hyp": "Yes, that's correct."
+    },
+    {
+     "ref": "That sounds perfect, thank you! Have a great day",
+     "hyp": "That sounds perfect. Thank you. Have a great day."
+    },
+    {
+     "ref": "Hello, I need a filling, do you have this Thursday at two thirty?",
+     "hyp": "Hello. I need a filling. Do you have a Thursday at 2.30?"
+    },
+    {
+     "ref": "Yes, that works for me. Thank you.",
+     "hyp": "Yes, that works for me. Thank you."
+    },
+    {
+     "ref": "Yes, my name is Daniel Okafor and my phone number is five five five three zero one seven seven four two.",
+     "hyp": "Yes, my name is Daniel Oliver, and my phone number is 555-30-17702."
+    },
+    {
+     "ref": "That's correct, thank you.",
+     "hyp": "That's correct, thank you."
+    },
+    {
+     "ref": "That's all I need, thank you. Have a great day.",
+     "hyp": "That's all I need, thank you. Have a great day."
+    },
+    {
+     "ref": "Hey, can I get a cleaning the day after tomorrow, sometime after lunch?",
+     "hyp": "Can I get a cleaning the day after tomorrow, sometime after lunch?"
+    }
+   ],
+   "latency_s": {
+    "n": 282,
+    "p50": 0.341,
+    "p95": 0.411,
+    "mean": 0.338,
+    "max": 0.779
+   }
+  },
+  "small.en": {
+   "clean": 0.1012,
+   "phone": 0.104,
+   "phone_noisy": 0.1566,
+   "latency_s": {
+    "n": 282,
+    "p50": 0.977,
+    "p95": 1.222,
+    "mean": 0.999,
+    "max": 1.516
+   }
+  }
+ }
+}

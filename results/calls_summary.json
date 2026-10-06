@@ -1,13 +1,13 @@
 {
- "calls": 367,
+ "calls": 389,
  "by_tag": {
   "smoke": 12,
-  "agent": 176,
+  "agent": 198,
   "caller": 178,
   "debug": 1
  },
  "by_status": {
-  "ok": 295,
+  "ok": 317,
   "error": 12,
   "retryable_error": 60
  },
@@ -17,7 +17,7 @@
   "google/gemma-4-26b-a4b-it:free": 8,
   "google/gemma-4-31b-it:free": 4,
   "liquid/lfm-2.5-2.6b:free": 171,
-  "inclusionai/ling-3.0-flash-sante:free": 171,
+  "inclusionai/ling-3.0-flash-sante:free": 193,
   "dots-studio/dots-3-note-preview:free": 1,
   "apodex/apodex-1.1-mini:free": 4,
   "nvidia/nemotron-3-super-120b-a12b:free": 6
@@ -25,7 +25,7 @@
  "served_models": {
   "nvidia/nemotron-3.5-lightning:free": 1,
   "liquid/lfm-2.5-2.6b:free": 132,
-  "inclusionai/ling-3.0-flash-sante:free": 156,
+  "inclusionai/ling-3.0-flash-sante:free": 178,
   "apodex/apodex-1.1-mini:free": 1,
   "nvidia/nemotron-3-super-120b-a12b:free": 6
  },
@@ -40,10 +40,10 @@
    "max": 18.08
   },
   "agent": {
-   "n": 161,
-   "p50": 2.88,
-   "p95": 4.79,
-   "mean": 3.092,
+   "n": 183,
+   "p50": 2.81,
+   "p95": 4.779,
+   "mean": 3.037,
    "max": 13.02
   },
   "caller": {
@@ -54,8 +54,8 @@
    "max": 37.33
   }
  },
- "input_tokens": 467967,
- "output_tokens": 65351,
+ "input_tokens": 525159,
+ "output_tokens": 66774,
  "first": "2026-10-06T12:12:39+00:00",
- "last": "2026-10-06T14:12:59+00:00"
+ "last": "2026-10-06T14:50:22+00:00"
 }

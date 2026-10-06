@@ -1,0 +1,76 @@
+{
+ "date": "2026-10-06T14:38:40+00:00",
+ "cpu_count": 16,
+ "load_avg_1m": 1.486328125,
+ "sentences": 8,
+ "engines": {
+  "kokoro-82m fp32 (agent voice)": {
+   "per_sentence_s": {
+    "n": 16,
+    "p50": 1.027,
+    "p95": 1.459,
+    "mean": 0.993,
+    "max": 1.485
+   },
+   "real_time_factor": 0.213
+  },
+  "kokoro-82m int8": {
+   "per_sentence_s": {
+    "n": 16,
+    "p50": 4.335,
+    "p95": 5.979,
+    "mean": 4.178,
+    "max": 5.98
+   },
+   "real_time_factor": 0.9
+  },
+  "piper libritts_r medium (caller voices)": {
+   "per_sentence_s": {
+    "n": 16,
+    "p50": 0.107,
+    "p95": 0.152,
+    "mean": 0.106,
+    "max": 0.168
+   },
+   "real_time_factor": 0.026
+  }
+ },
+ "agent_voice_intelligibility": {
+  "stt": "faster-whisper/base.en/int8",
+  "wer": 0.0096,
+  "examples": [
+   {
+    "ref": "Thanks for calling Brightside Dental.",
+    "hyp": "Thanks for calling Brightside Dental."
+   },
+   {
+    "ref": "I have Tuesday, October 13th at 2:30 PM, 3 PM or 3:30 PM.",
+    "hyp": "I have Tuesday, October 13th at 2.30 PM, 3 PM or 3.30 PM."
+   },
+   {
+    "ref": "Just to confirm: a cleaning and checkup for Maria Gonzalez on Tuesday, October 13th at 2:30 PM.",
+    "hyp": "Just to confirm, a cleaning and checkup for Maria Gonzalez on Tuesday, October 13th at 2.30 PM."
+   },
+   {
+    "ref": "I'll text the confirmation to the number ending in 8 8 3 9. Is that right?",
+    "hyp": "I'll text the confirmation to the number ending in 8-8-3-9. Is that right?"
+   },
+   {
+    "ref": "We are in network with Delta Dental, Cigna, MetLife, Aetna and Guardian PPO plans.",
+    "hyp": "We are in network with Delta Dental, Cigna, MetLife, Aetna and Guardian PPO plans."
+   },
+   {
+    "ref": "If this is life-threatening, please hang up and call 911.",
+    "hyp": "If this is life-threatening, please hang up and call 911."
+   },
+   {
+    "ref": "Our office is at 418 Linden Street, on the second floor above the pharmacy.",
+    "hyp": "Our office is at 418 Linden Street on the second floor above the pharmacy."
+   },
+   {
+    "ref": "Without insurance, a cleaning and checkup is $120.",
+    "hyp": "Without insurance, a cleaning and checkup is $1.120."
+   }
+  ]
+ }
+}

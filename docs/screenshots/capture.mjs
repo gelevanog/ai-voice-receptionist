@@ -51,9 +51,19 @@ for (const item of pages) {
       if (ended) break;
     }
     await sleep(1500);
-    await page.evaluate(() => { const t = document.querySelector("#transcript"); t.style.maxHeight = "none"; });
-    await page.screenshot({ path: `${out}live-call.png`, fullPage: true });
-    console.log("live-call.png");
+    // Compact hero: the transcript panel scrolled to the booking part, the waterfall beside it.
+    await page.setViewport({ width: 1440, height: 1180, deviceScaleFactor: 1.5 });
+    await page.evaluate(() => {
+      const t = document.querySelector("#transcript");
+      t.style.maxHeight = "820px";
+      const tools = [...t.querySelectorAll(".tool")];
+      const anchor = tools.length > 1 ? tools[1] : tools[0];
+      if (anchor) t.scrollTop = anchor.offsetTop - t.offsetTop - 120;
+    });
+    await page.screenshot({ path: `${out}live-call.png` });
+    await page.evaluate(() => { document.querySelector("#transcript").style.maxHeight = "none"; });
+    await page.screenshot({ path: `${out}live-call-full.png`, fullPage: true });
+    console.log("live-call.png, live-call-full.png");
   } else if (item === "calls") {
     await shot("/calls", "call-history", { full: true });
   } else if (item.startsWith("call:")) {

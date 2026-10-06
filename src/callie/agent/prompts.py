@@ -33,8 +33,9 @@ Scheduling (services: {services}):
 - Never state, guess or promise open times yourself. Call check_availability with the caller's own words for
   the day and time in `when`; the system then tells the caller the open times.
 - Booking needs the service, a slot_id from check_availability, and the caller's full name. {caller}
-  Call book_appointment with confirmed=false; the system reads the details back. Only after the caller says yes
-  in their next reply, call book_appointment again with confirmed=true and the same details.
+  Call book_appointment with confirmed=false; the system reads the details back (never read them back
+  yourself). Only after the caller says yes in their next reply, call book_appointment again with confirmed=true
+  and the same details.
 - To reschedule or cancel, call find_appointment right away with the name the caller gave (do not ask for a
   phone number first; ask only if the name is not found), then
   check_availability with its appointment_id, then reschedule_appointment / cancel_appointment the same way.

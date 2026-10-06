@@ -1,0 +1,95 @@
+{
+ "title": "Demo call 2: rescheduling, with the caller interrupting Callie",
+ "lines": [
+  {
+   "start": 1.7,
+   "end": 9.8,
+   "speaker": "Callie",
+   "text": "Thanks for calling Bright Side Dental. I'm Callie, the clinic's AI assistant, and this call may be recorded. How can I help you today?"
+  },
+  {
+   "start": 11.9,
+   "end": 15.4,
+   "speaker": "Caller",
+   "text": "Hi, it's Sophie, or Rossi. I have a cleaning tomorrow afternoon and I need to move it."
+  },
+  {
+   "start": 18.4,
+   "end": 19.4,
+   "speaker": "Callie",
+   "text": "ONE MOMENT"
+  },
+  {
+   "start": 20.4,
+   "end": 29.7,
+   "speaker": "Callie",
+   "text": "Let me look up your appointment. Sophie, one moment please. I found your cleaning and checkup on Wednesday, October 7th at 8am. What day and time would you like instead?"
+  },
+  {
+   "start": 30.2,
+   "end": 31.5,
+   "speaker": "Caller",
+   "text": "Do you have anything on Thursday?"
+  },
+  {
+   "start": 34.5,
+   "end": 39.5,
+   "speaker": "Callie",
+   "text": "Let me check. I have Thursday, October 8, at 9.30 a.m., 10 a.m. or 10 a.m."
+  },
+  {
+   "start": 39.0,
+   "end": 40.4,
+   "speaker": "Caller",
+   "text": "Sorry, sorry, in the morning, please."
+  },
+  {
+   "start": 43.5,
+   "end": 51.7,
+   "speaker": "Callie",
+   "text": "Sure, one second. No problem. I have Thursday morning at 9 30 a.m. 10 a.m. Or 10 30 a.m. Which one works for you?"
+  },
+  {
+   "start": 56.3,
+   "end": 57.3,
+   "speaker": "Caller",
+   "text": "The first one works."
+  },
+  {
+   "start": 60.4,
+   "end": 61.3,
+   "speaker": "Callie",
+   "text": "One moment."
+  },
+  {
+   "start": 63.4,
+   "end": 73.7,
+   "speaker": "Callie",
+   "text": "Just to confirm, I'll move your cleaning and check up from Wednesday, October 7th at 8 a.m. to Thursday, October 8th at 9, 30 a.m. Is that right?"
+  },
+  {
+   "start": 77.2,
+   "end": 77.9,
+   "speaker": "Caller",
+   "text": "Yes, that's right."
+  },
+  {
+   "start": 79.0,
+   "end": 87.4,
+   "speaker": "Callie",
+   "text": "Done. Your cleaning and check-up is now on Thursday, October 8th at 9, 30 a.m. I've texted you the new time. Anything else?"
+  },
+  {
+   "start": 92.8,
+   "end": 94.2,
+   "speaker": "Caller",
+   "text": "No, that's all thanks. Bye"
+  },
+  {
+   "start": 95.5,
+   "end": 99.4,
+   "speaker": "Callie",
+   "text": "Thanks for calling Bright Side Dental. Have a great day. Goodbye."
+  }
+ ]
+}
