@@ -66,7 +66,7 @@ async def run_e2e(
     agent_llm = build_chat_model(settings, clinic, tag="agent")
     caller_llm = (
         build_chat_model(
-            settings,
+            settings.model_copy(update={"llm_max_retries": 3}),
             clinic,
             provider="openrouter",
             model=caller_model,

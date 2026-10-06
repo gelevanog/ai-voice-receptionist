@@ -433,7 +433,14 @@ async def simulate_one(
     clinic = load_clinic(settings.clinic_file)
     agent_llm = build_chat_model(settings, clinic)
     caller_llm = (
-        build_chat_model(settings, clinic, provider="openrouter", model=caller_model, fallback_models=[], tag="caller")
+        build_chat_model(
+            settings.model_copy(update={"llm_max_retries": 3}),
+            clinic,
+            provider="openrouter",
+            model=caller_model,
+            fallback_models=[],
+            tag="caller",
+        )
         if caller_mode == "llm"
         else None
     )

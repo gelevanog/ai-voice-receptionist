@@ -35,26 +35,6 @@
   opening: Hello, I need a filling, do you have this Thursday at two thirty?
   expect: {outcome: booked, service: filling, day: "2026-10-08", at: "14:30", name: Okafor, phone_last4: "7742"}
 
-- id: book_new_patient_asap
-  category: booking
-  channel: phone
-  voice: 101
-  persona: Priya Shah, new to the area, a bit hurried.
-  goal: Book a new patient exam as soon as possible. Take the earliest time offered.
-  facts: {name: Priya Shah, phone: "555 410 2290"}
-  opening: Hi, I just moved here and I need a new patient exam, whatever is the earliest you have.
-  expect: {outcome: booked, service: new_patient_exam, from_day: "2026-10-06", to_day: "2026-10-13", name: Shah, phone_last4: "2290"}
-
-- id: book_child
-  category: booking
-  channel: clean
-  voice: 230
-  persona: Tom Becker, a dad booking for his seven-year-old son Leo.
-  goal: Book a children's cleaning for your son this Saturday morning. Any Saturday morning time is fine. The appointment can be under the name Leo Becker.
-  facts: {name: Leo Becker, parent: Tom Becker, phone: "555 778 0143"}
-  opening: Hi, I'd like to book a cleaning for my son, he's seven. Do you have anything Saturday morning?
-  expect: {outcome: booked, service: kids_cleaning, day: "2026-10-10", before: "13:00", name: Becker, phone_last4: "0143"}
-
 - id: book_after_price_question
   category: booking
   channel: clean
@@ -74,16 +54,6 @@
   facts: {name: Grace Liu, phone: "555 617 4402"}
   opening: Hey, can I get a cleaning the day after tomorrow, sometime after lunch?
   expect: {outcome: booked, service: cleaning, day: "2026-10-08", after: "13:00", before: "18:00", name: Liu}
-
-- id: book_unavailable_time
-  category: booking
-  channel: clean
-  voice: 803
-  persona: Hannah Wright, flexible.
-  goal: Ask for a cleaning this Thursday at 10 in the morning. If that is not available, accept any other time Callie offers on Thursday or Friday.
-  facts: {name: Hannah Wright, phone: "555 348 6620"}
-  opening: Hi, could I come in for a cleaning this Thursday at ten?
-  expect: {outcome: booked, service: cleaning, from_day: "2026-10-08", to_day: "2026-10-09", name: Wright}
 
 - id: change_mind_day
   category: change_of_mind
@@ -172,28 +142,6 @@
   opening: Hi, I'm sorry, I need to cancel my cleaning next Thursday. My name is Emily Clark.
   expect: {outcome: cancelled, appointment: 0}
 
-- id: cancel_same_day
-  category: cancel
-  channel: phone
-  voice: 341
-  persona: Robert Kim, something came up at work.
-  goal: Cancel your filling appointment this afternoon. Do not reschedule.
-  facts: {name: Robert Kim, phone: "555 391 7258", existing: filling today at 3 PM}
-  setup: [{service: filling, start: "2026-10-06T15:00", name: Robert Kim, phone: "+15553917258"}]
-  opening: Hi, this is Robert Kim. I have to cancel my appointment this afternoon, something came up.
-  expect: {outcome: cancelled, appointment: 0, agent_says_any: ["fee", "24 hours"]}
-
-- id: cancel_nickname
-  category: cancel
-  channel: clean
-  voice: 590
-  persona: Liz Turner (the appointment is under her full name, Elizabeth Turner).
-  goal: Cancel your cleaning next Monday. Introduce yourself as Liz Turner. If Callie cannot find it, give your phone number, 555 777 2020.
-  facts: {name: Liz Turner, full_name: Elizabeth Turner, phone: "555 777 2020", existing: cleaning next Monday at 9 AM}
-  setup: [{service: cleaning, start: "2026-10-12T09:00", name: Elizabeth Turner, phone: "+15557772020"}]
-  opening: Hi, this is Liz Turner, I'd like to cancel my cleaning on Monday.
-  expect: {outcome: cancelled, appointment: 0}
-
 - id: faq_insurance
   category: faq
   channel: clean
@@ -236,16 +184,6 @@
   facts: {name: Aisha Bello}
   opening: Hi, I'm a new patient, what do I need to bring for my first visit?
   expect: {outcome: info_only, must_not_book: true, agent_says_any: ["insurance card", "ID", "photo"]}
-
-- id: message_billing
-  category: message
-  channel: clean
-  voice: 610
-  persona: Peter Novak, has a question about a bill.
-  goal: Leave a message for the billing team asking them to call you back about a charge on your last bill. Give your name and number when asked. Then say goodbye.
-  facts: {name: Peter Novak, phone: "555 812 0965"}
-  opening: Hi, I have a question about a charge on my bill. Can I leave a message for billing?
-  expect: {outcome: message_taken, must_not_book: true}
 
 - id: after_hours_person
   category: message

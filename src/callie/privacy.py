@@ -67,6 +67,31 @@ def normalize_phone(raw: str | None) -> str | None:
     return None
 
 
+_NOT_A_NAME_WORD = {
+    "monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday", "january", "february", "march",
+    "april", "june", "july", "august", "september", "october", "november", "december", "today", "tomorrow",
+    "morning", "afternoon", "evening", "am", "pm", "at", "on", "the", "a", "an", "and", "or", "for", "me", "my",
+    "myself", "i", "you", "it", "is", "yes", "no", "please", "thanks", "thank", "okay", "ok", "sure", "appointment",
+    "cleaning", "patient", "caller", "unknown", "name", "son", "daughter", "mom", "dad",
+}  # fmt: skip
+
+
+def looks_like_name(value: str | None) -> bool:
+    """A person's name as a tool argument: 1-4 alphabetic words, none of them a date, time or filler word."""
+    if not value:
+        return False
+    words = value.replace(",", " ").replace(".", " ").split()
+    if not 1 <= len(words) <= 4:
+        return False
+    for word in words:
+        cleaned = word.strip("'’-")
+        if len(cleaned) < 2 or not cleaned.replace("'", "").replace("-", "").isalpha():
+            return False
+        if cleaned.lower() in _NOT_A_NAME_WORD:
+            return False
+    return True
+
+
 def mask_phone(phone: str | None) -> str:
     if not phone:
         return ""
@@ -87,8 +112,9 @@ class Masker:
         self.names: set[str] = set()
 
     def register_name(self, name: str | None) -> None:
-        if not name:
+        if not looks_like_name(name):
             return
+        assert name is not None
         for part in name.replace(",", " ").split():
             cleaned = part.strip(".'’")
             if len(cleaned) >= 2 and cleaned[0].isalpha():
@@ -103,7 +129,7 @@ class Masker:
         text = _SPOKEN_DIGITS_RE.sub(lambda m: mask_phone(digits_from_speech(m.group(0))), text)
         for match in _INTRO_NAME_RE.finditer(text):
             for part in match.group(2).split():
-                if part not in _NOT_NAMES:
+                if part not in _NOT_NAMES and looks_like_name(part):
                     self.names.add(part)
         for name in sorted(self.names, key=len, reverse=True):
             text = re.sub(rf"\b{re.escape(name)}\b", mask_name(name), text, flags=re.IGNORECASE)

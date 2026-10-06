@@ -461,3 +461,13 @@ def test_unclear_phone_is_re_asked_then_booking_proceeds_without_text(runtime: R
     assert first.data["status"] == "phone_unclear" and "13 digits" in (first.say or "")
     second = box.execute("book_appointment", {**args, "confirmed": False})
     assert second.data["status"] == "needs_confirmation" and "won't be able to text" in (second.say or "")
+
+
+def test_non_names_are_refused_and_never_masked(runtime: Runtime) -> None:
+    box = toolbox(runtime)
+    slot = offer(box)["slots"][0]["slot_id"]
+    for bogus in ["Tuesday, October 6th at 1 p.m.", "me", "5551234567"]:
+        result = box.execute("book_appointment", {"service": "cleaning", "slot_id": slot, "patient_name": bogus,
+                                                  "phone": "5551234567", "confirmed": False})  # fmt: skip
+        assert result.data["status"] == "need_name", bogus
+    assert box.ctx.masker.mask("Let me check Tuesday at 1 PM") == "Let me check Tuesday at 1 PM"

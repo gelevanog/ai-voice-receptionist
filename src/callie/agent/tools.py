@@ -25,7 +25,7 @@ from callie.agent.grounding import extract_times
 from callie.clinic import Clinic, Service
 from callie.kb.retriever import KnowledgeBase
 from callie.llm.base import JsonDict
-from callie.privacy import Masker, mask_phone, normalize_phone
+from callie.privacy import Masker, looks_like_name, mask_phone, normalize_phone
 from callie.scheduling.calendar import Calendar, Slot, SlotUnavailableError
 from callie.scheduling.db import Appointment, Message, SmsOutbox
 from callie.scheduling.google_calendar import GoogleCalendarClient, GoogleCalendarError
@@ -418,7 +418,7 @@ class ToolBox:
         if slot is None:
             return self._unoffered("book_appointment", args)
         name = " ".join(str(args.get("patient_name") or "").split()).title()
-        if len(name) < 2:
+        if not looks_like_name(name):
             return ToolResult(
                 "book_appointment", args, {"status": "need_name"}, say="Can I get your first and last name, please?"
             )
