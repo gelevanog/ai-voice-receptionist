@@ -201,6 +201,7 @@ class CallContext:
     known_times: set[str] = field(default_factory=set)  # times that tools or the caller mentioned
     phone_failures: int = 0
     phone_skipped: bool = False
+    reschedule_slots: dict[str, str] = field(default_factory=dict)  # slot key -> appointment being moved
 
 
 def _digits_spoken(phone: str | None) -> str:
@@ -369,6 +370,8 @@ class ToolBox:
         offered = slots or alternatives
         for slot in offered:
             self.ctx.offered[slot.key] = slot
+            if exclude:
+                self.ctx.reschedule_slots[slot.key] = exclude
         self._remember_times(*(s.start for s in offered))
         data: JsonDict = {
             "status": "ok" if slots else "no_slots_in_window",
@@ -417,6 +420,14 @@ class ToolBox:
         slot = self._slot(str(args.get("slot_id", "")), service)
         if slot is None:
             return self._unoffered("book_appointment", args)
+        moving = self.ctx.reschedule_slots.get(slot.key)
+        if moving:
+            # The slot came from a reschedule search: booking it would leave the old appointment in place.
+            return ToolResult("book_appointment", args, {
+                "status": "error",
+                "error": f"the caller is moving appointment {moving}; call reschedule_appointment with "
+                f"appointment_id={moving} and slot_id={slot.key} instead of booking a second appointment",
+            })  # fmt: skip
         name = " ".join(str(args.get("patient_name") or "").split()).title()
         if not looks_like_name(name):
             return ToolResult(
@@ -639,7 +650,17 @@ class ToolBox:
                 {"status": "need_message"},
                 say="Of course. What message would you like me to pass on?",
             )
-        if phone is None:
+        heard = "".join(ch for ch in str(args.get("phone") or "") if ch.isdigit())
+        if phone is None and heard and self.ctx.phone_failures < 1:
+            self.ctx.phone_failures += 1
+            return ToolResult(
+                "take_message",
+                args,
+                {"status": "phone_unclear", "heard_digits": len(heard)},
+                say=f"Sorry, I got {len(heard)} digits instead of 10. "
+                "Could you say the number again, one digit at a time?",
+            )
+        if phone is None and not heard:
             return ToolResult(
                 "take_message", args, {"status": "need_phone"}, say="And what number should they call you back on?"
             )
@@ -666,7 +687,12 @@ class ToolBox:
             args,
             {"status": "message_taken"},
             say=f"Thanks, {name.split()[0]}. I've passed that on, and someone will call you back "
-            f"at the number ending in {_digits_spoken(phone)} {when}. Anything else?",
+            + (
+                f"at the number ending in {_digits_spoken(phone)} {when}. Anything else?"
+                if phone
+                else f"{when}. I couldn't catch your number, so please call us back if you don't hear from us. "
+                "Anything else?"
+            ),
         )
 
     def _tool_transfer_to_human(self, args: JsonDict) -> ToolResult:

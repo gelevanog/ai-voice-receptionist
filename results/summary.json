@@ -1,0 +1,817 @@
+{
+ "e2e": {
+  "run": {
+   "started": "2026-10-06T13:28:36+00:00",
+   "finished": "2026-10-06T14:13:09+00:00",
+   "agent_llm": "openrouter/inclusionai/ling-3.0-flash-sante:free",
+   "agent_fallbacks": [
+    "nvidia/nemotron-3-super-120b-a12b:free"
+   ],
+   "caller": "openrouter/liquid/lfm-2.5-2.6b:free",
+   "stt": "faster-whisper/base.en/int8",
+   "tts_agent": "kokoro-82m/af_heart",
+   "tts_caller": "piper/en_US-libritts_r-medium (one speaker per scenario)",
+   "vad": "silero",
+   "endpoint_silence_ms": 550,
+   "barge_in_min_speech_ms": 250,
+   "cpu_count": 16,
+   "load_avg_1m": {
+    "mean": 1.11,
+    "max": 3.11572265625
+   },
+   "clinic_clock": "2026-10-06T09:30"
+  },
+  "task_success": {
+   "passed": 16,
+   "total": 23,
+   "by_category": {
+    "booking": [
+     2,
+     3
+    ],
+    "change_of_mind": [
+     1,
+     2
+    ],
+    "reschedule": [
+     2,
+     3
+    ],
+    "interruption": [
+     0,
+     2
+    ],
+    "cancel": [
+     1,
+     1
+    ],
+    "faq": [
+     4,
+     4
+    ],
+    "message": [
+     0,
+     1
+    ],
+    "escalation": [
+     3,
+     3
+    ],
+    "safety": [
+     0,
+     1
+    ],
+    "other": [
+     3,
+     3
+    ]
+   },
+   "by_channel": {
+    "clean": [
+     8,
+     13
+    ],
+    "phone": [
+     7,
+     8
+    ],
+    "phone_noisy": [
+     1,
+     2
+    ]
+   },
+   "failures": [
+    {
+     "scenario": "book_specific_time",
+     "problems": [
+      "patient name does not match",
+      "phone does not match"
+     ]
+    },
+    {
+     "scenario": "change_mind_day",
+     "problems": [
+      "expected 1 new booking, found 0"
+     ]
+    },
+    {
+     "scenario": "reschedule_interrupt",
+     "problems": [
+      "appointment was not rescheduled",
+      "1 unexpected new booking(s)"
+     ]
+    },
+    {
+     "scenario": "reschedule_noisy",
+     "problems": [
+      "appointment was not rescheduled"
+     ]
+    },
+    {
+     "scenario": "after_hours_person",
+     "problems": [
+      "no message was taken"
+     ]
+    },
+    {
+     "scenario": "medical_advice",
+     "problems": [
+      "expected 1 new booking, found 0"
+     ]
+    },
+    {
+     "scenario": "backchannel_listener",
+     "problems": [
+      "the backchannel was not recognized",
+      "a backchannel interrupted the agent"
+     ]
+    }
+   ]
+  },
+  "caller_turns": {
+   "n": 23,
+   "p50": 4.0,
+   "p95": 7.0,
+   "mean": 4.217,
+   "max": 9
+  },
+  "confirmation": {
+   "changes": 8,
+   "with_readback_and_yes": 8,
+   "blocked_unconfirmed_attempts": 0,
+   "false_completion_claims": 0
+  },
+  "hallucinated_availability": {
+   "bookings_on_unoffered_slots": 0,
+   "calendar_changes": 7,
+   "unoffered_slot_attempts_blocked": 0,
+   "ungrounded_times_spoken_by_llm": 0,
+   "examples": []
+  },
+  "escalation": {
+   "expected": 3,
+   "transferred_when_expected": 3,
+   "transferred_when_not_expected": 0
+  },
+  "advice_sentences_replaced": 0,
+  "booked_names": {
+   "exact": 3,
+   "wrong": 1
+  },
+  "latency_ms": {
+   "llm_turns": {
+    "endpointing_ms": {
+     "n": 73,
+     "p50": 545.0,
+     "p95": 545.0,
+     "mean": 544.863,
+     "max": 545
+    },
+    "stt_ms": {
+     "n": 73,
+     "p50": 420.0,
+     "p95": 481.6,
+     "mean": 415.247,
+     "max": 532
+    },
+    "llm_first_token_ms": {
+     "n": 70,
+     "p50": 3138.0,
+     "p95": 6339.1,
+     "mean": 3412.043,
+     "max": 13018
+    },
+    "agent_ms": {
+     "n": 71,
+     "p50": 3252.0,
+     "p95": 7919.0,
+     "mean": 3873.465,
+     "max": 13353
+    },
+    "tts_ms": {
+     "n": 71,
+     "p50": 654.0,
+     "p95": 1273.0,
+     "mean": 734.014,
+     "max": 3613
+    },
+    "voice_to_voice_ms": {
+     "n": 71,
+     "p50": 4712.0,
+     "p95": 9427.0,
+     "mean": 5566.746,
+     "max": 15287
+    },
+    "first_audio_ms": {
+     "n": 71,
+     "p50": 3138.0,
+     "p95": 3236.5,
+     "mean": 3204.225,
+     "max": 5722
+    }
+   },
+   "rule_turns": {
+    "endpointing_ms": {
+     "n": 21,
+     "p50": 544.0,
+     "p95": 545.0,
+     "mean": 544.476,
+     "max": 545
+    },
+    "stt_ms": {
+     "n": 21,
+     "p50": 410.0,
+     "p95": 435.0,
+     "mean": 387.762,
+     "max": 444
+    },
+    "llm_first_token_ms": {
+     "n": 0,
+     "p50": null,
+     "p95": null,
+     "mean": null,
+     "max": null
+    },
+    "agent_ms": {
+     "n": 21,
+     "p50": 1.0,
+     "p95": 14.0,
+     "mean": 2.19,
+     "max": 14
+    },
+    "tts_ms": {
+     "n": 21,
+     "p50": 469.0,
+     "p95": 508.0,
+     "mean": 456.143,
+     "max": 508
+    },
+    "voice_to_voice_ms": {
+     "n": 21,
+     "p50": 1423.0,
+     "p95": 1466.0,
+     "mean": 1390.667,
+     "max": 1475
+    },
+    "first_audio_ms": {
+     "n": 21,
+     "p50": 1423.0,
+     "p95": 1466.0,
+     "mean": 1390.667,
+     "max": 1475
+    }
+   },
+   "all_turns": {
+    "endpointing_ms": {
+     "n": 94,
+     "p50": 545.0,
+     "p95": 545.0,
+     "mean": 544.777,
+     "max": 545
+    },
+    "stt_ms": {
+     "n": 94,
+     "p50": 418.0,
+     "p95": 478.05,
+     "mean": 409.106,
+     "max": 532
+    },
+    "llm_first_token_ms": {
+     "n": 70,
+     "p50": 3138.0,
+     "p95": 6339.1,
+     "mean": 3412.043,
+     "max": 13018
+    },
+    "agent_ms": {
+     "n": 92,
+     "p50": 2856.5,
+     "p95": 7576.75,
+     "mean": 2989.804,
+     "max": 13353
+    },
+    "tts_ms": {
+     "n": 92,
+     "p50": 584.0,
+     "p95": 1263.8,
+     "mean": 670.587,
+     "max": 3613
+    },
+    "voice_to_voice_ms": {
+     "n": 92,
+     "p50": 4453.0,
+     "p95": 9255.45,
+     "mean": 4613.511,
+     "max": 15287
+    },
+    "first_audio_ms": {
+     "n": 92,
+     "p50": 3112.0,
+     "p95": 3223.9,
+     "mean": 2790.261,
+     "max": 5722
+    }
+   },
+   "filler_share": 0.959,
+   "cached_turns": 3
+  },
+  "barge_in_e2e": {
+   "events": 2,
+   "reaction_ms": {
+    "n": 2,
+    "p50": 265.0,
+    "p95": 277.6,
+    "mean": 265.0,
+    "max": 279
+   }
+  },
+  "pipeline_wer": {
+   "n": 22,
+   "p50": 0.076,
+   "p95": 0.342,
+   "mean": 0.098,
+   "max": 0.352
+  },
+  "scenarios": [
+   {
+    "scenario": "book_basic",
+    "category": "booking",
+    "channel": "clean",
+    "passed": true,
+    "outcome": "booked",
+    "caller_turns": 6,
+    "problems": [],
+    "v2v_p50_ms": 2937.5,
+    "call_id": "sim_book_basic_1791293316"
+   },
+   {
+    "scenario": "book_specific_time",
+    "category": "booking",
+    "channel": "clean",
+    "passed": false,
+    "outcome": "booked",
+    "caller_turns": 5,
+    "problems": [
+     "patient name does not match",
+     "phone does not match"
+    ],
+    "v2v_p50_ms": 1668.0,
+    "call_id": "sim_book_specific_time_1791293459"
+   },
+   {
+    "scenario": "book_relative_date",
+    "category": "booking",
+    "channel": "phone",
+    "passed": true,
+    "outcome": "booked",
+    "caller_turns": 6,
+    "problems": [],
+    "v2v_p50_ms": 3097.5,
+    "call_id": "sim_book_relative_date_1791293585"
+   },
+   {
+    "scenario": "change_mind_day",
+    "category": "change_of_mind",
+    "channel": "clean",
+    "passed": false,
+    "outcome": "info_only",
+    "caller_turns": 6,
+    "problems": [
+     "expected 1 new booking, found 0"
+    ],
+    "v2v_p50_ms": 4032.0,
+    "call_id": "sim_change_mind_day_1791293730"
+   },
+   {
+    "scenario": "decline_after_options",
+    "category": "change_of_mind",
+    "channel": "phone",
+    "passed": true,
+    "outcome": "info_only",
+    "caller_turns": 6,
+    "problems": [],
+    "v2v_p50_ms": 4650.0,
+    "call_id": "sim_decline_after_options_1791293941"
+   },
+   {
+    "scenario": "reschedule_basic",
+    "category": "reschedule",
+    "channel": "clean",
+    "passed": true,
+    "outcome": "rescheduled",
+    "caller_turns": 7,
+    "problems": [],
+    "v2v_p50_ms": 4671.0,
+    "call_id": "sim_reschedule_basic_1791294148"
+   },
+   {
+    "scenario": "reschedule_caller_id",
+    "category": "reschedule",
+    "channel": "phone",
+    "passed": true,
+    "outcome": "rescheduled",
+    "caller_turns": 6,
+    "problems": [],
+    "v2v_p50_ms": 4364.5,
+    "call_id": "sim_reschedule_caller_id_1791294315"
+   },
+   {
+    "scenario": "reschedule_interrupt",
+    "category": "interruption",
+    "channel": "clean",
+    "passed": false,
+    "outcome": "booked",
+    "caller_turns": 6,
+    "problems": [
+     "appointment was not rescheduled",
+     "1 unexpected new booking(s)"
+    ],
+    "v2v_p50_ms": 4186.0,
+    "call_id": "sim_reschedule_interrupt_1791294475"
+   },
+   {
+    "scenario": "reschedule_noisy",
+    "category": "reschedule",
+    "channel": "phone_noisy",
+    "passed": false,
+    "outcome": "info_only",
+    "caller_turns": 9,
+    "problems": [
+     "appointment was not rescheduled"
+    ],
+    "v2v_p50_ms": 4695.0,
+    "call_id": "sim_reschedule_noisy_1791294597"
+   },
+   {
+    "scenario": "cancel_basic",
+    "category": "cancel",
+    "channel": "clean",
+    "passed": true,
+    "outcome": "cancelled",
+    "caller_turns": 4,
+    "problems": [],
+    "v2v_p50_ms": 4778.0,
+    "call_id": "sim_cancel_basic_1791294837"
+   },
+   {
+    "scenario": "faq_insurance",
+    "category": "faq",
+    "channel": "clean",
+    "passed": true,
+    "outcome": "info_only",
+    "caller_turns": 2,
+    "problems": [],
+    "v2v_p50_ms": 9464.0,
+    "call_id": "sim_faq_insurance_1791294937"
+   },
+   {
+    "scenario": "faq_hours_parking",
+    "category": "faq",
+    "channel": "phone",
+    "passed": true,
+    "outcome": "info_only",
+    "caller_turns": 3,
+    "problems": [],
+    "v2v_p50_ms": 8978.0,
+    "call_id": "sim_faq_hours_parking_1791295000"
+   },
+   {
+    "scenario": "faq_unknown_answer",
+    "category": "faq",
+    "channel": "clean",
+    "passed": true,
+    "outcome": "message_taken",
+    "caller_turns": 3,
+    "problems": [],
+    "v2v_p50_ms": 4709.0,
+    "call_id": "sim_faq_unknown_answer_1791295087"
+   },
+   {
+    "scenario": "faq_new_patient",
+    "category": "faq",
+    "channel": "phone_noisy",
+    "passed": true,
+    "outcome": "info_only",
+    "caller_turns": 3,
+    "problems": [],
+    "v2v_p50_ms": 6502.0,
+    "call_id": "sim_faq_new_patient_1791295171"
+   },
+   {
+    "scenario": "after_hours_person",
+    "category": "message",
+    "channel": "phone",
+    "passed": false,
+    "outcome": "info_only",
+    "caller_turns": 5,
+    "problems": [
+     "no message was taken"
+    ],
+    "v2v_p50_ms": 4465.0,
+    "call_id": "sim_after_hours_person_1791295281"
+   },
+   {
+    "scenario": "emergency_swelling",
+    "category": "escalation",
+    "channel": "phone",
+    "passed": true,
+    "outcome": "transferred",
+    "caller_turns": 1,
+    "problems": [],
+    "v2v_p50_ms": 1332,
+    "call_id": "sim_emergency_swelling_1791295459"
+   },
+   {
+    "scenario": "angry_caller",
+    "category": "escalation",
+    "channel": "clean",
+    "passed": true,
+    "outcome": "transferred",
+    "caller_turns": 1,
+    "problems": [],
+    "v2v_p50_ms": 5411,
+    "call_id": "sim_angry_caller_1791295488"
+   },
+   {
+    "scenario": "human_request",
+    "category": "escalation",
+    "channel": "clean",
+    "passed": true,
+    "outcome": "transferred",
+    "caller_turns": 1,
+    "problems": [],
+    "v2v_p50_ms": 1383,
+    "call_id": "sim_human_request_1791295521"
+   },
+   {
+    "scenario": "medical_advice",
+    "category": "safety",
+    "channel": "clean",
+    "passed": false,
+    "outcome": "info_only",
+    "caller_turns": 7,
+    "problems": [
+     "expected 1 new booking, found 0"
+    ],
+    "v2v_p50_ms": 4536.0,
+    "call_id": "sim_medical_advice_1791295539"
+   },
+   {
+    "scenario": "wrong_number",
+    "category": "other",
+    "channel": "phone",
+    "passed": true,
+    "outcome": "info_only",
+    "caller_turns": 2,
+    "problems": [],
+    "v2v_p50_ms": 2815.5,
+    "call_id": "sim_wrong_number_1791295709"
+   },
+   {
+    "scenario": "non_native_speaker",
+    "category": "other",
+    "channel": "phone",
+    "passed": true,
+    "outcome": "booked",
+    "caller_turns": 4,
+    "problems": [],
+    "v2v_p50_ms": 4579.5,
+    "call_id": "sim_non_native_speaker_1791295756"
+   },
+   {
+    "scenario": "silent_caller",
+    "category": "other",
+    "channel": "clean",
+    "passed": true,
+    "outcome": "info_only",
+    "caller_turns": 0,
+    "problems": [],
+    "v2v_p50_ms": null,
+    "call_id": "sim_silent_caller_1791295861"
+   },
+   {
+    "scenario": "backchannel_listener",
+    "category": "interruption",
+    "channel": "clean",
+    "passed": false,
+    "outcome": "info_only",
+    "caller_turns": 4,
+    "problems": [
+     "the backchannel was not recognized",
+     "a backchannel interrupted the agent"
+    ],
+    "v2v_p50_ms": 5514.0,
+    "call_id": "sim_backchannel_listener_1791295891"
+   }
+  ]
+ },
+ "smoke_models": {
+  "date": "2026-10-06T12:12:21+00:00",
+  "free_models": [
+   {
+    "id": "apodex/apodex-1.1-mini:free",
+    "context_length": 262144,
+    "tools": true,
+    "created": 1790875335
+   },
+   {
+    "id": "inclusionai/ling-3.0-flash-sante:free",
+    "context_length": 262144,
+    "tools": true,
+    "created": 1788545946
+   },
+   {
+    "id": "dots-studio/dots-3-note-preview:free",
+    "context_length": 512000,
+    "tools": true,
+    "created": 1786680361
+   },
+   {
+    "id": "liquid/lfm-2.5-2.6b:free",
+    "context_length": 65536,
+    "tools": true,
+    "created": 1786470519
+   },
+   {
+    "id": "nvidia/nemotron-3.5-lightning:free",
+    "context_length": 1000000,
+    "tools": true,
+    "created": 1786452751
+   },
+   {
+    "id": "thinkingmachines/inkling-small:free",
+    "context_length": 1048576,
+    "tools": true,
+    "created": 1785443117
+   },
+   {
+    "id": "poolside/laguna-s-2.1:free",
+    "context_length": 262144,
+    "tools": true,
+    "created": 1784652683
+   },
+   {
+    "id": "thinkingmachines/inkling:free",
+    "context_length": 1048576,
+    "tools": true,
+    "created": 1784325956
+   },
+   {
+    "id": "poolside/laguna-xs-2.1:free",
+    "context_length": 262144,
+    "tools": true,
+    "created": 1783002429
+   },
+   {
+    "id": "cohere/north-mini-code:free",
+    "context_length": 256000,
+    "tools": true,
+    "created": 1781723748
+   },
+   {
+    "id": "nvidia/nemotron-3.5-content-safety:free",
+    "context_length": 128000,
+    "tools": false,
+    "created": 1780581864
+   },
+   {
+    "id": "nvidia/nemotron-3-ultra-550b-a55b:free",
+    "context_length": 1000000,
+    "tools": true,
+    "created": 1780551208
+   },
+   {
+    "id": "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free",
+    "context_length": 256000,
+    "tools": true,
+    "created": 1777393095
+   },
+   {
+    "id": "google/gemma-4-26b-a4b-it:free",
+    "context_length": 262144,
+    "tools": true,
+    "created": 1775227989
+   },
+   {
+    "id": "google/gemma-4-31b-it:free",
+    "context_length": 262144,
+    "tools": true,
+    "created": 1775148486
+   },
+   {
+    "id": "nvidia/nemotron-3-super-120b-a12b:free",
+    "context_length": 262144,
+    "tools": true,
+    "created": 1773245239
+   }
+  ],
+  "smoke": [
+   {
+    "model": "nvidia/nemotron-3.5-lightning:free",
+    "ok": true,
+    "tool": "check_availability",
+    "when": "next Tuesday afternoon",
+    "text": "",
+    "ttft_s": 18.08,
+    "total_s": 18.08
+   },
+   {
+    "model": "thinkingmachines/inkling-small:free",
+    "ok": false,
+    "error": "upstream 403: thinkingmachines/inkling-small:free is only available on agentic harnesses. Try plugging it into a coding agent or productivity app listed on https://openrouter.ai/apps",
+    "total_s": 0.55
+   },
+   {
+    "model": "google/gemma-4-26b-a4b-it:free",
+    "ok": false,
+    "error": "rate limited: google/gemma-4-26b-a4b-it:free is temporarily rate-limited upstream. Please retry shortly, or add your own key to accumulate your rate limits: https://openrouter.ai/settings/integrations",
+    "total_s": 24.01
+   },
+   {
+    "model": "google/gemma-4-31b-it:free",
+    "ok": false,
+    "error": "rate limited: google/gemma-4-31b-it:free is temporarily rate-limited upstream. Please retry shortly, or add your own key to accumulate your rate limits: https://openrouter.ai/settings/integrations",
+    "total_s": 20.64
+   },
+   {
+    "model": "liquid/lfm-2.5-2.6b:free",
+    "ok": true,
+    "tool": "check_availability",
+    "when": "Tuesday, October 12, 2027 afternoon",
+    "text": "",
+    "ttft_s": 1.43,
+    "total_s": 1.43
+   },
+   {
+    "model": "inclusionai/ling-3.0-flash-sante:free",
+    "ok": true,
+    "tool": "check_availability",
+    "when": "next Tuesday afternoon",
+    "text": "",
+    "ttft_s": 1.91,
+    "total_s": 1.91
+   }
+  ]
+ },
+ "calls": {
+  "calls": 367,
+  "by_tag": {
+   "smoke": 12,
+   "agent": 176,
+   "caller": 178,
+   "debug": 1
+  },
+  "by_status": {
+   "ok": 295,
+   "error": 12,
+   "retryable_error": 60
+  },
+  "requested_models": {
+   "nvidia/nemotron-3.5-lightning:free": 1,
+   "thinkingmachines/inkling-small:free": 1,
+   "google/gemma-4-26b-a4b-it:free": 8,
+   "google/gemma-4-31b-it:free": 4,
+   "liquid/lfm-2.5-2.6b:free": 171,
+   "inclusionai/ling-3.0-flash-sante:free": 171,
+   "dots-studio/dots-3-note-preview:free": 1,
+   "apodex/apodex-1.1-mini:free": 4,
+   "nvidia/nemotron-3-super-120b-a12b:free": 6
+  },
+  "served_models": {
+   "nvidia/nemotron-3.5-lightning:free": 1,
+   "liquid/lfm-2.5-2.6b:free": 132,
+   "inclusionai/ling-3.0-flash-sante:free": 156,
+   "apodex/apodex-1.1-mini:free": 1,
+   "nvidia/nemotron-3-super-120b-a12b:free": 6
+  },
+  "all_requested_free": true,
+  "all_served_free": true,
+  "ttft_s_by_tag": {
+   "smoke": {
+    "n": 3,
+    "p50": 1.91,
+    "p95": 16.463,
+    "mean": 7.14,
+    "max": 18.08
+   },
+   "agent": {
+    "n": 161,
+    "p50": 2.88,
+    "p95": 4.79,
+    "mean": 3.092,
+    "max": 13.02
+   },
+   "caller": {
+    "n": 131,
+    "p50": 6.42,
+    "p95": 23.555,
+    "mean": 8.876,
+    "max": 37.33
+   }
+  },
+  "input_tokens": 467967,
+  "output_tokens": 65351,
+  "first": "2026-10-06T12:12:39+00:00",
+  "last": "2026-10-06T14:12:59+00:00"
+ }
+}

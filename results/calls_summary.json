@@ -1,0 +1,61 @@
+{
+ "calls": 367,
+ "by_tag": {
+  "smoke": 12,
+  "agent": 176,
+  "caller": 178,
+  "debug": 1
+ },
+ "by_status": {
+  "ok": 295,
+  "error": 12,
+  "retryable_error": 60
+ },
+ "requested_models": {
+  "nvidia/nemotron-3.5-lightning:free": 1,
+  "thinkingmachines/inkling-small:free": 1,
+  "google/gemma-4-26b-a4b-it:free": 8,
+  "google/gemma-4-31b-it:free": 4,
+  "liquid/lfm-2.5-2.6b:free": 171,
+  "inclusionai/ling-3.0-flash-sante:free": 171,
+  "dots-studio/dots-3-note-preview:free": 1,
+  "apodex/apodex-1.1-mini:free": 4,
+  "nvidia/nemotron-3-super-120b-a12b:free": 6
+ },
+ "served_models": {
+  "nvidia/nemotron-3.5-lightning:free": 1,
+  "liquid/lfm-2.5-2.6b:free": 132,
+  "inclusionai/ling-3.0-flash-sante:free": 156,
+  "apodex/apodex-1.1-mini:free": 1,
+  "nvidia/nemotron-3-super-120b-a12b:free": 6
+ },
+ "all_requested_free": true,
+ "all_served_free": true,
+ "ttft_s_by_tag": {
+  "smoke": {
+   "n": 3,
+   "p50": 1.91,
+   "p95": 16.463,
+   "mean": 7.14,
+   "max": 18.08
+  },
+  "agent": {
+   "n": 161,
+   "p50": 2.88,
+   "p95": 4.79,
+   "mean": 3.092,
+   "max": 13.02
+  },
+  "caller": {
+   "n": 131,
+   "p50": 6.42,
+   "p95": 23.555,
+   "mean": 8.876,
+   "max": 37.33
+  }
+ },
+ "input_tokens": 467967,
+ "output_tokens": 65351,
+ "first": "2026-10-06T12:12:39+00:00",
+ "last": "2026-10-06T14:12:59+00:00"
+}

@@ -471,3 +471,29 @@ def test_non_names_are_refused_and_never_masked(runtime: Runtime) -> None:
                                                   "phone": "5551234567", "confirmed": False})  # fmt: skip
         assert result.data["status"] == "need_name", bogus
     assert box.ctx.masker.mask("Let me check Tuesday at 1 PM") == "Let me check Tuesday at 1 PM"
+
+
+def test_a_reschedule_search_cannot_turn_into_a_second_booking(runtime: Runtime) -> None:
+    from datetime import datetime
+
+    from tests.conftest import NY
+
+    cleaning = runtime.clinic.service("cleaning")
+    assert cleaning is not None
+    existing = runtime.calendar.book(cleaning, datetime(2026, 10, 8, 10, tzinfo=NY), "Sofia Rossi", "+15553492216")
+    box = toolbox(runtime)
+    offered = box.execute(
+        "check_availability", {"service": "cleaning", "when": "Friday morning", "appointment_id": existing.id}
+    )
+    slot = offered.data["slots"][0]["slot_id"]
+    wrong = box.execute("book_appointment", {"service": "cleaning", "slot_id": slot, "patient_name": "Sofia Rossi",
+                                             "phone": "5553492216", "confirmed": False})  # fmt: skip
+    assert wrong.data["status"] == "error" and "reschedule_appointment" in wrong.data["error"]
+
+
+def test_message_with_an_unclear_number_is_re_asked_then_taken(runtime: Runtime) -> None:
+    box = toolbox(runtime)
+    args = {"caller_name": "Laura Chen", "message": "Please call me back", "phone": "555 455 33302"}
+    assert box.execute("take_message", args).data["status"] == "phone_unclear"
+    taken = box.execute("take_message", args)
+    assert taken.data["status"] == "message_taken" and "couldn't catch your number" in (taken.say or "")
