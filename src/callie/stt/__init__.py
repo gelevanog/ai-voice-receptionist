@@ -23,7 +23,7 @@ from callie.audio.pcm import Audio
 
 DOMAIN_PROMPT = (
     "Brightside Dental. Appointment, cleaning, checkup, filling, whitening, Dr. Patel, Delta Dental, Cigna, "
-    "MetLife, Aetna, reschedule, cancel. Mm-hmm. Uh-huh. Okay."
+    "MetLife, Aetna, reschedule, cancel. My number is 555-214-8839. Mm-hmm. Uh-huh. Okay."
 )
 
 

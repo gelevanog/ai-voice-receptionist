@@ -1,0 +1,98 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+env:
+  UV_LINK_MODE: copy
+
+jobs:
+  lint:
+    name: Lint and typecheck
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v10.2.0
+        with:
+          enable-cache: true
+          cache-dependency-glob: "uv.lock"
+          python-version: "3.12"
+
+      # No `voice` extra: the speech runtimes are imported lazily, so linting and typing do not need them.
+      - name: Install dependencies
+        run: uv sync --frozen
+
+      - name: Ruff check
+        run: uv run ruff check src tests
+
+      - name: Ruff format check
+        run: uv run ruff format --check src tests
+
+      - name: mypy (strict)
+        run: uv run mypy
+
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v10.2.0
+        with:
+          enable-cache: true
+          cache-dependency-glob: "uv.lock"
+          python-version: "3.12"
+
+      # No API keys and no model downloads: the pipeline runs with the energy VAD, scripted STT, tone TTS and the
+      # rule-based fake model; tests that need downloaded models are skipped.
+      - name: Install dependencies
+        run: uv sync --frozen
+
+      - name: Run tests
+        run: uv run pytest --junitxml=report.xml
+
+      - name: CLI smoke run (text call with the fake model)
+        env:
+          CALLIE_DATABASE_URL: sqlite:////tmp/callie-ci.db
+          CALLIE_NOW: "2026-10-06T09:30"
+        run: |
+          uv run callie call "I'd like a cleaning next Tuesday after lunch" "The 3 PM one" \
+            "My name is Jane Doe, 555 123 4567" "Yes" "No, that's all, thanks" | tee call.log
+          grep -q "outcome: booked" call.log
+
+      - name: Scenario file is valid
+        run: uv run callie eval scenarios
+
+      - name: Upload test report
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: junit-report
+          path: report.xml
+
+  build:
+    name: Docker build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+
+      # Speech runtimes are installed; model weights are not (they are downloaded at deploy time).
+      - name: Build image (no push)
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          push: false
+          tags: callie:ci
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

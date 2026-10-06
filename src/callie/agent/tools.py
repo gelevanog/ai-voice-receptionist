@@ -199,6 +199,8 @@ class CallContext:
     outcome: Outcome = field(default_factory=Outcome)
     tool_log: list[JsonDict] = field(default_factory=list)
     known_times: set[str] = field(default_factory=set)  # times that tools or the caller mentioned
+    phone_failures: int = 0
+    phone_skipped: bool = False
 
 
 def _digits_spoken(phone: str | None) -> str:
@@ -421,19 +423,34 @@ class ToolBox:
                 "book_appointment", args, {"status": "need_name"}, say="Can I get your first and last name, please?"
             )
         phone = normalize_phone(str(args.get("phone") or "")) or self.ctx.caller_phone
-        if phone is None:
-            return ToolResult(
-                "book_appointment",
-                args,
-                {"status": "need_phone"},
-                say="And what's the best phone number for your confirmation text?",
-            )
+        if phone is None and not self.ctx.phone_skipped:
+            heard = "".join(ch for ch in str(args.get("phone") or "") if ch.isdigit())
+            if not heard:
+                return ToolResult(
+                    "book_appointment",
+                    args,
+                    {"status": "need_phone"},
+                    say="And what's the best phone number for your confirmation text?",
+                )
+            self.ctx.phone_failures += 1
+            if self.ctx.phone_failures >= 2:
+                self.ctx.phone_skipped = True  # book anyway, without the text; the read-back says so
+            else:
+                return ToolResult(
+                    "book_appointment",
+                    args,
+                    {"status": "phone_unclear", "heard_digits": len(heard)},
+                    say=f"Sorry, I got {len(heard)} digits instead of 10. Could you say your number again, "
+                    "one digit at a time?",
+                )
         self.ctx.masker.register_name(name)
         details = {"service": service.id, "slot_id": slot.key, "patient_name": name, "phone": phone}
-        read_back = (
-            f"Just to confirm: a {service.name} for {name} on {slot.spoken()}, "
-            f"and I'll text the confirmation to the number ending in {_digits_spoken(phone)}. Is that right?"
+        texting = (
+            f"and I'll text the confirmation to the number ending in {_digits_spoken(phone)}"
+            if phone
+            else "and since I couldn't catch your number, I won't be able to text you a confirmation"
         )
+        read_back = f"Just to confirm: a {service.name} for {name} on {slot.spoken()}, {texting}. Is that right?"
         gate = self._confirm_gate("book_appointment", details, read_back, bool(args.get("confirmed")))
         if gate is not None:
             return gate

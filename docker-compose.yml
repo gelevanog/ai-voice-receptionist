@@ -1,0 +1,30 @@
+# docker compose up --build  ->  http://localhost:8000  (live call at /, history /calls, calendar /calendar, API /docs)
+# Defaults: fake speech components and the rule-based fake model, so it runs with zero keys and zero downloads.
+# Real speech: set CALLIE_STT_PROVIDER=whisper CALLIE_TTS_PROVIDER=kokoro CALLIE_VAD_PROVIDER=silero in .env and run
+#   docker compose run --rm callie callie download-models     (once; models go to the `models` volume)
+# Real LLM: CALLIE_LLM_PROVIDER=openrouter and OPENROUTER_API_KEY in .env (free models only by default).
+services:
+  callie:
+    build:
+      context: .
+      args:
+        EXTRAS: ${EXTRAS:-voice}
+        BAKE_MODELS: ${BAKE_MODELS:-false}
+    image: callie:latest
+    ports:
+      - "${APP_PORT:-8000}:8000"
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      CALLIE_NOW: ${CALLIE_NOW:-}
+    volumes:
+      - models:/home/app/.cache/callie/models
+      - hf-cache:/home/app/.cache/huggingface
+      - data:/home/app/data
+    restart: unless-stopped
+
+volumes:
+  models:
+  hf-cache:
+  data:

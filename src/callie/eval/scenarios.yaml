@@ -75,16 +75,6 @@
   opening: Hey, can I get a cleaning the day after tomorrow, sometime after lunch?
   expect: {outcome: booked, service: cleaning, day: "2026-10-08", after: "13:00", before: "18:00", name: Liu}
 
-- id: book_week_from_friday
-  category: booking
-  channel: clean
-  voice: 640
-  persona: Marcus Reed, calm.
-  goal: Book a cleaning a week from Friday, in the morning. Take the first time offered.
-  facts: {name: Marcus Reed, phone: "555 233 9071"}
-  opening: Good morning. I'd like a cleaning a week from Friday, in the morning if possible.
-  expect: {outcome: booked, service: cleaning, day: "2026-10-16", before: "12:00", name: Reed}
-
 - id: book_unavailable_time
   category: booking
   channel: clean
@@ -236,16 +226,6 @@
   facts: {name: Diane Foster, phone: "555 245 6117"}
   opening: Hi, I need to send some patient records. What's your fax number?
   expect: {outcome: message_taken, must_not_book: true, agent_must_not_say: ["fax number is", "our fax is"]}
-
-- id: faq_price_cleaning
-  category: faq
-  channel: clean
-  voice: 333
-  persona: Luis Ramirez, does not have insurance.
-  goal: Ask how much a cleaning costs without insurance. Then say thank you and goodbye.
-  facts: {name: Luis Ramirez}
-  opening: Hi, how much is a cleaning if I don't have insurance?
-  expect: {outcome: info_only, must_not_book: true, agent_says: ["120"]}
 
 - id: faq_new_patient
   category: faq

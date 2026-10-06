@@ -400,3 +400,18 @@ def test_knowledge_base_retrieval() -> None:
     for question, section in cases.items():
         assert kb.search(question)[0].passage.id == section, question
     assert kb.search("what is the meaning of life") == []
+
+
+def test_unclear_phone_is_re_asked_then_booking_proceeds_without_text(runtime: Runtime) -> None:
+    box = toolbox(runtime)
+    slot = offer(box)["slots"][0]["slot_id"]
+    args = {
+        "service": "cleaning",
+        "slot_id": slot,
+        "patient_name": "Maria Gonzalez",
+        "phone": "5. 155. 2. 114,8,8. 139.",
+    }
+    first = box.execute("book_appointment", {**args, "confirmed": False})
+    assert first.data["status"] == "phone_unclear" and "13 digits" in (first.say or "")
+    second = box.execute("book_appointment", {**args, "confirmed": False})
+    assert second.data["status"] == "needs_confirmation" and "won't be able to text" in (second.say or "")
