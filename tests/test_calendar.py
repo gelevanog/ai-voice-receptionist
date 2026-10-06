@@ -148,8 +148,12 @@ class TestChanges:
 
 class TestGoogleCalendar:
     def make(self, handler) -> GoogleCalendarClient:  # type: ignore[no-untyped-def]
-        return GoogleCalendarClient("clinic@group.calendar.google.com", "token", timezone="America/New_York",
-                                    transport=httpx.MockTransport(handler))  # fmt: skip
+        return GoogleCalendarClient(
+            "clinic@group.calendar.google.com",
+            "token",
+            timezone="America/New_York",
+            transport=httpx.MockTransport(handler),
+        )
 
     def test_busy_times_block_slots(self, clinic: Clinic, sessions, now) -> None:  # type: ignore[no-untyped-def]
         seen: list[dict[str, object]] = []
@@ -163,7 +167,10 @@ class TestGoogleCalendar:
 
         google = self.make(handler)
         calendar = Calendar(clinic, sessions, now, external_busy=google.busy)
-        starts = [s.start for s in calendar.free_slots(clinic.service("cleaning"), parse_when("thursday", FROZEN_NOW).windows[0])]  # type: ignore[arg-type]
+        starts = [
+            s.start
+            for s in calendar.free_slots(clinic.service("cleaning"), parse_when("thursday", FROZEN_NOW).windows[0])
+        ]  # type: ignore[arg-type]
         assert at(8, 8) in starts and at(8, 9) not in starts and at(8, 10, 30) not in starts and at(8, 11) in starts
         assert seen and seen[0]["items"] == [{"id": "clinic@group.calendar.google.com"}]
 

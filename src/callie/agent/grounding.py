@@ -15,7 +15,8 @@ from callie.scheduling.timeparse import normalize, speak_time
 
 _TIME = re.compile(r"\b(\d{1,2})(?::(\d{2}))?\s*(am|pm)\b|\b(\d{1,2}):(\d{2})\b|\b(noon)\b")
 _OFFER = re.compile(
-    r"\b(available|availability|opening|openings|open slot|free|i have|we have|there's|there is|i can (?:do|fit|offer|book)|"
+    r"\b(available|availability|opening|openings|open slot|free|i have|we have|there's|there is|"
+    r"i can (?:do|fit|offer|book)|"
     r"works|booked|book you|schedule you|how about|would .* work|slot|appointment)\b",
     re.IGNORECASE,
 )

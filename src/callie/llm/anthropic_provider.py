@@ -13,6 +13,8 @@ from typing import Any
 
 import anthropic
 from anthropic import AsyncAnthropic
+from anthropic.types import RawContentBlockDeltaEvent, ToolUseBlock
+from anthropic.types import TextDelta as AnthropicTextDelta
 
 from callie.llm.base import Completed, JsonDict, LLMEvent, ProviderError, RetryableError, TextDelta, ToolCall
 
@@ -48,7 +50,9 @@ def to_anthropic(messages: list[JsonDict], tools: list[JsonDict]) -> tuple[str, 
                     arguments = json.loads(function.get("arguments") or "{}")
                 except json.JSONDecodeError:
                     arguments = {}
-                blocks.append({"type": "tool_use", "id": call["id"], "name": function.get("name", ""), "input": arguments})
+                blocks.append(
+                    {"type": "tool_use", "id": call["id"], "name": function.get("name", ""), "input": arguments}
+                )
             append("assistant", blocks)
         elif role == "tool":
             append("user", [{"type": "tool_result", "tool_use_id": message.get("tool_call_id", ""), "content": text}])
@@ -110,12 +114,14 @@ class AnthropicChat:
         try:
             async with self._client.messages.stream(**kwargs) as stream:
                 async for event in stream:
-                    if event.type == "content_block_delta" and getattr(event.delta, "type", "") == "text_delta":
+                    if isinstance(event, RawContentBlockDeltaEvent) and isinstance(event.delta, AnthropicTextDelta):
                         yield TextDelta(event.delta.text)
                 final = await stream.get_final_message()
         except anthropic.RateLimitError as exc:
             retry_after = exc.response.headers.get("retry-after") if exc.response is not None else None
-            raise RetryableError(f"rate limited: {exc.message}", float(retry_after) if retry_after else None, 429) from exc
+            raise RetryableError(
+                f"rate limited: {exc.message}", float(retry_after) if retry_after else None, 429
+            ) from exc
         except anthropic.APIStatusError as exc:
             if exc.status_code >= 500:
                 raise RetryableError(f"anthropic {exc.status_code}: {exc.message}") from exc
@@ -124,7 +130,7 @@ class AnthropicChat:
             raise RetryableError(f"anthropic connection error: {exc}") from exc
         if final.stop_reason == "refusal":
             raise ProviderError("the model declined to answer (refusal)", 422)
-        tool_uses = [block for block in final.content if block.type == "tool_use"]
+        tool_uses = [block for block in final.content if isinstance(block, ToolUseBlock)]
         if final.stop_reason == "max_tokens" and tool_uses:
             raise ProviderError("tool input truncated at max_tokens", 502)
         for block in tool_uses:

@@ -72,7 +72,9 @@ def build_runtime(settings: Settings, *, llm: ChatModel | None = None, database_
 
     google = None
     if settings.google_calendar_id and settings.google_access_token:
-        google = GoogleCalendarClient(settings.google_calendar_id, settings.google_access_token, timezone=clinic.timezone)
+        google = GoogleCalendarClient(
+            settings.google_calendar_id, settings.google_access_token, timezone=clinic.timezone
+        )
     calendar = Calendar(clinic, sessions, now, external_busy=google.busy if google else None)
     if settings.seed_demo_data:
         with sessions() as session:

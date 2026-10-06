@@ -21,22 +21,68 @@ from zoneinfo import ZoneInfo
 
 WEEKDAYS = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]
 MONTHS = [
-    "january", "february", "march", "april", "may", "june",
-    "july", "august", "september", "october", "november", "december",
-]  # fmt: skip
+    "january",
+    "february",
+    "march",
+    "april",
+    "may",
+    "june",
+    "july",
+    "august",
+    "september",
+    "october",
+    "november",
+    "december",
+]
 _MONTH_ABBR = {m[:3]: i + 1 for i, m in enumerate(MONTHS)} | {"sept": 9}
 
 _UNITS = {
-    "zero": 0, "oh": 0, "one": 1, "two": 2, "three": 3, "four": 4, "five": 5, "six": 6, "seven": 7, "eight": 8,
-    "nine": 9, "ten": 10, "eleven": 11, "twelve": 12, "thirteen": 13, "fourteen": 14, "fifteen": 15,
-    "sixteen": 16, "seventeen": 17, "eighteen": 18, "nineteen": 19,
-}  # fmt: skip
+    "zero": 0,
+    "oh": 0,
+    "one": 1,
+    "two": 2,
+    "three": 3,
+    "four": 4,
+    "five": 5,
+    "six": 6,
+    "seven": 7,
+    "eight": 8,
+    "nine": 9,
+    "ten": 10,
+    "eleven": 11,
+    "twelve": 12,
+    "thirteen": 13,
+    "fourteen": 14,
+    "fifteen": 15,
+    "sixteen": 16,
+    "seventeen": 17,
+    "eighteen": 18,
+    "nineteen": 19,
+}
 _TENS = {"twenty": 20, "thirty": 30, "forty": 40, "fifty": 50}
 _ORDINALS = {
-    "first": 1, "second": 2, "third": 3, "fourth": 4, "fifth": 5, "sixth": 6, "seventh": 7, "eighth": 8,
-    "ninth": 9, "tenth": 10, "eleventh": 11, "twelfth": 12, "thirteenth": 13, "fourteenth": 14, "fifteenth": 15,
-    "sixteenth": 16, "seventeenth": 17, "eighteenth": 18, "nineteenth": 19, "twentieth": 20, "thirtieth": 30,
-}  # fmt: skip
+    "first": 1,
+    "second": 2,
+    "third": 3,
+    "fourth": 4,
+    "fifth": 5,
+    "sixth": 6,
+    "seventh": 7,
+    "eighth": 8,
+    "ninth": 9,
+    "tenth": 10,
+    "eleventh": 11,
+    "twelfth": 12,
+    "thirteenth": 13,
+    "fourteenth": 14,
+    "fifteenth": 15,
+    "sixteenth": 16,
+    "seventeenth": 17,
+    "eighteenth": 18,
+    "nineteenth": 19,
+    "twentieth": 20,
+    "thirtieth": 30,
+}
 _SMALL_COUNTS = {"a": 1, "an": 1, "one": 1, "two": 2, "three": 3, "four": 4, "couple": 2, "few": 3}
 
 # Parts of the day as [start, end) local times.
@@ -189,9 +235,9 @@ def _words_to_times(text: str) -> str:
                     out.append(f"{hour}:{minute:02d}")
                     i += 3
                     continue
-            minute, used = _compound(tokens, i + 1)
-            if minute is not None and used and 10 <= minute <= 59 and tokens[i + 1] in _TENS | {"fifteen": 15}:
-                out.append(f"{hour}:{minute:02d}")
+            compound, used = _compound(tokens, i + 1)
+            if compound is not None and used and 10 <= compound <= 59 and tokens[i + 1] in {*_TENS, "fifteen"}:
+                out.append(f"{hour}:{compound:02d}")
                 i += 1 + used
                 continue
             out.append(str(hour))
@@ -226,8 +272,11 @@ def normalize(text: str) -> str:
     text = re.sub(r"\b(\d{1,2})(st|nd|rd|th)\b", r"\1", text)
     text = re.sub(r"\b(o'clock|oclock)\b", " o'clock", text)
     text = re.sub(r"\b12 ?noon\b|\bnoon\b|\bmidday time\b", "12:00pm", text)
-    text = re.sub(r"\btwenty (first|second|third|fourth|fifth|sixth|seventh|eighth|ninth)\b",
-                  lambda m: str(20 + _ORDINALS[m.group(1)]), text)  # fmt: skip
+    text = re.sub(
+        r"\btwenty (first|second|third|fourth|fifth|sixth|seventh|eighth|ninth)\b",
+        lambda m: str(20 + _ORDINALS[m.group(1)]),
+        text,
+    )
     text = re.sub(r"\bthirty first\b", "31", text)
     # Ordinals only next to a month or after "the" ("the thirteenth"), so "a second" stays a word.
     month_names = "|".join(MONTHS + list(_MONTH_ABBR))
@@ -241,7 +290,11 @@ def normalize(text: str) -> str:
         rf"\b({ordinal_words})\s+of\s+({month_names})\b", lambda m: f"{_ORDINALS[m.group(1)]} of {m.group(2)}", text
     )
     text = _words_to_times(" ".join(text.split()))
-    text = re.sub(r"\b(\d{1,2})(?::(\d{2}))?\s+(am|pm)\b", lambda m: f"{m.group(1)}{':' + m.group(2) if m.group(2) else ''}{m.group(3)}", text)  # fmt: skip
+    text = re.sub(
+        r"\b(\d{1,2})(?::(\d{2}))?\s+(am|pm)\b",
+        lambda m: f"{m.group(1)}{':' + m.group(2) if m.group(2) else ''}{m.group(3)}",
+        text,
+    )
     return " ".join(text.split())
 
 
@@ -312,17 +365,19 @@ class _Parser:
             r"\b(as soon as possible|asap|earliest|soonest|first available|first opening|next available)\b", text
         ):
             self.result.asap = True
-            span = [self.today + timedelta(days=i) for i in range(0, 14)]
+            span = [self.today + timedelta(days=i) for i in range(14)]
         if re.search(r"\bday after tomorrow\b", text):
             add(self.today + timedelta(days=2))
             text = text.replace("day after tomorrow", " ")
         for match in re.finditer(r"\ba week from (today|tomorrow|" + "|".join(WEEKDAYS) + r")\b", text):
             anchor = match.group(1)
             base = (
-                self.today if anchor == "today"
-                else self.today + timedelta(days=1) if anchor == "tomorrow"
+                self.today
+                if anchor == "today"
+                else self.today + timedelta(days=1)
+                if anchor == "tomorrow"
                 else self.weekday_date(anchor, None)
-            )  # fmt: skip
+            )
             add(base + timedelta(days=7))
             text = text.replace(match.group(0), " ")
         explicit: list[date] = []
@@ -372,9 +427,13 @@ class _Parser:
             )
             weekday_matches = list(re.finditer(weekday_re, text))
             range_match = re.search(
-                r"\b(?:between|from)?\s*(" + "|".join(WEEKDAYS) + r")\s+(?:through|thru|to|and|until|till)\s+(" + "|".join(WEEKDAYS) + r")\b",
+                r"\b(?:between|from)?\s*("
+                + "|".join(WEEKDAYS)
+                + r")\s+(?:through|thru|to|and|until|till)\s+("
+                + "|".join(WEEKDAYS)
+                + r")\b",
                 text,
-            )  # fmt: skip
+            )
             if range_match and (
                 "between" in text or "through" in text or "thru" in text or " to " in range_match.group(0)
             ):

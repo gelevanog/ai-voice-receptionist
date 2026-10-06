@@ -301,7 +301,8 @@ class ToolBox:
             if change == "book":
                 service = self.ctx.clinic.service(appointment.service_id)
                 appointment.external_id = google.create_event(
-                    f"{service.name if service else appointment.service_id}: {self.ctx.masker.mask(appointment.patient_name)}",
+                    f"{service.name if service else appointment.service_id}: "
+                    f"{self.ctx.masker.mask(appointment.patient_name)}",
                     appointment.start,
                     appointment.end,
                     "Booked by Callie",
@@ -344,7 +345,11 @@ class ToolBox:
         service = self._service(args.get("service"))
         when_text = str(args.get("when") or "").strip()
         if service is None:
-            return ToolResult("check_availability", args, {"status": "need_service", "services": [s.name for s in self.ctx.clinic.services]})
+            return ToolResult(
+                "check_availability",
+                args,
+                {"status": "need_service", "services": [s.name for s in self.ctx.clinic.services]},
+            )
         parsed = parse_when(when_text, self.ctx.now())
         exclude = str(args.get("appointment_id") or "") or None
         if not parsed.understood:
@@ -380,7 +385,9 @@ class ToolBox:
             say = self._offer_text(service, parsed.describe(), slots, alternatives, parsed.asap)
         return ToolResult("check_availability", args, data, say=say)
 
-    def _offer_text(self, service: Service, understood: str, slots: list[Slot], alternatives: list[Slot], asap: bool) -> str:
+    def _offer_text(
+        self, service: Service, understood: str, slots: list[Slot], alternatives: list[Slot], asap: bool
+    ) -> str:
         def join(items: list[str]) -> str:
             return items[0] if len(items) == 1 else ", ".join(items[:-1]) + " or " + items[-1]
 
@@ -395,7 +402,10 @@ class ToolBox:
             question = "Does that work?" if len(slots) == 1 else "Which would you prefer?"
             return f"{lead} {times(slots)}. {question}"
         if alternatives:
-            return f"I'm sorry, I don't have anything for {understood}. The next openings are {times(alternatives)}. Would one of those work?"
+            return (
+                f"I'm sorry, I don't have anything for {understood}. "
+                f"The next openings are {times(alternatives)}. Would one of those work?"
+            )
         return f"I'm sorry, I don't see any openings for a {service.name} around then. Is there another day that works?"
 
     def _tool_book_appointment(self, args: JsonDict) -> ToolResult:
@@ -407,11 +417,17 @@ class ToolBox:
             return self._unoffered("book_appointment", args)
         name = " ".join(str(args.get("patient_name") or "").split()).title()
         if len(name) < 2:
-            return ToolResult("book_appointment", args, {"status": "need_name"}, say="Can I get your first and last name, please?")
+            return ToolResult(
+                "book_appointment", args, {"status": "need_name"}, say="Can I get your first and last name, please?"
+            )
         phone = normalize_phone(str(args.get("phone") or "")) or self.ctx.caller_phone
         if phone is None:
-            return ToolResult("book_appointment", args, {"status": "need_phone"},
-                              say="And what's the best phone number for your confirmation text?")  # fmt: skip
+            return ToolResult(
+                "book_appointment",
+                args,
+                {"status": "need_phone"},
+                say="And what's the best phone number for your confirmation text?",
+            )
         self.ctx.masker.register_name(name)
         details = {"service": service.id, "slot_id": slot.key, "patient_name": name, "phone": phone}
         read_back = (
@@ -426,8 +442,12 @@ class ToolBox:
         except SlotUnavailableError as exc:
             self.ctx.pending = None
             self.ctx.offered.pop(slot.key, None)
-            return ToolResult("book_appointment", args, {"status": "slot_unavailable", "error": str(exc)},
-                              say="I'm sorry, that time was just taken. Would you like me to look for another time?")  # fmt: skip
+            return ToolResult(
+                "book_appointment",
+                args,
+                {"status": "slot_unavailable", "error": str(exc)},
+                say="I'm sorry, that time was just taken. Would you like me to look for another time?",
+            )
         self.ctx.pending = None
         self.ctx.outcome.booked.append(appointment.id)
         self._mirror(appointment, "book")
@@ -445,8 +465,12 @@ class ToolBox:
         phone = normalize_phone(str(args.get("phone") or "")) or (self.ctx.caller_phone if not name else None)
         purpose = str(args.get("purpose") or "check")
         if not name and not phone:
-            return ToolResult("find_appointment", args, {"status": "need_identity"},
-                              say="Sure. What's the name the appointment is under?")  # fmt: skip
+            return ToolResult(
+                "find_appointment",
+                args,
+                {"status": "need_identity"},
+                say="Sure. What's the name the appointment is under?",
+            )
         self.ctx.masker.register_name(name)
         found = self.ctx.calendar.find_appointments(name=name, phone=phone)
         if not found and name and phone:
@@ -456,26 +480,54 @@ class ToolBox:
             service = self.ctx.clinic.service(appointment.service_id)
             local = appointment.start.astimezone(self.ctx.clinic.tz)
             self._remember_times(local)
-            items.append({"appointment_id": appointment.id, "service": service.id if service else appointment.service_id,
-                          "service_name": service.name if service else appointment.service_id, "time": speak_slot(local)})  # fmt: skip
+            items.append(
+                {
+                    "appointment_id": appointment.id,
+                    "service": service.id if service else appointment.service_id,
+                    "service_name": service.name if service else appointment.service_id,
+                    "time": speak_slot(local),
+                }
+            )
         if not items:
-            return ToolResult("find_appointment", args, {"status": "not_found"},
-                              say="I couldn't find an upcoming appointment under that name. Could you spell the last name for me, or give me the phone number on file?")  # fmt: skip
+            return ToolResult(
+                "find_appointment",
+                args,
+                {"status": "not_found"},
+                say="I couldn't find an upcoming appointment under that name. "
+                "Could you spell the last name for me, or give me the phone number on file?",
+            )
         if len(items) > 1:
             listed = " and ".join(f"a {i['service_name']} on {i['time']}" for i in items)
-            return ToolResult("find_appointment", args, {"status": "found", "appointments": items},
-                              say=f"I see {listed}. Which one is it about?")  # fmt: skip
+            return ToolResult(
+                "find_appointment",
+                args,
+                {"status": "found", "appointments": items},
+                say=f"I see {listed}. Which one is it about?",
+            )
         item = items[0]
         if purpose == "cancel":
             read_back = f"I found your {item['service_name']} on {item['time']}. Would you like me to cancel it?"
             details = {"appointment_id": item["appointment_id"]}
             self.ctx.pending = PendingAction("cancel_appointment", details, read_back, self.ctx.turn)
-            return ToolResult("find_appointment", args, {"status": "found", "appointments": items, "pending": "cancel_appointment"}, say=read_back)
+            return ToolResult(
+                "find_appointment",
+                args,
+                {"status": "found", "appointments": items, "pending": "cancel_appointment"},
+                say=read_back,
+            )
         if purpose == "reschedule":
-            return ToolResult("find_appointment", args, {"status": "found", "appointments": items},
-                              say=f"I found your {item['service_name']} on {item['time']}. What day and time would you like instead?")  # fmt: skip
-        return ToolResult("find_appointment", args, {"status": "found", "appointments": items},
-                          say=f"You have a {item['service_name']} on {item['time']}. Is there anything else I can help with?")  # fmt: skip
+            return ToolResult(
+                "find_appointment",
+                args,
+                {"status": "found", "appointments": items},
+                say=f"I found your {item['service_name']} on {item['time']}. What day and time would you like instead?",
+            )
+        return ToolResult(
+            "find_appointment",
+            args,
+            {"status": "found", "appointments": items},
+            say=f"You have a {item['service_name']} on {item['time']}. Is there anything else I can help with?",
+        )
 
     def _tool_reschedule_appointment(self, args: JsonDict) -> ToolResult:
         appointment = self.ctx.calendar.get(str(args.get("appointment_id", "")))
@@ -496,15 +548,23 @@ class ToolBox:
             moved = self.ctx.calendar.reschedule(appointment.id, slot.start)
         except SlotUnavailableError as exc:
             self.ctx.pending = None
-            return ToolResult("reschedule_appointment", args, {"status": "slot_unavailable", "error": str(exc)},
-                              say="I'm sorry, that time was just taken. Shall I look for another one?")  # fmt: skip
+            return ToolResult(
+                "reschedule_appointment",
+                args,
+                {"status": "slot_unavailable", "error": str(exc)},
+                say="I'm sorry, that time was just taken. Shall I look for another one?",
+            )
         self.ctx.pending = None
         self.ctx.outcome.rescheduled.append(moved.id)
         self._mirror(moved, "move")
         sms = self._sms(moved, "we moved your")
         texted = " I've texted you the new time." if sms in {"sent", "dry_run"} else ""
-        return ToolResult("reschedule_appointment", args, {"status": "rescheduled", "appointment_id": moved.id, "time": slot.spoken()},
-                          say=f"Done. Your {service.name} is now on {slot.spoken()}.{texted} Anything else?")  # fmt: skip
+        return ToolResult(
+            "reschedule_appointment",
+            args,
+            {"status": "rescheduled", "appointment_id": moved.id, "time": slot.spoken()},
+            say=f"Done. Your {service.name} is now on {slot.spoken()}.{texted} Anything else?",
+        )
 
     def _tool_cancel_appointment(self, args: JsonDict) -> ToolResult:
         appointment = self.ctx.calendar.get(str(args.get("appointment_id", "")))
@@ -513,7 +573,9 @@ class ToolBox:
         service = self.ctx.clinic.service(appointment.service_id)
         when = speak_slot(appointment.start.astimezone(self.ctx.clinic.tz))
         details = {"appointment_id": appointment.id}
-        read_back = f"Just to confirm: you'd like to cancel your {service.name if service else 'appointment'} on {when}?"
+        read_back = (
+            f"Just to confirm: you'd like to cancel your {service.name if service else 'appointment'} on {when}?"
+        )
         gate = self._confirm_gate("cancel_appointment", details, read_back, bool(args.get("confirmed")))
         if gate is not None:
             return gate
@@ -523,37 +585,72 @@ class ToolBox:
         self._mirror(appointment, "cancel")
         late = appointment.start - self.ctx.now() < timedelta(hours=24)
         fee = " Since it's less than 24 hours away, a $40 late cancellation fee may apply." if late else ""
-        return ToolResult("cancel_appointment", args, {"status": "cancelled", "appointment_id": appointment.id, "late": late},
-                          say=f"Your appointment on {when} is cancelled.{fee} Would you like to book a new time?")  # fmt: skip
+        return ToolResult(
+            "cancel_appointment",
+            args,
+            {"status": "cancelled", "appointment_id": appointment.id, "late": late},
+            say=f"Your appointment on {when} is cancelled.{fee} Would you like to book a new time?",
+        )
 
     def _tool_answer_faq(self, args: JsonDict) -> ToolResult:
         question = str(args.get("question") or "")
         hits = self.ctx.kb.search(question, k=2)
         if not hits:
-            return ToolResult("answer_faq", args, {"status": "no_answer"},
-                              say="I'm sorry, I don't have that information. I can take a message and someone from the team will call you back.")  # fmt: skip
+            return ToolResult(
+                "answer_faq",
+                args,
+                {"status": "no_answer"},
+                say="I'm sorry, I don't have that information. "
+                "I can take a message and someone from the team will call you back.",
+            )
         for hit in hits:
             self.ctx.known_times.update(extract_times(hit.passage.text))
-        return ToolResult("answer_faq", args, {"status": "ok", "passages": [{"title": h.passage.title, "text": h.passage.text} for h in hits]})
+        return ToolResult(
+            "answer_faq",
+            args,
+            {"status": "ok", "passages": [{"title": h.passage.title, "text": h.passage.text} for h in hits]},
+        )
 
     def _tool_take_message(self, args: JsonDict) -> ToolResult:
         name = " ".join(str(args.get("caller_name") or "").split()).title() or "Unknown caller"
         text = str(args.get("message") or "").strip()
         phone = normalize_phone(str(args.get("phone") or "")) or self.ctx.caller_phone
         if not text:
-            return ToolResult("take_message", args, {"status": "need_message"}, say="Of course. What message would you like me to pass on?")
+            return ToolResult(
+                "take_message",
+                args,
+                {"status": "need_message"},
+                say="Of course. What message would you like me to pass on?",
+            )
         if phone is None:
-            return ToolResult("take_message", args, {"status": "need_phone"}, say="And what number should they call you back on?")
+            return ToolResult(
+                "take_message", args, {"status": "need_phone"}, say="And what number should they call you back on?"
+            )
         self.ctx.masker.register_name(name)
         with self.ctx.sessions() as session, session.begin():
-            session.add(Message(call_id=None, name=name, phone=phone, text=self.ctx.masker.mask(text),
-                                urgency="urgent" if args.get("urgent") else "normal"))  # fmt: skip
+            session.add(
+                Message(
+                    call_id=None,
+                    name=name,
+                    phone=phone,
+                    text=self.ctx.masker.mask(text),
+                    urgency="urgent" if args.get("urgent") else "normal",
+                )
+            )
         self.ctx.outcome.messages += 1
         reopen = self.ctx.clinic.next_open(self.ctx.now())
-        when = "shortly" if self.ctx.clinic.is_open(self.ctx.now()) else (
-            f"when we open, {speak_slot(reopen)}" if reopen else "as soon as possible")  # fmt: skip
-        return ToolResult("take_message", args, {"status": "message_taken"},
-                          say=f"Thanks, {name.split()[0]}. I've passed that on, and someone will call you back at the number ending in {_digits_spoken(phone)} {when}. Anything else?")  # fmt: skip
+        when = (
+            "shortly"
+            if self.ctx.clinic.is_open(self.ctx.now())
+            else (f"when we open, {speak_slot(reopen)}" if reopen else "as soon as possible")
+        )
+        return ToolResult(
+            "take_message",
+            args,
+            {"status": "message_taken"},
+            say=f"Thanks, {name.split()[0]}. I've passed that on, and someone will call you back "
+            f"at the number ending in {_digits_spoken(phone)} {when}. Anything else?",
+        )
 
     def _tool_transfer_to_human(self, args: JsonDict) -> ToolResult:
         reason = str(args.get("reason") or "caller request")
@@ -562,22 +659,43 @@ class ToolBox:
             self.ctx.outcome.transferred = reason
             advised = "911" in reason
             prefix = "If this is life-threatening, please hang up and call 911. " if emergency and not advised else ""
-            return ToolResult("transfer_to_human", args, {"status": "transferring", "to": "front desk"},
-                              say=f"{prefix}I'm connecting you with our team now. Please hold for a moment.", action="transfer")  # fmt: skip
+            return ToolResult(
+                "transfer_to_human",
+                args,
+                {"status": "transferring", "to": "front desk"},
+                say=f"{prefix}I'm connecting you with our team now. Please hold for a moment.",
+                action="transfer",
+            )
         reopen = self.ctx.clinic.next_open(self.ctx.now())
         when = speak_slot(reopen) if reopen else "the next business day"
-        return ToolResult("transfer_to_human", args, {"status": "front_desk_closed", "reopens": when},
-                          say=f"Our front desk is closed right now; we open again {when}. I can take a message so someone calls you back. Would you like that?")  # fmt: skip
+        return ToolResult(
+            "transfer_to_human",
+            args,
+            {"status": "front_desk_closed", "reopens": when},
+            say=f"Our front desk is closed right now; we open again {when}. "
+            "I can take a message so someone calls you back. Would you like that?",
+        )
 
     def _tool_send_confirmation_sms(self, args: JsonDict) -> ToolResult:
         appointment = self.ctx.calendar.get(str(args.get("appointment_id", "")))
         if appointment is None or appointment.status != "booked":
             return ToolResult("send_confirmation_sms", args, {"status": "error", "error": "appointment not found"})
         status = self._sms(appointment, "your")
-        return ToolResult("send_confirmation_sms", args, {"status": status},
-                          say="I've sent the details by text." if status in {"sent", "dry_run"} else "I'm sorry, I couldn't send the text.")  # fmt: skip
+        return ToolResult(
+            "send_confirmation_sms",
+            args,
+            {"status": status},
+            say="I've sent the details by text."
+            if status in {"sent", "dry_run"}
+            else "I'm sorry, I couldn't send the text.",
+        )
 
     def _tool_end_call(self, args: JsonDict) -> ToolResult:
         self.ctx.outcome.ended_by_agent = True
-        return ToolResult("end_call", args, {"status": "ending"},
-                          say=f"Thanks for calling {self.ctx.clinic.name}. Have a great day. Goodbye!", action="hangup")  # fmt: skip
+        return ToolResult(
+            "end_call",
+            args,
+            {"status": "ending"},
+            say=f"Thanks for calling {self.ctx.clinic.name}. Have a great day. Goodbye!",
+            action="hangup",
+        )

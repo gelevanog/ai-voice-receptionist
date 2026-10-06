@@ -198,8 +198,13 @@ class ResilientChat:
                         raise
                     if attempt < self.max_retries:
                         delay = self._backoff(model, attempt, exc)
-                        log.warning("llm.retry", model=model.label, attempt=attempt + 1, delay=round(delay, 1),
-                                    error=str(exc)[:160])  # fmt: skip
+                        log.warning(
+                            "llm.retry",
+                            model=model.label,
+                            attempt=attempt + 1,
+                            delay=round(delay, 1),
+                            error=str(exc)[:160],
+                        )
                         await self._pause(delay)
                     continue
                 except ProviderError as exc:

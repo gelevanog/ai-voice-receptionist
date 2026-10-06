@@ -10,9 +10,19 @@ from __future__ import annotations
 import re
 
 _DIGIT_WORDS = {
-    "zero": "0", "oh": "0", "o": "0", "one": "1", "two": "2", "three": "3", "four": "4", "five": "5",
-    "six": "6", "seven": "7", "eight": "8", "nine": "9",
-}  # fmt: skip
+    "zero": "0",
+    "oh": "0",
+    "o": "0",
+    "one": "1",
+    "two": "2",
+    "three": "3",
+    "four": "4",
+    "five": "5",
+    "six": "6",
+    "seven": "7",
+    "eight": "8",
+    "nine": "9",
+}
 _PHONE_RE = re.compile(r"(?<!\w)(?:\+?1[\s.-]?)?(?:\(?\d{3}\)?[\s.-]?)\d{3}[\s.-]?\d{4}(?!\w)")
 _LONG_DIGITS_RE = re.compile(r"(?<![\w-])(?:\d[\s.-]?){6,14}\d(?![\w-])")
 _SPOKEN_DIGITS_RE = re.compile(

@@ -240,9 +240,9 @@ class Calendar:
             ).all()
         matches = []
         for row in rows:
-            if phone and row.phone and _digits(row.phone)[-10:] == _digits(phone)[-10:]:
-                matches.append(row)
-            elif name and _name_matches(name, row.patient_name):
+            if (phone and row.phone and _digits(row.phone)[-10:] == _digits(phone)[-10:]) or (
+                name and _name_matches(name, row.patient_name)
+            ):
                 matches.append(row)
         return matches
 

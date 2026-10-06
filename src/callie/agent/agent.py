@@ -19,7 +19,7 @@ import time
 import uuid
 from collections.abc import AsyncIterator
 from dataclasses import dataclass, field
-from typing import Literal
+from typing import Any, Literal
 
 from callie.agent.grounding import extract_times, unsupported_times
 from callie.agent.policy import (
@@ -40,6 +40,14 @@ from callie.tts.chunker import SentenceChunker
 log = get_logger(__name__)
 Source = Literal["llm", "tool", "rules", "filler"]
 FILLERS = ["One moment.", "Let me check.", "Sure, one second."]
+SIDE_EFFECT_TOOLS = {
+    "book_appointment",
+    "reschedule_appointment",
+    "cancel_appointment",
+    "take_message",
+    "transfer_to_human",
+    "end_call",
+}
 
 
 @dataclass(frozen=True)
@@ -108,6 +116,7 @@ class Agent:
         ]
         self._fillers = itertools.cycle(FILLERS)
         self.last_stats = TurnStats()
+        self.turn_committed = False  # a tool with side effects ran in the current turn
 
     def greeting(self) -> str:
         text = greeting(self.ctx.clinic)
@@ -129,6 +138,7 @@ class Agent:
     async def respond(self, user_text: str, *, merge: bool = False) -> AsyncIterator[AgentEvent]:
         stats = TurnStats()
         self.last_stats = stats
+        self.turn_committed = False
         if merge and self.messages[-1]["role"] == "user":
             self.messages[-1]["content"] = f"{self.messages[-1]['content']} {user_text}".strip()
             user_text = self.messages[-1]["content"]
@@ -180,10 +190,16 @@ class Agent:
     async def _run_rule_tool(self, name: str, arguments: JsonDict) -> AsyncIterator[AgentEvent]:
         call_id = f"rule_{uuid.uuid4().hex[:8]}"
         result = self.tools.execute(name, arguments)
+        self.turn_committed = self.turn_committed or name in SIDE_EFFECT_TOOLS
         self.messages.append(
-            {"role": "assistant", "content": None,
-             "tool_calls": [{"id": call_id, "type": "function", "function": {"name": name, "arguments": _json(arguments)}}]}
-        )  # fmt: skip
+            {
+                "role": "assistant",
+                "content": None,
+                "tool_calls": [
+                    {"id": call_id, "type": "function", "function": {"name": name, "arguments": _json(arguments)}}
+                ],
+            }
+        )
         self.messages.append({"role": "tool", "tool_call_id": call_id, "content": result.for_model()})
         if result.say:
             self.messages.append({"role": "assistant", "content": result.say})
@@ -203,9 +219,11 @@ class Agent:
             first_token: float | None = None
             completed: Completed | None = None
             stats.llm_calls += 1
-            stream = self.llm.stream(self.messages, self.specs, max_tokens=self.max_tokens, temperature=self.temperature)
+            stream = self.llm.stream(
+                self.messages, self.specs, max_tokens=self.max_tokens, temperature=self.temperature
+            )
             iterator = stream.__aiter__()
-            pending_first: asyncio.Future[object] | None = None
+            pending_first: asyncio.Future[Any] | None = None
             try:
                 if self.filler_after_s and not filler_used:
                     pending_first = asyncio.ensure_future(iterator.__anext__())
@@ -269,10 +287,21 @@ class Agent:
                     yield Sentence(fallback, "rules")
                 return
             self.messages.append(
-                {"role": "assistant", "content": text or None,
-                 "tool_calls": [{"id": c.id, "type": "function", "function": {"name": c.name, "arguments": c.raw_arguments or _json(c.arguments)}} for c in calls]}
-            )  # fmt: skip
+                {
+                    "role": "assistant",
+                    "content": text or None,
+                    "tool_calls": [
+                        {
+                            "id": c.id,
+                            "type": "function",
+                            "function": {"name": c.name, "arguments": c.raw_arguments or _json(c.arguments)},
+                        }
+                        for c in calls
+                    ],
+                }
+            )
             results = [self.tools.execute(call.name, call.arguments) for call in calls]
+            self.turn_committed = self.turn_committed or any(c.name in SIDE_EFFECT_TOOLS for c in calls)
             for call, result in zip(calls, results, strict=True):
                 self.messages.append({"role": "tool", "tool_call_id": call.id, "content": result.for_model()})
             says = " ".join(r.say for r in results if r.say)
@@ -301,7 +330,7 @@ class Agent:
         yield Sentence(sentence, "llm")
 
 
-async def _prepend(first: asyncio.Future[object], rest: AsyncIterator[object]) -> AsyncIterator[object]:
+async def _prepend(first: asyncio.Future[Any], rest: AsyncIterator[Any]) -> AsyncIterator[Any]:
     try:
         yield await first
     except StopAsyncIteration:

@@ -26,4 +26,4 @@ def configure_logging(level: str = "INFO", fmt: str = "console") -> None:
 
 
 def get_logger(name: str) -> structlog.stdlib.BoundLogger:
-    return cast(structlog.stdlib.BoundLogger, structlog.get_logger(name))
+    return cast("structlog.stdlib.BoundLogger", structlog.get_logger(name))

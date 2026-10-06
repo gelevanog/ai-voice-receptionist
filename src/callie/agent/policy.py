@@ -62,10 +62,38 @@ def classify_reply(text: str) -> Reply:
 
 
 _BACKCHANNELS = {
-    "mm hmm", "mhm", "mm", "mmm", "uh huh", "hmm", "yeah", "yep", "yes", "okay", "ok", "right", "sure", "got it",
-    "i see", "alright", "all right", "uh", "um", "ah", "oh", "oh okay", "okay okay", "yeah yeah", "right right",
-    "mm hm", "m hm", "great", "cool", "nice", "sounds good",
-}  # fmt: skip
+    "mm hmm",
+    "mhm",
+    "mm",
+    "mmm",
+    "uh huh",
+    "hmm",
+    "yeah",
+    "yep",
+    "yes",
+    "okay",
+    "ok",
+    "right",
+    "sure",
+    "got it",
+    "i see",
+    "alright",
+    "all right",
+    "uh",
+    "um",
+    "ah",
+    "oh",
+    "oh okay",
+    "okay okay",
+    "yeah yeah",
+    "right right",
+    "mm hm",
+    "m hm",
+    "great",
+    "cool",
+    "nice",
+    "sounds good",
+}
 
 
 def is_backchannel(text: str) -> bool:
@@ -75,7 +103,9 @@ def is_backchannel(text: str) -> bool:
         return True  # breath, cough or noise the STT turned into nothing
     if len(cleaned.split()) > 3:
         return False
-    return cleaned in _BACKCHANNELS or all(word in {"mm", "hmm", "uh", "huh", "yeah", "okay"} for word in cleaned.split())
+    return cleaned in _BACKCHANNELS or all(
+        word in {"mm", "hmm", "uh", "huh", "yeah", "okay"} for word in cleaned.split()
+    )
 
 
 class Escalation(StrEnum):
@@ -87,7 +117,8 @@ class Escalation(StrEnum):
 
 _EMERGENCY = re.compile(
     r"\b(can'?t breathe|cannot breathe|trouble breathing|hard to breathe|difficulty breathing|"
-    r"can'?t swallow|trouble swallowing|(?:face|cheek|jaw|neck|eye)\s+(?:is\s+)?(?:\w+\s+)?(?:swollen|swelling|swelled)|"
+    r"can'?t swallow|trouble swallowing|"
+    r"(?:face|cheek|jaw|neck|eye)\s+(?:is\s+)?(?:\w+\s+)?(?:swollen|swelling|swelled)|"
     r"swelling (?:in|of|on) (?:my|his|her|the) (?:face|cheek|jaw|neck|eye)|swollen (?:face|cheek|jaw|neck)|"
     r"won'?t stop bleeding|bleeding (?:won'?t|doesn'?t|does not|will not) stop|bleeding a lot|heavy bleeding|"
     r"lots of blood|"
@@ -108,7 +139,8 @@ _ANGER_SOFT = re.compile(r"\b(annoyed|frustrated|upset|angry|mad|unhappy|disappo
 _GOODBYE = re.compile(
     r"^(?:(?:no|nope|nah)\s+)?(?:(?:that's|that is|that'll be|that will be)\s+(?:all|it|everything)|"
     r"(?:nothing|no)\s+(?:else|more)|i'm (?:all set|good|done)|we're (?:good|done)|"
-    r"(?:ok(?:ay)?\s+)?(?:thanks|thank you)(?:\s+so much|\s+very much)?\s*(?:bye|goodbye|have a (?:good|nice|great) (?:day|one))|"
+    r"(?:ok(?:ay)?\s+)?(?:thanks|thank you)(?:\s+so much|\s+very much)?\s*"
+    r"(?:bye|goodbye|have a (?:good|nice|great) (?:day|one))|"
     r"(?:ok(?:ay)?\s+)?(?:bye|goodbye|bye bye|see you|talk to you later|have a (?:good|nice|great) (?:day|one)))\b"
 )
 _CONFUSION = re.compile(

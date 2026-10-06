@@ -97,7 +97,7 @@ class Clinic(BaseModel):
 
     def next_open(self, moment: datetime) -> datetime | None:
         local = moment.astimezone(self.tz)
-        for offset in range(0, 14):
+        for offset in range(14):
             for start, end in self.intervals(local.date() + timedelta(days=offset)):
                 if end > local:
                     return max(start, local)

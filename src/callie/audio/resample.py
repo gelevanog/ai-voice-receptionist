@@ -19,6 +19,9 @@ def resample(audio: Audio, src_rate: int, dst_rate: int) -> Audio:
     return np.asarray(out, dtype=np.float32)
 
 
+_ONE = np.array([1.0])
+
+
 class StreamResampler:
     """Resamples consecutive chunks as one continuous signal.
 
@@ -46,7 +49,7 @@ class StreamResampler:
             return chunk.astype(np.float32, copy=False)
         upsampled = np.zeros(len(chunk) * self.up, dtype=np.float64)
         upsampled[:: self.up] = chunk
-        filtered, self._zi = signal.lfilter(self._taps, 1.0, upsampled, zi=self._zi)
+        filtered, self._zi = signal.lfilter(self._taps, _ONE, upsampled, zi=self._zi)
         first = (-self._offset) % self.down
         self._offset += len(filtered)
         return np.asarray(filtered[first :: self.down], dtype=np.float32)

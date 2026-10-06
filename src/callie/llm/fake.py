@@ -19,13 +19,37 @@ from callie.llm.base import Completed, JsonDict, LLMEvent, TextDelta, ToolCall, 
 from callie.privacy import digits_from_speech
 
 _NAME = re.compile(
-    r"\b(?:my name is|my name's|name is|this is|it's|i'm|i am|under|for)\s+([A-Za-z][a-z'’-]+(?:\s+[A-Za-z][a-z'’-]+)?)",
+    r"\b(?:my name is|my name's|name is|this is|it's|i'm|i am|under|for)\s+"
+    r"([A-Za-z][a-z'’-]+(?:\s+[A-Za-z][a-z'’-]+)?)",
     re.IGNORECASE,
 )
 _NOT_NAME = {
-    "calling", "looking", "wondering", "trying", "free", "fine", "good", "not", "a", "an", "the", "just", "sorry",
-    "available", "interested", "new", "busy", "here", "okay", "sure", "me", "my", "next", "this", "that",
-}  # fmt: skip
+    "calling",
+    "looking",
+    "wondering",
+    "trying",
+    "free",
+    "fine",
+    "good",
+    "not",
+    "a",
+    "an",
+    "the",
+    "just",
+    "sorry",
+    "available",
+    "interested",
+    "new",
+    "busy",
+    "here",
+    "okay",
+    "sure",
+    "me",
+    "my",
+    "next",
+    "this",
+    "that",
+}
 _DAY_WORDS = re.compile(
     r"\b(today|tomorrow|monday|tuesday|wednesday|thursday|friday|saturday|sunday|next week|this week|weekend|"
     r"morning|afternoon|evening|asap|soon|earliest|\d{1,2}(?:st|nd|rd|th)|january|february|march|april|may|june|july|"
@@ -115,7 +139,9 @@ class FakeReceptionist:
             yield TextDelta(word)
         for name, arguments in calls:
             self._counter += 1
-            yield ToolCall(id=f"fake_{self._counter}", name=name, arguments=arguments, raw_arguments=json.dumps(arguments))
+            yield ToolCall(
+                id=f"fake_{self._counter}", name=name, arguments=arguments, raw_arguments=json.dumps(arguments)
+            )
         yield Completed(finish_reason="tool_calls" if calls else "stop", served_model=self.label)
 
     # -- the rules ---------------------------------------------------------------------------------------------
@@ -135,9 +161,14 @@ class FakeReceptionist:
         last_tool = results[-1] if results else None
         found = next((r for r in reversed(results) if r[0] == "find_appointment" and r[2].get("appointments")), None)
         offered_result = next((r for r in reversed(results) if r[0] == "check_availability"), None)
-        offered = (offered_result[2].get("slots") or offered_result[2].get("alternatives") or []) if offered_result else []
-        purpose = "reschedule" if re.search(r"\b(reschedul\w*|move|change|push|different (?:day|time))\b", all_user.lower()) else (
-            "cancel" if re.search(r"\bcancel\w*\b", all_user.lower()) else None)  # fmt: skip
+        offered = (
+            (offered_result[2].get("slots") or offered_result[2].get("alternatives") or []) if offered_result else []
+        )
+        purpose = (
+            "reschedule"
+            if re.search(r"\b(reschedul\w*|move|change|push|different (?:day|time))\b", all_user.lower())
+            else ("cancel" if re.search(r"\bcancel\w*\b", all_user.lower()) else None)
+        )
 
         # A read-back is waiting for a yes or a no.
         if last_tool and last_tool[2].get("status") == "needs_confirmation":
@@ -145,10 +176,10 @@ class FakeReceptionist:
                 return "", [(last_tool[0], {**last_tool[1], "confirmed": True})]
             if re.match(r"^\W*(no|nope|not quite|actually|wait)\b", lowered):
                 return "No problem. What would you like to change?", []
-        if last_tool and last_tool[0] == "find_appointment" and last_tool[2].get("pending") == "cancel_appointment":
-            if re.match(r"^\W*(yes|yeah|yep|please|sure|correct)\b", lowered):
-                appointment = last_tool[2]["appointments"][0]["appointment_id"]
-                return "", [("cancel_appointment", {"appointment_id": appointment, "confirmed": True})]
+        cancel_pending = last_tool and last_tool[0] == "find_appointment" and last_tool[2].get("pending")
+        if cancel_pending and last_tool and re.match(r"^\W*(yes|yeah|yep|please|sure|correct)\b", lowered):
+            appointment = last_tool[2]["appointments"][0]["appointment_id"]
+            return "", [("cancel_appointment", {"appointment_id": appointment, "confirmed": True})]
 
         if re.search(r"\b(leave a message|take a message|pass (?:on )?a message|message for)\b", lowered):
             if not name:
@@ -158,18 +189,49 @@ class FakeReceptionist:
         if purpose and not found:
             if not name and not phone:
                 return "Sure. What's the name the appointment is under?", []
-            return "", [("find_appointment", {"patient_name": name or "", "purpose": purpose, **({"phone": phone} if phone else {})})]
+            return "", [
+                (
+                    "find_appointment",
+                    {"patient_name": name or "", "purpose": purpose, **({"phone": phone} if phone else {})},
+                )
+            ]
         if found and purpose == "reschedule":
             appointment = found[2]["appointments"][0]
-            pick = pick_slot(text, offered) if offered_result and results.index(offered_result) > results.index(found) else None
+            pick = (
+                pick_slot(text, offered)
+                if offered_result and results.index(offered_result) > results.index(found)
+                else None
+            )
             if pick:
-                return "", [("reschedule_appointment", {"appointment_id": appointment["appointment_id"], "slot_id": pick["slot_id"], "confirmed": False})]
-            if extract_times(text) or re.search(r"\b(monday|tuesday|wednesday|thursday|friday|saturday|tomorrow|next|week|morning|afternoon)\b", lowered):
-                return "", [("check_availability", {"service": appointment["service"], "when": text, "appointment_id": appointment["appointment_id"]})]
+                return "", [
+                    (
+                        "reschedule_appointment",
+                        {
+                            "appointment_id": appointment["appointment_id"],
+                            "slot_id": pick["slot_id"],
+                            "confirmed": False,
+                        },
+                    )
+                ]
+            if extract_times(text) or re.search(
+                r"\b(monday|tuesday|wednesday|thursday|friday|saturday|tomorrow|next|week|morning|afternoon)\b", lowered
+            ):
+                return "", [
+                    (
+                        "check_availability",
+                        {
+                            "service": appointment["service"],
+                            "when": text,
+                            "appointment_id": appointment["appointment_id"],
+                        },
+                    )
+                ]
 
         if offered and offered_result and not found:
             # Which slot did the caller pick, this turn or since the slots were offered?
-            trigger = max((i for i, m in enumerate(messages[: offered_result[3]]) if m.get("role") == "user"), default=0)
+            trigger = max(
+                (i for i, m in enumerate(messages[: offered_result[3]]) if m.get("role") == "user"), default=0
+            )
             since = [message_text(m) for m in messages[trigger:] if m.get("role") == "user"]
             exact = offered_result[2].get("exact_match")
             pick = next((p for p in (pick_slot(t, offered) for t in reversed(since)) if p), None)
@@ -182,29 +244,52 @@ class FakeReceptionist:
             if pick:
                 if not name:
                     return "Great. Can I get your first and last name?", []
-                arguments: JsonDict = {"service": offered_result[1].get("service"), "slot_id": pick["slot_id"], "patient_name": name, "confirmed": False}
+                arguments: JsonDict = {
+                    "service": offered_result[1].get("service"),
+                    "slot_id": pick["slot_id"],
+                    "patient_name": name,
+                    "confirmed": False,
+                }
                 if phone:
                     arguments["phone"] = phone
                 return "", [("book_appointment", arguments)]
 
-        if _QUESTION.search(lowered) and not re.search(r"\b(book|schedule|appointment|available|availability|opening)\b", lowered):
+        if _QUESTION.search(lowered) and not re.search(
+            r"\b(book|schedule|appointment|available|availability|opening)\b", lowered
+        ):
             return "", [("answer_faq", {"question": text})]
 
-        wants_booking = re.search(r"\b(book|schedule|appointment|come in|get in|see the dentist|availab\w*|opening|slot)\b", lowered)
+        wants_booking = re.search(
+            r"\b(book|schedule|appointment|come in|get in|see the dentist|availab\w*|opening|slot)\b", lowered
+        )
         if wants_booking or service:
             if service is None:
                 return "Sure, I can help with that. What kind of appointment do you need?", []
-            when = text if (extract_times(text) or re.search(
-                r"\b(today|tomorrow|monday|tuesday|wednesday|thursday|friday|saturday|sunday|week|morning|afternoon|evening|soon|asap|earliest|\d{1,2}(st|nd|rd|th))\b",
-                lowered)) else ""  # fmt: skip
+            when = (
+                text
+                if (
+                    extract_times(text)
+                    or re.search(
+                        r"\b(today|tomorrow|monday|tuesday|wednesday|thursday|friday|saturday|sunday|week|morning|afternoon|evening|soon|asap|earliest|\d{1,2}(st|nd|rd|th))\b",
+                        lowered,
+                    )
+                )
+                else ""
+            )
             if not when:
                 return f"Sure, a {service.name}. What day and time work best for you?", []
             return "Let me check that for you.", [("check_availability", {"service": service.id, "when": when})]
-        if extract_times(text) or re.search(r"\b(tomorrow|monday|tuesday|wednesday|thursday|friday|saturday|next week)\b", lowered):
+        if extract_times(text) or re.search(
+            r"\b(tomorrow|monday|tuesday|wednesday|thursday|friday|saturday|next week)\b", lowered
+        ):
             if service:
                 return "", [("check_availability", {"service": service.id, "when": text})]
             return "What kind of appointment is it for?", []
-        return "I can help you book, change or cancel an appointment, answer questions about the clinic, or take a message. What can I do for you?", []
+        return (
+            "I can help you book, change or cancel an appointment, answer questions about the clinic, "
+            "or take a message. What can I do for you?",
+            [],
+        )
 
     def _after_tool(self, result: tuple[str, JsonDict, JsonDict, int]) -> str:
         name, arguments, data, _ = result

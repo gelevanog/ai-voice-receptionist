@@ -10,7 +10,24 @@ from __future__ import annotations
 
 import re
 
-_ABBREVIATIONS = {"dr", "mr", "mrs", "ms", "st", "ave", "no", "vs", "etc", "e.g", "i.e", "a.m", "p.m", "approx", "jr", "sr"}
+_ABBREVIATIONS = {
+    "dr",
+    "mr",
+    "mrs",
+    "ms",
+    "st",
+    "ave",
+    "no",
+    "vs",
+    "etc",
+    "e.g",
+    "i.e",
+    "a.m",
+    "p.m",
+    "approx",
+    "jr",
+    "sr",
+}
 _BOUNDARY = re.compile(r"([.!?]+)([\"')\]]*)(\s+|$)")
 _MARKDOWN = re.compile(r"(\*\*|__|`|^#+\s*|^\s*[-*•]\s+|^\s*\d+\.\s+)", re.MULTILINE)
 _EMOJI = re.compile("[\U0001f300-\U0001faff\U00002600-\U000027bf\U0001f000-\U0001f2ff]")
@@ -55,7 +72,10 @@ class SentenceChunker:
                 return None  # may continue ("Dr" + "." + " Patel"), wait for more text
             before = text[: match.start()]
             last_word = re.split(r"\s+", before.strip())[-1].lower().rstrip(".") if before.strip() else ""
-            if match.group(1) == "." and (last_word in _ABBREVIATIONS or re.search(r"\d$", before) and text[match.end() - len(match.group(3)) :][:1].isdigit()):
+            if match.group(1) == "." and (
+                last_word in _ABBREVIATIONS
+                or (re.search(r"\d$", before) and text[match.end() - len(match.group(3)) :][:1].isdigit())
+            ):
                 continue
             if match.group(1) == "." and len(last_word) == 1 and last_word.isalpha():
                 continue  # initials: "J. Smith"
@@ -67,12 +87,13 @@ class SentenceChunker:
                 if len(head.split()) >= self.first_chunk_min_words - 2 and not re.search(r"\d$", head):
                     return self._emit(comma.end())
         if len(words) > self.max_words:
-            comma = None
-            for comma in re.finditer(r"[,;]\s", text):
-                if len(text[: comma.start()].split()) >= self.max_words // 2:
+            split_at: int | None = None
+            for found in re.finditer(r"[,;]\s", text):
+                split_at = found.end()
+                if len(text[: found.start()].split()) >= self.max_words // 2:
                     break
-            if comma is not None:
-                return self._emit(comma.end())
+            if split_at is not None:
+                return self._emit(split_at)
         return None
 
     def _emit(self, end: int) -> str | None:
