@@ -19,7 +19,7 @@ _FAREWELL = re.compile(
 
 
 def caller_system_prompt(scenario: Scenario) -> str:
-    facts = "; ".join(f"{k}: {v}" for k, v in scenario.facts.items()) or "none"
+    facts = "; ".join(f"{k}: {_spelled(str(v)) if 'phone' in k else v}" for k, v in scenario.facts.items()) or "none"
     return (
         "You are role-playing a person who phones Brightside Dental and talks to its AI phone receptionist, "
         "Callie. Stay in character.\n"
@@ -96,6 +96,14 @@ class Caller:
         text = text_clean
         self.said(text + (f" {END}" if ended else ""))
         return text or "Okay.", ended
+
+
+_WORDS = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"]
+
+
+def _spelled(phone: str) -> str:
+    """'555 214 8839' -> 'five five five, two one four, eight eight three nine' (no room to drift)."""
+    return ", ".join(" ".join(_WORDS[int(d)] for d in group) for group in phone.split() if group.isdigit())
 
 
 def _transcript_line(message: JsonDict) -> str:

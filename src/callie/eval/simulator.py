@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import asyncio
 import contextlib
+import re
 import time
 from collections import deque
 from dataclasses import dataclass, field
@@ -386,7 +387,7 @@ async def _say(
 ) -> float:
     if isinstance(tts, PiperTTS):
         tts.speaker_id = scenario.voice
-    speech = await tts.synthesize(text)
+    speech = await tts.synthesize(speakable_digits(text))
     clean = _normalize_level(resample(speech.audio, speech.rate, PIPELINE_RATE))
     audio = apply_channel(clean, scenario.channel, rng)
     voiced = np.flatnonzero(np.abs(clean) > 0.01)
@@ -408,6 +409,20 @@ async def preload(speech: SpeechStack, *engines: object) -> None:
         loader = getattr(component, "load", None)
         if loader is not None:
             await asyncio.to_thread(loader)
+
+
+_DIGIT_WORDS = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"]
+
+
+def speakable_digits(text: str) -> str:
+    """People say phone numbers digit by digit; a TTS engine reads "555" as "five hundred fifty-five". Runs of 3+
+    digits that are not times or prices are spelled out the way a caller would say them."""
+
+    def spell(match: re.Match[str]) -> str:
+        groups = re.split(r"[\s.-]+", match.group(0).strip())
+        return ", ".join(" ".join(_DIGIT_WORDS[int(d)] for d in group if d.isdigit()) for group in groups if group)
+
+    return re.sub(r"(?<![$:\d])\b\d{3}(?:[\s.-]?\d{3,4}){1,2}\b|(?<![$:\d])\b\d{7,11}\b", spell, text)
 
 
 def caller_tts_for(settings: Settings, fake: bool = False) -> TTS:

@@ -59,8 +59,9 @@ async def run_e2e(
     only: list[str] | None,
     out_dir: Path,
     tag: str,
+    include_extended: bool = False,
 ) -> dict[str, Any]:
-    scenarios = [s for s in load_scenarios() if not only or s.id in only]
+    scenarios = [s for s in load_scenarios(include_extended=include_extended or bool(only)) if not only or s.id in only]
     clinic = load_clinic(settings.clinic_file)
     speech = build_speech(settings)
     agent_llm = build_chat_model(settings, clinic, tag="agent")

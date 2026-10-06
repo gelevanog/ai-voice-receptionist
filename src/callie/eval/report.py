@@ -119,6 +119,7 @@ def e2e_summary(data: dict[str, Any]) -> dict[str, Any]:
             ),
         },
         "advice_sentences_replaced": sum(r["replaced_advice"] for r in scenarios),
+        "booked_names": dict(Counter(r.get("name_check") for r in scenarios if r.get("name_check"))),
         "latency_ms": latency,
         "barge_in_e2e": {
             "events": len(barge_truth),

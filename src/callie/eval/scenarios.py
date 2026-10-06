@@ -52,6 +52,7 @@ class Expect(BaseModel):
 
 class Scenario(BaseModel):
     id: str
+    tier: Literal["core", "extended"] = "core"
     category: str
     channel: Channel = "clean"
     voice: int = 0
@@ -68,13 +69,13 @@ class Scenario(BaseModel):
     expect: Expect
 
 
-def load_scenarios(path: Path = SCENARIO_FILE) -> list[Scenario]:
+def load_scenarios(path: Path = SCENARIO_FILE, *, include_extended: bool = True) -> list[Scenario]:
     data = yaml.safe_load(path.read_text(encoding="utf-8"))
     scenarios = [Scenario.model_validate(item) for item in data]
     ids = [s.id for s in scenarios]
     if len(ids) != len(set(ids)):
         raise ValueError("duplicate scenario ids")
-    return scenarios
+    return [s for s in scenarios if include_extended or s.tier == "core"]
 
 
 def get_scenario(scenario_id: str) -> Scenario:

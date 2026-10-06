@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import re
 from datetime import date, datetime, time
+from difflib import SequenceMatcher
 from typing import Any
 
 from sqlalchemy import select
@@ -56,6 +57,7 @@ def check_call(
 ) -> dict[str, Any]:
     expect = scenario.expect
     problems: list[str] = []
+    name_check: str | None = None
     with sessions() as db:
         created = db.scalars(select(Appointment).where(Appointment.call_id == call_id)).all()
         created = [a for a in created if a.status == "booked"]
@@ -74,8 +76,15 @@ def check_call(
             if expect.service and appointment.service_id != expect.service:
                 problems.append(f"service {appointment.service_id} != {expect.service}")
             problems += _in_window(appointment.start, expect, clinic.tz)
-            if expect.name and expect.name.lower() not in appointment.patient_name.lower():
-                problems.append("patient name does not match")
+            if expect.name:
+                exact = expect.name.lower() in appointment.patient_name.lower().split()
+                close = any(
+                    SequenceMatcher(None, expect.name.lower(), w).ratio() >= 0.7
+                    for w in appointment.patient_name.lower().split()
+                )
+                name_check = "exact" if exact else ("close" if close else "wrong")
+                if name_check == "wrong":
+                    problems.append("patient name does not match")
             if expect.phone_last4 and not (appointment.phone or "").endswith(expect.phone_last4):
                 problems.append("phone does not match")
     elif outcome == "rescheduled":
@@ -139,6 +148,7 @@ def check_call(
             "unoffered_slot_attempts": detail.get("blocked_unoffered", 0),
         },
         "false_claims": false_claims(summary),
+        "name_check": name_check,
         "replaced_advice": stats["replaced_advice"],
     }
 

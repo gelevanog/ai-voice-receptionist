@@ -122,9 +122,9 @@ def eval_scenarios() -> None:
     """List the caller scenarios."""
     from callie.eval.scenarios import load_scenarios
 
-    table = Table("id", "category", "channel", "expect", "goal")
+    table = Table("id", "tier", "category", "channel", "expect", "goal")
     for s in load_scenarios():
-        table.add_row(s.id, s.category, s.channel, s.expect.outcome, s.goal[:70])
+        table.add_row(s.id, s.tier, s.category, s.channel, s.expect.outcome, s.goal[:60])
     console.print(table)
 
 
@@ -140,12 +140,23 @@ def eval_run(
     only: Annotated[list[str] | None, typer.Option(help="Run only these scenario ids")] = None,
     out_dir: Annotated[Path, typer.Option(help="Results directory")] = Path("results"),
     tag: Annotated[str, typer.Option(help="Name of this run (file prefix)")] = "e2e",
+    include_all: Annotated[bool, typer.Option("--all", help="Also the extended scenarios (more API calls)")] = False,
 ) -> None:
     """Simulated callers end to end through audio; writes results/<tag>.json and the call recordings."""
     from callie.eval.run import run_e2e
 
     settings = _settings(provider=provider, model=model, fallbacks=fallback)
-    asyncio.run(run_e2e(settings, caller_mode=caller, caller_model=caller_model, only=only, out_dir=out_dir, tag=tag))
+    asyncio.run(
+        run_e2e(
+            settings,
+            caller_mode=caller,
+            caller_model=caller_model,
+            only=only,
+            out_dir=out_dir,
+            tag=tag,
+            include_extended=include_all,
+        )
+    )
 
 
 @eval_app.command("wer")
