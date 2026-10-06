@@ -1,0 +1,20 @@
+{% macro waterfall(turns) %}
+{% set ns = namespace(max=2000) %}
+{% for t in turns %}{% if t.voice_to_voice_ms and t.voice_to_voice_ms > ns.max %}{% set ns.max = t.voice_to_voice_ms %}{% endif %}{% endfor %}
+<div class="legend">
+  <span><span class="swatch st-end"></span>end of turn</span><span><span class="swatch st-stt"></span>STT</span>
+  <span><span class="swatch st-llm"></span>LLM first sentence (+ tools)</span><span><span class="swatch st-tts"></span>TTS first audio</span>
+</div>
+{% for t in turns if t.voice_to_voice_ms is not none and not t.typed %}
+<div class="wf-row">
+  <span class="muted">#{{ t.turn }}</span>
+  <div class="wf-bar">
+    {% for key, cls, label in [("endpointing_ms", "st-end", "End of turn"), ("stt_ms", "st-stt", "STT"), ("agent_ms", "st-llm", "LLM + tools"), ("tts_ms", "st-tts", "TTS + send")] %}
+    <span class="{{ cls }}" style="width:{{ ((t[key] or 0) if (t[key] or 0) > 0 else 0) / ns.max * 100 }}%" title="{{ label }}: {{ t[key] }} ms"></span>
+    {% endfor %}
+  </div>
+  <span class="wf-total">{{ "%.2f"|format(t.voice_to_voice_ms / 1000) }} s</span>
+  <div class="wf-meta">{{ "confirmed by rules (no LLM call)" if t.path == "fast_confirm" else ("rules" if t.path == "rules" else t.model) }}{% if t.llm_first_token_ms is not none %} · first token {{ t.llm_first_token_ms }} ms{% endif %}{% if t.cached %} · cached{% endif %}{% if t.filler %} · filler{% endif %}{% if t.interrupted %} · interrupted{% endif %}</div>
+</div>
+{% endfor %}
+{% endmacro %}

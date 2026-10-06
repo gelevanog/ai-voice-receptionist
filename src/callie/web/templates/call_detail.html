@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% from "_macros.html" import waterfall %}
+{% block title %}Call {{ call.id }} · Callie{% endblock %}
+{% block content %}
+<div class="hero">
+  <div><h1>Call <span class="mono" style="font-size:1rem">{{ call.id }}</span></h1>
+    <p class="muted">{{ call.started }} · {{ call.transport }}{% if call.scenario %} · scenario <code>{{ call.scenario }}</code>{% endif %} · {{ "%.0f"|format(call.duration or 0) }} s</p></div>
+  <div class="chips"><span class="badge badge-{{ call.outcome }}">{{ call.outcome.replace("_", " ") }}</span>
+    {% for k, v in (record.stack or {}).items() %}<span class="chip">{{ k }} <b>{{ v }}</b></span>{% endfor %}</div>
+</div>
+{% if call.has_recording %}
+<div class="panel" style="margin-bottom:1rem"><h3>Recording <span class="muted small">(stereo: caller left, Callie right)</span></h3>
+  <audio controls preload="none" src="/calls/{{ call.id }}/recording.wav"></audio></div>
+{% endif %}
+<div class="call-grid">
+  <section class="panel">
+    <h3>Transcript and tool calls</h3>
+    <div class="transcript" style="max-height:none">
+    {% for entry in record.transcript %}
+      {% for tool in record.tool_calls if tool.turn == entry.turn and entry.role == "agent" %}
+        <div class="tool"><span class="name">{{ tool.name }}</span> <span class="muted">{{ tool.ms }} ms</span>
+          <div class="args">{% for k, v in tool.arguments.items() if v not in ("", none) %}{{ k }}={{ v }}  {% endfor %}</div>
+          <div class="res">→ {{ tool.result.status }}{% if tool.result.understood_as %} · understood: {{ tool.result.understood_as }}{% endif %}{% if tool.result.appointment_id %} · id {{ tool.result.appointment_id }}{% endif %}</div></div>
+      {% endfor %}
+      <div class="msg {{ entry.role }}{{ ' interrupted' if entry.interrupted }}"><span class="who">{{ "Caller" if entry.role == "caller" else "Callie" }} · {{ entry.t }} s</span>{{ entry.text }}</div>
+    {% endfor %}
+    </div>
+  </section>
+  <section class="panel">
+    <h3>Voice-to-voice latency per turn</h3>
+    {{ waterfall(record.turns) }}
+    <div class="table-wrap" style="margin-top:1rem">
+    <table>
+      <thead><tr><th>Turn</th><th class="num">End of turn</th><th class="num">STT</th><th class="num">LLM 1st token</th><th class="num">LLM + tools</th><th class="num">TTS</th><th class="num">Total</th></tr></thead>
+      <tbody>{% for t in record.turns %}<tr><td>#{{ t.turn }} <span class="muted small">{{ t.path }}</span></td>
+        <td class="num">{{ t.endpointing_ms if t.endpointing_ms is not none else "–" }}</td><td class="num">{{ t.stt_ms if t.stt_ms is not none else "–" }}</td>
+        <td class="num">{{ t.llm_first_token_ms if t.llm_first_token_ms is not none else "–" }}</td><td class="num">{{ t.agent_ms if t.agent_ms is not none else "–" }}</td>
+        <td class="num">{{ t.tts_ms if t.tts_ms is not none else "–" }}</td><td class="num"><b>{{ t.voice_to_voice_ms if t.voice_to_voice_ms is not none else "–" }}</b></td></tr>{% endfor %}</tbody>
+    </table>
+    <p class="muted small">Milliseconds. {{ record.outcome_detail }}</p>
+    </div>
+  </section>
+</div>
+{% endblock %}

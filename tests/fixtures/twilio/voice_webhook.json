@@ -1,0 +1,20 @@
+{
+  "_comment": "Form fields of Twilio's voice webhook for an incoming call (fictional ids). The signatures were computed with Twilio's official Python helper library (twilio.request_validator.RequestValidator) for the auth tokens given here.",
+  "url": "https://callie.example.ngrok.app/twilio/voice",
+  "auth_token": "test_auth_token_0123456789abcdef",
+  "params": {
+    "AccountSid": "AC00000000000000000000000000000000",
+    "CallSid": "CA11111111111111111111111111111111",
+    "From": "+15555550123",
+    "To": "+15555550100",
+    "CallStatus": "ringing",
+    "Direction": "inbound"
+  },
+  "signature": "C+QIOB8YfFbe/3DACc9cIgbG2kw=",
+  "docs_example": {
+    "url": "https://mycompany.com/myapp.php?foo=1&bar=2",
+    "auth_token": "12345",
+    "params": {"CallSid": "CA1234567890ABCDE", "Caller": "+12349013030", "Digits": "1234", "From": "+12349013030", "To": "+18005551212"},
+    "signature": "0/KCTR6DLpKmkAf8muzZqo1nDgQ="
+  }
+}

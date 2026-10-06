@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Calendar · Callie{% endblock %}
+{% block content %}
+<div class="hero">
+  <div><h1>{{ title }}</h1><p class="muted">The appointment book Callie reads availability from and writes bookings to. Patient names are shown as initials.</p></div>
+  <div class="controls">
+    <a class="btn secondary" href="/calendar?week={{ prev }}">← Previous</a>
+    <a class="btn secondary" href="/calendar">This week</a>
+    <a class="btn secondary" href="/calendar?week={{ next }}">Next →</a>
+  </div>
+</div>
+<div class="chips" style="margin-bottom:0.75rem">
+  <span class="chip"><b>{{ count }}</b> appointments this week</span>
+  <span class="chip"><b>{{ booked_by_callie }}</b> booked by Callie</span>
+  <span class="chip"><span class="swatch" style="background:var(--series-1)"></span>Sam, hygienist</span>
+  <span class="chip"><span class="swatch" style="background:var(--series-2)"></span>Dr. Patel</span>
+  <span class="chip"><span class="swatch" style="background:var(--accent-soft); box-shadow: inset 0 0 0 1.5px var(--accent)"></span>booked by Callie</span>
+</div>
+<div class="table-wrap">
+<div class="cal" style="min-width:760px">
+  <div class="cal-head"></div>
+  {% for day in days %}<div class="cal-head{{ ' today' if day.is_today }}">{{ day.label }}</div>{% endfor %}
+  <div class="cal-hours">{% for h in hours %}<div>{{ (h - 1) % 12 + 1 }} {{ "AM" if h < 12 else "PM" }}</div>{% endfor %}</div>
+  {% for day in days %}
+  <div class="cal-day" style="height:{{ hours|length * 60 }}px">
+    {% for top, height in day.open %}<div class="cal-open" style="top:{{ top }}px; height:{{ height }}px"></div>{% endfor %}
+    {% for a in day.appts %}
+    <div class="appt {{ a.resource }}{{ ' callie' if a.source == 'call' }}" style="top:{{ a.top }}px; height:{{ a.height - 1 }}px" title="{{ a.start }} · {{ a.service }} · {{ a.patient }}{{ ' · booked by Callie' if a.source == 'call' }}">
+      <span class="t">{{ a.start }}</span> {{ a.patient }}<br><span class="muted">{{ a.service }}</span>
+    </div>
+    {% endfor %}
+  </div>
+  {% endfor %}
+</div>
+</div>
+{% endblock %}

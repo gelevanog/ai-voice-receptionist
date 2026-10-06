@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}Live call · Callie{% endblock %}
+{% block content %}
+<div class="hero">
+  <div>
+    <h1>Call {{ clinic.name }}</h1>
+    <p class="muted">Talk to Callie from your browser: speech is detected, transcribed, answered and spoken back in real time. Interrupt her any time.</p>
+  </div>
+  <div class="chips">
+    <span class="chip">STT <b>{{ stack.stt }}</b></span>
+    <span class="chip">LLM <b>{{ stack.llm }}</b></span>
+    <span class="chip">TTS <b>{{ stack.tts }}</b></span>
+    <span class="chip">VAD <b>{{ stack.vad }}</b></span>
+  </div>
+</div>
+{% if fake_stt %}
+<div class="note" style="margin-bottom:1rem">Demo mode with fake speech components (no models downloaded): each time you speak, the fake STT
+  hears the next line of a demo script ({{ demo_script[0] }} …), and Callie's voice is a tone. You can also type. Run with
+  <code>CALLIE_STT_PROVIDER=whisper CALLIE_TTS_PROVIDER=kokoro CALLIE_VAD_PROVIDER=silero</code> for real speech.</div>
+{% endif %}
+<div class="call-grid">
+  <section class="panel">
+    <div class="panel-head">
+      <div class="controls">
+        <button class="btn" id="start">Start call</button>
+        <button class="btn danger" id="hangup" disabled>Hang up</button>
+        <span class="state" id="state" data-state="idle"><span class="dot"></span><span>not connected</span></span>
+        <span class="meter" title="microphone level"><span id="meter"></span></span>
+      </div>
+      <span class="muted small mono" id="call-id"></span>
+    </div>
+    <div class="transcript" id="transcript">
+      <div class="event">Press “Start call” and allow the microphone. Callie greets you with an AI and recording disclosure.</div>
+    </div>
+    <form id="typed" style="margin-top:0.75rem; display:flex; gap:0.5rem">
+      <input type="text" placeholder="…or type what the caller says" autocomplete="off">
+      <button class="btn secondary" id="say" disabled>Send</button>
+    </form>
+  </section>
+  <section class="panel">
+    <div class="panel-head">
+      <h3>Voice-to-voice latency per turn</h3>
+      <span class="muted small">median <b id="v2v-median" class="num">–</b></span>
+    </div>
+    <div class="legend">
+      <span><span class="swatch st-end"></span>end of turn (silence)</span>
+      <span><span class="swatch st-stt"></span>STT</span>
+      <span><span class="swatch st-llm"></span>LLM first sentence (+ tools)</span>
+      <span><span class="swatch st-tts"></span>TTS first audio</span>
+    </div>
+    <div id="waterfall"></div>
+    <p class="muted small" style="margin-top:0.75rem">From the moment the caller stops speaking to the moment Callie's first word plays.
+      End of turn = the silence Callie waits for before answering. A filler (“One moment.”) may play earlier when the model is slow; it is not counted as the answer.</p>
+  </section>
+</div>
+<div class="tip" id="tip"></div>
+<script src="/static/call.js"></script>
+{% endblock %}

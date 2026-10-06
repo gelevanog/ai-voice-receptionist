@@ -113,6 +113,8 @@ class TurnMetrics:
             "stt_ms": ms(self.vad_end, self.stt_done),
             "llm_first_token_ms": ms(self.stt_done, self.llm_first_token),
             "to_first_sentence_ms": ms(llm_end, self.first_sentence) if self.llm_first_token else None,
+            "agent_ms": ms(self.stt_done, self.first_sentence),
+            "tts_ms": ms(self.first_sentence, self.playback_start),
             "tts_first_audio_ms": ms(self.first_sentence, self.tts_first_audio),
             "send_ms": ms(self.tts_first_audio, self.playback_start),
             "voice_to_voice_ms": ms(self.user_stop, self.playback_start),

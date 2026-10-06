@@ -34,7 +34,7 @@ voice = ["faster-whisper>=1.2", "kokoro-onnx>=0.5", "onnxruntime>=1.20"]
 piper = ["piper-tts>=1.3"]
 
 [dependency-groups]
-dev = ["mypy", "pytest", "pytest-asyncio", "ruff", "scipy-stubs", "types-pyyaml"]
+dev = ["mypy", "pytest", "pytest-asyncio", "pytest-timeout", "ruff", "scipy-stubs", "types-pyyaml"]
 
 [project.scripts]
 callie = "callie.cli:app"
@@ -49,6 +49,7 @@ packages = ["src/callie"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-ra"
+timeout = 120
 asyncio_mode = "auto"
 asyncio_default_fixture_loop_scope = "function"
 markers = ["models: needs the `voice` extra and downloaded models (skipped otherwise)"]
