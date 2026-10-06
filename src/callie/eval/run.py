@@ -65,7 +65,14 @@ async def run_e2e(
     speech = build_speech(settings)
     agent_llm = build_chat_model(settings, clinic, tag="agent")
     caller_llm = (
-        build_chat_model(settings, clinic, provider="openrouter", model=caller_model, fallback_models=[], tag="caller")
+        build_chat_model(
+            settings,
+            clinic,
+            provider="openrouter",
+            model=caller_model,
+            fallback_models=[],
+            tag="caller",
+        )
         if caller_mode == "llm"
         else None
     )

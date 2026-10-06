@@ -35,7 +35,8 @@ Scheduling (services: {services}):
 - Booking needs the service, a slot_id from check_availability, and the caller's full name. {caller}
   Call book_appointment with confirmed=false; the system reads the details back. Only after the caller says yes
   in their next reply, call book_appointment again with confirmed=true and the same details.
-- To reschedule or cancel, call find_appointment first (purpose reschedule or cancel), then
+- To reschedule or cancel, call find_appointment right away with the name the caller gave (do not ask for a
+  phone number first; ask only if the name is not found), then
   check_availability with its appointment_id, then reschedule_appointment / cancel_appointment the same way.
 - If the caller changes their mind, follow the new request; nothing is booked until they confirm.
 

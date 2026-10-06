@@ -32,7 +32,9 @@ _YES_HEAD = (
     r"(?:yes|yeah|yea|yep|yup|ya|correct|that's correct|that is correct|that's right|that is right|right|sure|"
     r"perfect|sounds good|sounds great|exactly|absolutely|definitely|of course|please do|go ahead|go for it|"
     r"that works|that's fine|that's good|that's great|that's perfect|ok|okay|alright|all right|uh huh|mm hmm|"
-    r"mhm|yes please|yes it is|it is|you got it|confirmed|book it|do it|let's do it|great)"
+    r"mhm|yes please|yes it is|it is|you got it|confirmed|book it|do it|let's do it|great|"
+    r"that sounds (?:good|great|perfect|right|fine)|sounds perfect|that's (?:correct|right) yes|yes definitely|"
+    r"yes that's (?:right|correct|perfect|it)|that's it|exactly right|spot on|works for me|that works for me)"
 )
 _YES_TAIL = (
     r"(?:\s+(?:yes|yeah|please|thanks|thank you|thank you so much|that's (?:right|correct|perfect|great|fine)|"
@@ -56,7 +58,8 @@ def classify_reply(text: str) -> Reply:
         return Reply.NO
     if _YES_FULL.match(cleaned):
         return Reply.YES
-    if _YES_START.match(cleaned):
+    first_clause = _clean(re.split(r"[,.!?;]", text.strip(), maxsplit=1)[0])
+    if _YES_START.match(cleaned) or _YES_FULL.match(first_clause):
         return Reply.YES_PLUS
     return Reply.OTHER
 
@@ -171,7 +174,13 @@ def analyze_turn(text: str) -> TurnSignals:
     signals.anger = 2 * len(_ANGER_STRONG.findall(cleaned)) + len(_ANGER_SOFT.findall(cleaned))
     if text.count("!") >= 2:
         signals.anger += 1
-    signals.goodbye = bool(_GOODBYE.match(cleaned))
+    signals.goodbye = bool(_GOODBYE.match(cleaned)) or (
+        "?" not in text
+        and bool(
+            re.search(r"\b(bye|goodbye|have a (?:good|nice|great|wonderful) (?:day|one|evening|afternoon))\b", cleaned)
+        )
+        and not re.search(r"\b(but|also|one more|another|question|before you go)\b", cleaned)
+    )
     signals.confused = bool(_CONFUSION.search(text.lower())) or not cleaned
     return signals
 

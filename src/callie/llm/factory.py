@@ -32,6 +32,7 @@ def build_chat_model(
     fallback_models: list[str] | None = None,
     tag: str = "agent",
     fake_delay_s: float = 0.0,
+    reasoning: dict[str, object] | None = None,
 ) -> ChatModel:
     provider = provider or settings.llm_provider
     model = model or (settings.resolved_llm_model() if provider == settings.llm_provider else "")
@@ -52,7 +53,8 @@ def build_chat_model(
                 base_url=os.environ.get("OPENROUTER_BASE_URL", OPENROUTER_BASE_URL),
                 require_free=settings.require_free_models,
                 timeout_seconds=settings.llm_timeout_seconds,
-                extra_body={"reasoning": {"effort": "low", "exclude": True}},
+                # Voice needs the first words fast: keep hidden reasoning minimal and out of the stream.
+                extra_body={"reasoning": reasoning or {"effort": "low", "exclude": True}},
             )
             for name in [model, *fallbacks]
         ]

@@ -22,7 +22,7 @@ def caller_system_prompt(scenario: Scenario) -> str:
         "Callie. Stay in character.\n"
         f"Who you are: {scenario.persona}\n"
         f"Your goal: {scenario.goal}\n"
-        f"Facts you know (share them only when asked or when it is natural): {facts}\n"
+        f"Facts about you (use exactly these; never make up other names or numbers): {facts}\n"
         "How to reply: one or two short sentences, the way people talk on the phone. No lists, no stage "
         "directions, no quotation marks, no emojis. Say phone numbers digit by digit with pauses, like "
         '"five five five, two one four, eight eight three nine". If Callie reads details back and they are '
@@ -40,6 +40,21 @@ class Caller:
         self.messages: list[JsonDict] = [{"role": "system", "content": caller_system_prompt(scenario)}]
         self.script = list(scenario.script)
         self.errors: list[str] = []
+
+    def _prompt(self) -> list[JsonDict]:
+        """The conversation as a transcript in one message: small models keep their role far better this way."""
+        lines = [_transcript_line(m) for m in self.messages[1:]]
+        if not self.messages[1:] or self.messages[-1]["role"] != "user":
+            lines.append("Receptionist (Callie): (silence)")
+        transcript = "\n".join(lines)
+        return [
+            self.messages[0],
+            {
+                "role": "user",
+                "content": f"The phone call so far:\n{transcript}\n\nYou are the caller. Reply with only the "
+                "words you say next (one or two short sentences).",
+            },
+        ]
 
     def heard(self, agent_text: str) -> None:
         if agent_text.strip():
@@ -62,11 +77,9 @@ class Caller:
             line = self.script.pop(0)
             self.said(line)
             return line.replace(END, "").strip(), END in line or not self.script
-        if self.messages[-1]["role"] != "user":
-            self.messages.append({"role": "user", "content": "(silence)"})
         text = ""
         try:
-            async for event in self.llm.stream(self.messages, [], max_tokens=160, temperature=0.7):
+            async for event in self.llm.stream(self._prompt(), [], max_tokens=1500, temperature=0.7):
                 if isinstance(event, TextDelta):
                     text += event.text
         except ProviderError as exc:
@@ -76,6 +89,11 @@ class Caller:
         text = clean_caller_text(text)
         self.said(text + (f" {END}" if ended else ""))
         return text or "Okay.", ended
+
+
+def _transcript_line(message: JsonDict) -> str:
+    who = "Receptionist (Callie)" if message["role"] == "user" else "You"
+    return f"{who}: {message['content']}"
 
 
 def clean_caller_text(text: str) -> str:

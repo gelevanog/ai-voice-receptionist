@@ -7,11 +7,13 @@ Availability only ever comes from here. The agent cannot offer or book a time th
 from __future__ import annotations
 
 import random
+import re
 import secrets
 import threading
 from collections.abc import Callable, Iterable
 from dataclasses import dataclass
 from datetime import date, datetime, time, timedelta
+from difflib import SequenceMatcher
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session, sessionmaker
@@ -262,12 +264,25 @@ def _digits(value: str) -> str:
     return "".join(ch for ch in value if ch.isdigit())
 
 
+def _similar(a: str, b: str) -> float:
+    return SequenceMatcher(None, a, b).ratio()
+
+
 def _name_matches(query: str, full_name: str) -> bool:
-    q = [part for part in query.lower().replace(".", " ").split() if len(part) > 1]
+    """Tolerant of speech-recognition spellings: "Sophia Rossi" finds "Sofia Rossi", "Gonzales" finds "Gonzalez".
+
+    The last name must be close (similarity >= 0.8); a first name, when given, must be close too or be a short
+    form of it ("Liz" / "Elizabeth" does not count: that one is left to a phone-number lookup).
+    """
+    q = [part for part in re.sub(r"[^a-z\s]", " ", query.lower()).split() if len(part) > 1]
     names = full_name.lower().split()
-    if not q:
+    if not q or not names:
         return False
-    return all(any(part == n for n in names) for part in q) or (len(q) == 1 and q[0] == names[-1])
+    last_ok = _similar(q[-1], names[-1]) >= 0.8
+    if len(q) == 1:
+        return last_ok
+    first_ok = _similar(q[0], names[0]) >= 0.7 or names[0].startswith(q[0])
+    return last_ok and first_ok
 
 
 SEED_FIRST = ["Olivia", "Liam", "Emma", "Noah", "Ava", "Elijah", "Sophia", "Lucas", "Mia", "Mateo", "Harper", "Ethan"]

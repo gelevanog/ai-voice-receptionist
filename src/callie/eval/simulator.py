@@ -296,14 +296,15 @@ async def simulate_call(
     config = SessionConfig(
         barge_in_min_speech_s=settings.barge_in_min_speech_ms / 1000,
         hard_interrupt_s=settings.hard_interrupt_ms / 1000,
-        silence_prompt_s=6.0 if scenario.silent else settings.silence_prompt_seconds,
+        # The simulated caller's own LLM may take many seconds to "think"; that is not a silent caller.
+        silence_prompt_s=6.0 if scenario.silent else 45.0,
         recordings_dir=work_dir / "recordings",
     )
     session = CallSession(runtime, speech, transport, config=config, caller_phone=scenario.caller_id, scenario=scenario.id,
                           call_id=f"sim_{scenario.id}_{int(time.time())}")  # fmt: skip
     await preload(speech, caller_tts)
     feeder = LineFeeder(session, scenario.channel, rng)
-    caller = Caller(scenario, caller_llm)
+    caller = Caller(scenario, caller_llm, max_turns=7)
     result = SimResult(scenario=scenario, summary={}, check={})
     started = time.monotonic()
     feeder.start()

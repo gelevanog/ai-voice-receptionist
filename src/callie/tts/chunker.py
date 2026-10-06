@@ -84,7 +84,8 @@ class SentenceChunker:
         if self._emitted == 0 and len(words) >= self.first_chunk_min_words:
             for comma in re.finditer(r"[,;:]\s", text):
                 head = text[: comma.start()]
-                if len(head.split()) >= self.first_chunk_min_words - 2 and not re.search(r"\d$", head):
+                minimum = 2 if comma.group(0).startswith(":") else self.first_chunk_min_words - 2
+                if len(head.split()) >= minimum and not re.search(r"\d$", head):
                     return self._emit(comma.end())
         if len(words) > self.max_words:
             split_at: int | None = None
