@@ -2,7 +2,7 @@
 {% block title %}Evaluation · Callie{% endblock %}
 {% block content %}
 <div class="hero"><div><h1>Evaluation</h1><p class="muted">Simulated callers, end to end through audio. Run <code>callie eval run</code> to (re)generate <code>results/</code>.</p></div></div>
-{% if not results.summary %}
+{% if not results.summary or not results.summary.e2e %}
 <div class="note">No evaluation results yet in <code>results/summary.json</code>.</div>
 {% else %}{% include "_eval_body.html" %}{% endif %}
 {% endblock %}

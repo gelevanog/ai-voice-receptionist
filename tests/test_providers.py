@@ -35,8 +35,14 @@ def sse(*chunks: JsonDict) -> bytes:
 
 
 def openrouter(handler: Any, model: str = "x/y:free", **kwargs: Any) -> OpenAICompatibleChat:
-    return OpenAICompatibleChat(kind="openrouter", model=model, api_key="test", base_url="https://openrouter.test/api/v1",
-                                transport=httpx.MockTransport(handler), **kwargs)  # fmt: skip
+    return OpenAICompatibleChat(
+        kind="openrouter",
+        model=model,
+        api_key="test",
+        base_url="https://openrouter.test/api/v1",
+        transport=httpx.MockTransport(handler),
+        **kwargs,
+    )
 
 
 async def drain(chat: Any) -> list[LLMEvent]:
@@ -74,8 +80,12 @@ class TestFreeOnlyGuard:
 
     def test_request_body_carries_fallbacks_and_tools(self) -> None:
         chat = openrouter(lambda r: httpx.Response(200), fallback_models=["b/c:free"])
-        body = chat.build_body([{"role": "user", "content": "x"}], [{"type": "function", "function": {"name": "t"}}],
-                               max_tokens=5, temperature=0.1)  # fmt: skip
+        body = chat.build_body(
+            [{"role": "user", "content": "x"}],
+            [{"type": "function", "function": {"name": "t"}}],
+            max_tokens=5,
+            temperature=0.1,
+        )
         assert body["models"] == ["x/y:free", "b/c:free"] and body["tool_choice"] == "auto" and body["stream"] is True
 
 
@@ -84,10 +94,31 @@ class TestStreaming:
         body = sse(
             {"model": "x/y:free", "choices": [{"delta": {"content": "Let me "}}]},
             {"choices": [{"delta": {"content": "check."}}]},
-            {"choices": [{"delta": {"tool_calls": [{"index": 0, "id": "c1", "function": {"name": "check_availability", "arguments": '{"serv'}}]}}]},
-            {"choices": [{"delta": {"tool_calls": [{"index": 0, "function": {"arguments": 'ice": "cleaning"}'}}]}, "finish_reason": "tool_calls"}]},
+            {
+                "choices": [
+                    {
+                        "delta": {
+                            "tool_calls": [
+                                {
+                                    "index": 0,
+                                    "id": "c1",
+                                    "function": {"name": "check_availability", "arguments": '{"serv'},
+                                }
+                            ]
+                        }
+                    }
+                ]
+            },
+            {
+                "choices": [
+                    {
+                        "delta": {"tool_calls": [{"index": 0, "function": {"arguments": 'ice": "cleaning"}'}}]},
+                        "finish_reason": "tool_calls",
+                    }
+                ]
+            },
             {"choices": [], "usage": {"prompt_tokens": 50, "completion_tokens": 9}},
-        )  # fmt: skip
+        )
         events = await drain(openrouter(lambda r: httpx.Response(200, content=body)))
         assert [e.text for e in events if isinstance(e, TextDelta)] == ["Let me ", "check."]
         call = next(e for e in events if isinstance(e, ToolCall))
@@ -141,8 +172,14 @@ class TestResilient:
     async def test_retry_then_fallback_then_ledger_and_cache(self, tmp_path: Path) -> None:
         primary, backup = FlakyModel("a/b:free", failures=10), FlakyModel("c/d:free", failures=1)
         ledger = CallLedger(tmp_path / "calls.jsonl", max_calls=100)
-        chat = ResilientChat([primary, backup], ledger=ledger, cache=DiskCache(tmp_path / "cache"), max_retries=1,
-                             retry_base_seconds=0.0, sleep=lambda s: None)  # fmt: skip
+        chat = ResilientChat(
+            [primary, backup],
+            ledger=ledger,
+            cache=DiskCache(tmp_path / "cache"),
+            max_retries=1,
+            retry_base_seconds=0.0,
+            sleep=lambda s: None,
+        )
         events = await drain(chat)
         assert isinstance(events[0], TextDelta) and "c/d:free" in events[0].text
         assert primary.calls == 2 and backup.calls == 2
@@ -164,10 +201,20 @@ def test_anthropic_conversion() -> None:
         {"role": "system", "content": "Be brief."},
         {"role": "assistant", "content": "Hi, how can I help?"},
         {"role": "user", "content": "Book a cleaning"},
-        {"role": "assistant", "content": None, "tool_calls": [{"id": "t1", "type": "function", "function": {"name": "check_availability", "arguments": '{"when": "Tuesday"}'}}]},
+        {
+            "role": "assistant",
+            "content": None,
+            "tool_calls": [
+                {
+                    "id": "t1",
+                    "type": "function",
+                    "function": {"name": "check_availability", "arguments": '{"when": "Tuesday"}'},
+                }
+            ],
+        },
         {"role": "tool", "tool_call_id": "t1", "content": '{"status": "ok"}'},
         {"role": "assistant", "content": "I have Tuesday at 3 PM."},
-    ]  # fmt: skip
+    ]
     tools = [
         {
             "type": "function",

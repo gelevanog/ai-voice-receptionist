@@ -20,7 +20,8 @@ from callie.eval.scenarios import Scenario
 from callie.scheduling.db import Appointment, Message
 
 _CLAIM = re.compile(
-    r"\b(you'?re (all set|booked|confirmed)|i'?ve (booked|scheduled|moved|cancell?ed)|(is|are) (now )?(booked|confirmed|cancell?ed)|"
+    r"\b(you'?re (all set|booked|confirmed)|i'?ve (booked|scheduled|moved|cancell?ed)|"
+    r"(is|are) (now )?(booked|confirmed|cancell?ed)|"
     r"booked you|scheduled you|your appointment is (set|confirmed|moved|cancell?ed))\b",
     re.IGNORECASE,
 )

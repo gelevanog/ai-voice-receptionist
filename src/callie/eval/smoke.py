@@ -55,8 +55,10 @@ async def list_and_smoke(settings: Settings, smoke: int, candidates: list[str] |
     (out / "smoke_models.json").write_text(json.dumps(listing, indent=2), encoding="utf-8")
     table = Table("model", "ok", "tool call", "when", "first token s", "total s", "error")
     for r in results:
-        table.add_row(r["model"], str(r["ok"]), r.get("tool") or "", r.get("when") or "", str(r.get("ttft_s")),
-                      str(r.get("total_s")), (r.get("error") or "")[:60])  # fmt: skip
+        table.add_row(
+            *(str(r.get(key) or "") for key in ("model", "ok", "tool", "when", "ttft_s", "total_s")),
+            str(r.get("error") or "")[:60],
+        )
     console.print(table)
 
 

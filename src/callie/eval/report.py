@@ -114,7 +114,9 @@ def e2e_summary(data: dict[str, Any]) -> dict[str, Any]:
         "escalation": {
             "expected": len(escalation_expected),
             "transferred_when_expected": sum(1 for r in escalation_expected if r["transferred"]),
-            "transferred_when_not_expected": sum(1 for r in scenarios if r["transferred"] and r["category"] != "escalation"),
+            "transferred_when_not_expected": sum(
+                1 for r in scenarios if r["transferred"] and r["category"] != "escalation"
+            ),
         },
         "advice_sentences_replaced": sum(r["replaced_advice"] for r in scenarios),
         "latency_ms": latency,
@@ -125,14 +127,21 @@ def e2e_summary(data: dict[str, Any]) -> dict[str, Any]:
         "pipeline_wer": summarize([r["pipeline_wer"] for r in scenarios if r.get("pipeline_wer") is not None]),
         "scenarios": [
             {
-                "scenario": r["scenario"], "category": r["category"], "channel": r["channel"], "passed": r["passed"],
-                "outcome": r["outcome"], "caller_turns": r["caller_turns"], "problems": r["problems"],
-                "v2v_p50_ms": summarize([t["voice_to_voice_ms"] for t in r["turns"] if t.get("voice_to_voice_ms") is not None])["p50"],
+                "scenario": r["scenario"],
+                "category": r["category"],
+                "channel": r["channel"],
+                "passed": r["passed"],
+                "outcome": r["outcome"],
+                "caller_turns": r["caller_turns"],
+                "problems": r["problems"],
+                "v2v_p50_ms": summarize(
+                    [t["voice_to_voice_ms"] for t in r["turns"] if t.get("voice_to_voice_ms") is not None]
+                )["p50"],
                 "call_id": r["call_id"],
             }
             for r in scenarios
         ],
-    }  # fmt: skip
+    }
 
 
 def build_report(out_dir: Path) -> str:
@@ -165,9 +174,10 @@ def render_markdown(summary: dict[str, Any]) -> str:
     if e2e:
         run = e2e["run"]
         lines += [
-            f"Run {run['started']} to {run['finished']} (UTC). Agent LLM `{run['agent_llm']}`, caller `{run['caller']}`, "
-            f"STT `{run['stt']}`, agent TTS `{run['tts_agent']}`, caller TTS {run['tts_caller']}, VAD `{run['vad']}`. "
-            f"{run['cpu_count']} CPU cores, 1-minute load average mean {run['load_avg_1m']['mean']} / max {run['load_avg_1m']['max']}.",
+            f"Run {run['started']} to {run['finished']} (UTC). Agent LLM `{run['agent_llm']}`, "
+            f"caller `{run['caller']}`, STT `{run['stt']}`, agent TTS `{run['tts_agent']}`, "
+            f"caller TTS {run['tts_caller']}, VAD `{run['vad']}`. {run['cpu_count']} CPU cores, "
+            f"1-minute load average mean {run['load_avg_1m']['mean']} / max {run['load_avg_1m']['max']}.",
             "",
             "## Task success",
             "",
@@ -188,9 +198,11 @@ def render_markdown(summary: dict[str, Any]) -> str:
             "## Safety and grounding",
             "",
             f"- Calendar changes with a read-back and a yes: {conf['with_readback_and_yes']}/{conf['changes']}; "
-            f"confirmed=true attempts refused because the caller had not said yes: {conf['blocked_unconfirmed_attempts']}; "
+            "confirmed=true attempts refused because the caller had not said yes: "
+            f"{conf['blocked_unconfirmed_attempts']}; "
             f"agent claims of a completed change without one: {conf['false_completion_claims']}.",
-            f"- Bookings on slots not offered by a tool: {hall['bookings_on_unoffered_slots']}/{hall['calendar_changes']}; "
+            "- Bookings on slots not offered by a tool: "
+            f"{hall['bookings_on_unoffered_slots']}/{hall['calendar_changes']}; "
             f"attempts blocked: {hall['unoffered_slot_attempts_blocked']}; ungrounded clock times spoken by the LLM: "
             f"{hall['ungrounded_times_spoken_by_llm']} {hall['examples']}.",
             f"- Escalations: {esc['transferred_when_expected']}/{esc['expected']} expected transfers happened; "
@@ -217,16 +229,32 @@ def render_markdown(summary: dict[str, Any]) -> str:
             "## Barge-in benchmark",
             "",
             f"Reaction time {bargein['reaction_ms']}; interruptions handled {_pct(*bargein['interruptions_handled'])}; "
-            f"backchannels handled {_pct(*bargein['backchannels_handled'])}; false interruptions {bargein['false_interruptions']}.",
+            f"backchannels handled {_pct(*bargein['backchannels_handled'])}; "
+            f"false interruptions {bargein['false_interruptions']}.",
         ]
     wer = summary.get("wer")
     if wer:
-        lines += ["", "## STT word error rate", "", f"{wer['utterances']} utterances, {wer['words']} words. {wer['note']}", "",
-                  "| Model | clean | phone | phone + noise | latency p50 / p95 s |", "|---|---|---|---|---|"]  # fmt: skip
+        lines += [
+            "",
+            "## STT word error rate",
+            "",
+            f"{wer['utterances']} utterances, {wer['words']} words. {wer['note']}",
+            "",
+            "| Model | clean | phone | phone + noise | latency p50 / p95 s |",
+            "|---|---|---|---|---|",
+        ]
         for name, entry in wer["models"].items():
-            lines.append(f"| {name} | {entry['clean']:.1%} | {entry['phone']:.1%} | {entry['phone_noisy']:.1%} | "
-                         f"{entry['latency_s']['p50']} / {entry['latency_s']['p95']} |")  # fmt: skip
+            lines.append(
+                f"| {name} | {entry['clean']:.1%} | {entry['phone']:.1%} | {entry['phone_noisy']:.1%} | "
+                f"{entry['latency_s']['p50']} / {entry['latency_s']['p95']} |"
+            )
     calls = summary["calls"]
-    lines += ["", "## API calls", "", f"{calls.get('calls', 0)} real requests; all requested ids `:free`: {calls.get('all_requested_free')}; "
-              f"all served ids `:free`: {calls.get('all_served_free')}. By tag {calls.get('by_tag')}, by status {calls.get('by_status')}."]  # fmt: skip
+    lines += [
+        "",
+        "## API calls",
+        "",
+        f"{calls.get('calls', 0)} real requests; all requested ids `:free`: {calls.get('all_requested_free')}; "
+        f"all served ids `:free`: {calls.get('all_served_free')}. "
+        f"By tag {calls.get('by_tag')}, by status {calls.get('by_status')}.",
+    ]
     return "\n".join(lines) + "\n"

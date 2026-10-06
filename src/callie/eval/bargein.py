@@ -45,15 +45,32 @@ BACKCHANNELS = ["Mm-hmm.", "Okay.", "Uh-huh.", "Right.", "Yeah."]
 QUESTION = "How much is a cleaning without insurance?"  # a long answer (the full price list)
 
 
-async def _trial(settings: Settings, speech: Any, caller_tts: PiperTTS, text: str, backchannel: bool, offset_s: float,
-                 speaker: int, seed: int) -> dict[str, Any]:  # fmt: skip
+async def _trial(
+    settings: Settings,
+    speech: Any,
+    caller_tts: PiperTTS,
+    text: str,
+    backchannel: bool,
+    offset_s: float,
+    speaker: int,
+    seed: int,
+) -> dict[str, Any]:
     clinic = load_clinic(settings.clinic_file)
-    runtime = build_runtime(settings.model_copy(update={"database_url": "sqlite://", "seed_demo_data": False}),
-                            llm=FakeReceptionist(clinic))  # fmt: skip
+    runtime = build_runtime(
+        settings.model_copy(update={"database_url": "sqlite://", "seed_demo_data": False}), llm=FakeReceptionist(clinic)
+    )
     transport = SimTransport()
-    session = CallSession(runtime, speech, transport, config=SessionConfig(save_record=False, record=False,
-                          barge_in_min_speech_s=settings.barge_in_min_speech_ms / 1000,
-                          hard_interrupt_s=settings.hard_interrupt_ms / 1000))  # fmt: skip
+    session = CallSession(
+        runtime,
+        speech,
+        transport,
+        config=SessionConfig(
+            save_record=False,
+            record=False,
+            barge_in_min_speech_s=settings.barge_in_min_speech_ms / 1000,
+            hard_interrupt_s=settings.hard_interrupt_ms / 1000,
+        ),
+    )
     feeder = LineFeeder(session, "clean", np.random.default_rng(seed))
     feeder.start()
     await session.start()
@@ -112,12 +129,22 @@ async def run_bargein(settings: Settings, trials: int, out_dir: Path) -> dict[st
     rng.shuffle(plan)
     records = []
     for index, (text, backchannel) in enumerate(plan):
-        record = await _trial(settings, speech, caller_tts, text, backchannel, rng.uniform(0.8, 2.5),
-                              rng.choice([12, 45, 101, 230, 377, 512, 640, 803]), index)  # fmt: skip
+        record = await _trial(
+            settings,
+            speech,
+            caller_tts,
+            text,
+            backchannel,
+            rng.uniform(0.8, 2.5),
+            rng.choice([12, 45, 101, 230, 377, 512, 640, 803]),
+            index,
+        )
         records.append(record)
         mark = "[green]ok[/]" if record["correct"] else "[red]wrong[/]"
-        console.print(f"{index + 1:>2}/{len(plan)} {record['kind']:<12} {mark} {record['result']:<20} "
-                      f"reaction {record['reaction_ms']} ms  stt={record['stt']!r}")  # fmt: skip
+        console.print(
+            f"{index + 1:>2}/{len(plan)} {record['kind']:<12} {mark} {record['result']:<20} "
+            f"reaction {record['reaction_ms']} ms  stt={record['stt']!r}"
+        )
     interruptions = [r for r in records if r["kind"] == "interruption"]
     backchannels = [r for r in records if r["kind"] == "backchannel"]
     summary = {
@@ -128,7 +155,7 @@ async def run_bargein(settings: Settings, trials: int, out_dir: Path) -> dict[st
             "hard_interrupt_ms": settings.hard_interrupt_ms,
             "vad": settings.vad_provider,
             "stt": settings.stt_model,
-        },  # fmt: skip
+        },
         "reaction_ms": summarize([r["reaction_ms"] for r in records if r["reaction_ms"] is not None]),
         "interruptions_handled": [sum(r["correct"] for r in interruptions), len(interruptions)],
         "backchannels_handled": [sum(r["correct"] for r in backchannels), len(backchannels)],

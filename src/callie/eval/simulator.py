@@ -154,7 +154,7 @@ def _normalize_level(audio: Audio, dbfs: float = SPEECH_DBFS) -> Audio:
     rms = float(np.sqrt(np.mean(np.square(voiced)))) if len(voiced) else 0.0
     if rms <= 0:
         return audio
-    return np.clip(audio * (10 ** (dbfs / 20) / rms), -1, 1).astype(np.float32)
+    return np.asarray(np.clip(audio * (10 ** (dbfs / 20) / rms), -1, 1), dtype=np.float32)
 
 
 def apply_channel(audio: Audio, channel: str, rng: np.random.Generator) -> Audio:
@@ -300,8 +300,15 @@ async def simulate_call(
         silence_prompt_s=6.0 if scenario.silent else 45.0,
         recordings_dir=work_dir / "recordings",
     )
-    session = CallSession(runtime, speech, transport, config=config, caller_phone=scenario.caller_id, scenario=scenario.id,
-                          call_id=f"sim_{scenario.id}_{int(time.time())}")  # fmt: skip
+    session = CallSession(
+        runtime,
+        speech,
+        transport,
+        config=config,
+        caller_phone=scenario.caller_id,
+        scenario=scenario.id,
+        call_id=f"sim_{scenario.id}_{int(time.time())}",
+    )
     await preload(speech, caller_tts)
     feeder = LineFeeder(session, scenario.channel, rng)
     caller = Caller(scenario, caller_llm, max_turns=6)
@@ -327,23 +334,24 @@ async def simulate_call(
             await _say(session, feeder, caller_tts, text, scenario, rng, result)
             await _wait_turn_started(session, expected_turn)
             interrupt = scenario.interrupt
-            if interrupt is not None and interrupt.turn == caller.turns:
-                if await _wait_agent_speaking(session, expected_turn):
-                    await asyncio.sleep(interrupt.after_s)
-                    caller.heard(_heard_since(session, last_turn_heard))
-                    clears_before = len(transport.clears)
-                    onset = await _say(
-                        session, feeder, caller_tts, interrupt.text, scenario, rng, result, interrupt=True
-                    )
-                    caller.said(interrupt.text)
-                    result.barge_in_truth.append(
-                        {"onset": onset, "clears_before": clears_before, "backchannel": interrupt.backchannel}
-                    )
-                    await feeder.idle.wait()
-                    await asyncio.sleep(1.2)
-                    for truth in result.barge_in_truth:
-                        later = [c for c in transport.clears[truth["clears_before"] :] if c >= truth["onset"]]
-                        truth["reaction_ms"] = round((later[0] - truth["onset"]) * 1000) if later else None
+            if (
+                interrupt is not None
+                and interrupt.turn == caller.turns
+                and await _wait_agent_speaking(session, expected_turn)
+            ):
+                await asyncio.sleep(interrupt.after_s)
+                caller.heard(_heard_since(session, last_turn_heard))
+                clears_before = len(transport.clears)
+                onset = await _say(session, feeder, caller_tts, interrupt.text, scenario, rng, result, interrupt=True)
+                caller.said(interrupt.text)
+                result.barge_in_truth.append(
+                    {"onset": onset, "clears_before": clears_before, "backchannel": interrupt.backchannel}
+                )
+                await feeder.idle.wait()
+                await asyncio.sleep(1.2)
+                for truth in result.barge_in_truth:
+                    later = [c for c in transport.clears[truth["clears_before"] :] if c >= truth["onset"]]
+                    truth["reaction_ms"] = round((later[0] - truth["onset"]) * 1000) if later else None
             if ends:
                 await feeder.idle.wait()
                 await _wait_agent_done(session, limit=30)
@@ -408,8 +416,14 @@ def caller_tts_for(settings: Settings, fake: bool = False) -> TTS:
     return PiperTTS(settings.models_dir / "en_US-libritts_r-medium.onnx")
 
 
-async def simulate_one(settings: Settings, scenario_id: str, *, caller_mode: str = "scripted", channel: str | None = None,
-                       caller_model: str = "liquid/lfm-2.5-2.6b:free") -> dict[str, Any]:  # fmt: skip
+async def simulate_one(
+    settings: Settings,
+    scenario_id: str,
+    *,
+    caller_mode: str = "scripted",
+    channel: str | None = None,
+    caller_model: str = "liquid/lfm-2.5-2.6b:free",
+) -> dict[str, Any]:
     scenario = get_scenario(scenario_id)
     if channel:
         scenario = scenario.model_copy(update={"channel": channel})
@@ -424,8 +438,15 @@ async def simulate_one(settings: Settings, scenario_id: str, *, caller_mode: str
         else None
     )
     fake_voice = settings.tts_provider == "fake" and settings.stt_provider == "fake"
-    result = await simulate_call(settings, scenario, speech=speech, agent_llm=agent_llm, caller_llm=caller_llm,
-                                 caller_tts=caller_tts_for(settings, fake_voice), work_dir=Path("data/eval/single"))  # fmt: skip
+    result = await simulate_call(
+        settings,
+        scenario,
+        speech=speech,
+        agent_llm=agent_llm,
+        caller_llm=caller_llm,
+        caller_tts=caller_tts_for(settings, fake_voice),
+        work_dir=Path("data/eval/single"),
+    )
     return {"check": result.check, "summary": result.summary, "recording": result.recording}
 
 

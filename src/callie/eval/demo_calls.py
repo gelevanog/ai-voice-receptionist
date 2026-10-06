@@ -35,18 +35,43 @@ def export_call(recording: Path, out_dir: Path, name: str, title: str, model: st
     whisper = WhisperModel(model, device="cpu", compute_type="int8", cpu_threads=4)
     lines: list[dict[str, Any]] = []
     for speaker, audio in (("Caller", caller), ("Callie", agent)):
-        segments, _ = whisper.transcribe(audio, language="en", beam_size=5, vad_filter=True,
-                                         condition_on_previous_text=False)  # fmt: skip
-        lines.extend({"start": round(s.start, 2), "end": round(s.end, 2), "speaker": speaker, "text": s.text.strip()}
-                     for s in segments if s.text.strip())  # fmt: skip
+        segments, _ = whisper.transcribe(
+            audio, language="en", beam_size=5, vad_filter=True, condition_on_previous_text=False
+        )
+        lines.extend(
+            {"start": round(s.start, 2), "end": round(s.end, 2), "speaker": speaker, "text": s.text.strip()}
+            for s in segments
+            if s.text.strip()
+        )
     lines.sort(key=lambda line: line["start"])
     mp3 = out_dir / f"{name}.mp3"
     if shutil.which("ffmpeg"):
-        subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", str(recording), "-ac", "2", "-codec:a", "libmp3lame",
-                        "-b:a", "64k", str(mp3)], check=True)  # fmt: skip
-    markdown = [f"# {title}", "", f"Audio: [{mp3.name}]({mp3.name}) (stereo: caller left, Callie right). "
-                "Simulated caller (LLM-written lines, Piper voice); Callie as in the evaluation run. "
-                f"Transcribed from the recording with faster-whisper {model}, so a few words may be misheard.", ""]  # fmt: skip
+        subprocess.run(
+            [
+                "ffmpeg",
+                "-y",
+                "-loglevel",
+                "error",
+                "-i",
+                str(recording),
+                "-ac",
+                "2",
+                "-codec:a",
+                "libmp3lame",
+                "-b:a",
+                "64k",
+                str(mp3),
+            ],
+            check=True,
+        )
+    markdown = [
+        f"# {title}",
+        "",
+        f"Audio: [{mp3.name}]({mp3.name}) (stereo: caller left, Callie right). "
+        "Simulated caller (LLM-written lines, Piper voice); Callie as in the evaluation run. "
+        f"Transcribed from the recording with faster-whisper {model}, so a few words may be misheard.",
+        "",
+    ]
     markdown += [f"- `{_clock(line['start'])}` **{line['speaker']}:** {line['text']}" for line in lines]
     (out_dir / f"{name}.md").write_text("\n".join(markdown) + "\n", encoding="utf-8")
     (out_dir / f"{name}.json").write_text(json.dumps({"title": title, "lines": lines}, indent=1), encoding="utf-8")

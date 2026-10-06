@@ -70,8 +70,9 @@ def run_wer(settings: Settings, models: list[str], out_dir: Path) -> dict[str, A
                 entry[f"examples_{condition}"] = [{"ref": r, "hyp": h} for r, h in pairs[:12]]
         entry["latency_s"] = summarize(latencies)
         results["models"][name] = entry
-        table.add_row(name, *(f"{entry[c]:.1%}" for c in CONDITIONS),
-                      f"{entry['latency_s']['p50']} / {entry['latency_s']['p95']}")  # fmt: skip
+        table.add_row(
+            name, *(f"{entry[c]:.1%}" for c in CONDITIONS), f"{entry['latency_s']['p50']} / {entry['latency_s']['p95']}"
+        )
         console.print(table)
     out_dir.mkdir(parents=True, exist_ok=True)
     (out_dir / "wer.json").write_text(json.dumps(results, indent=1), encoding="utf-8")

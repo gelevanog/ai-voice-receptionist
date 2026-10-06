@@ -170,12 +170,47 @@ def eval_bargein(
     asyncio.run(run_bargein(_settings(), trials, out_dir))
 
 
+@eval_app.command("tts")
+def eval_tts(out_dir: Annotated[Path, typer.Option()] = Path("results")) -> None:
+    """TTS speed on this CPU (Kokoro fp32 vs int8 vs Piper) and Whisper WER on Callie's own voice."""
+    from callie.eval.tts_bench import run_tts_bench
+
+    console.print_json(json.dumps(run_tts_bench(_settings(), out_dir), default=str))
+
+
 @eval_app.command("report")
 def eval_report(out_dir: Annotated[Path, typer.Option()] = Path("results")) -> None:
     """Combine the result files into results/summary.json and results/report.md."""
     from callie.eval.report import build_report
 
     console.print(build_report(out_dir))
+
+
+@eval_app.command("import-calls")
+def eval_import_calls(
+    db: Annotated[Path, typer.Option(help="Target SQLite database (the dashboard's)")] = Path("data/callie.db"),
+    source: Annotated[Path, typer.Option(help="Per-scenario databases written by `eval run`")] = Path("data/eval/db"),
+) -> None:
+    """Copy the evaluation's call records (masked) and Callie's bookings into a dashboard database."""
+    from callie.eval.importer import import_calls
+
+    console.print(import_calls(source, db))
+
+
+@eval_app.command("export-demo")
+def eval_export_demo(
+    scenario: Annotated[str, typer.Argument(help="Scenario id whose recording to export")],
+    name: Annotated[str, typer.Option(help="Output file name (without extension)")],
+    title: Annotated[str, typer.Option(help="Title of the transcript")],
+    out_dir: Annotated[Path, typer.Option()] = Path("docs/demo-calls"),
+    results: Annotated[Path, typer.Option()] = Path("results/e2e.json"),
+) -> None:
+    """Export one evaluation call: MP3 of both sides and a timestamped transcript (from the recording)."""
+    from callie.eval.demo_calls import export_call
+
+    data = json.loads(results.read_text(encoding="utf-8"))
+    record = next(r for r in data["scenarios"] if r["scenario"] == scenario)
+    console.print(export_call(Path(record["recording"]), out_dir, name, title))
 
 
 @models_app.command("free")

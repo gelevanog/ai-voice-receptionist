@@ -93,16 +93,34 @@ async def run_e2e(
         for index, scenario in enumerate(scenarios, 1):
             t0 = time.monotonic()
             console.print(f"[bold]{index}/{len(scenarios)}[/] {scenario.id} ({scenario.category}, {scenario.channel})")
-            result = await simulate_call(settings, scenario, speech=speech, agent_llm=agent_llm, caller_llm=caller_llm,
-                                         caller_tts=caller_tts, work_dir=WORK_DIR)  # fmt: skip
+            result = await simulate_call(
+                settings,
+                scenario,
+                speech=speech,
+                agent_llm=agent_llm,
+                caller_llm=caller_llm,
+                caller_tts=caller_tts,
+                work_dir=WORK_DIR,
+            )
             record = _record(result)
             record["wall_s"] = round(time.monotonic() - t0, 1)
             records.append(record)
             for n, utterance in enumerate(result.utterances):
                 wav = utterance_dir / f"{scenario.id}_{n:02d}.wav"
                 write_wav(wav, utterance.clean, 16000)
-                manifest.write(json.dumps({"scenario": scenario.id, "channel": scenario.channel, "voice": scenario.voice,
-                                           "text": utterance.text, "wav": str(wav), "interrupt": utterance.interrupt}) + "\n")  # fmt: skip
+                manifest.write(
+                    json.dumps(
+                        {
+                            "scenario": scenario.id,
+                            "channel": scenario.channel,
+                            "voice": scenario.voice,
+                            "text": utterance.text,
+                            "wav": str(wav),
+                            "interrupt": utterance.interrupt,
+                        }
+                    )
+                    + "\n"
+                )
             manifest.flush()
             verdict = "[green]PASS[/]" if record["passed"] else f"[red]FAIL[/] {record['problems']}"
             console.print(

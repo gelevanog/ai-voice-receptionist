@@ -11,7 +11,7 @@ import pytest
 from callie.agent.agent import Agent, CallAction, Sentence, ToolEvent, split_sentences
 from callie.agent.grounding import extract_times, unsupported_times
 from callie.agent.policy import Escalation, EscalationState, Reply, analyze_turn, classify_reply, is_backchannel
-from callie.agent.tools import CallContext, ToolBox
+from callie.agent.tools import ToolBox
 from callie.kb.retriever import KnowledgeBase
 from callie.llm.base import Completed, JsonDict, LLMEvent, TextDelta, ToolCall
 from callie.privacy import Masker, digits_from_speech, mask_name, mask_phone, normalize_phone
@@ -100,21 +100,44 @@ class TestBookingGate:
         box = toolbox(runtime)
         slot = offer(box)["slots"][0]["slot_id"]
         box.ctx.turn += 1
-        box.execute("book_appointment", {"service": "cleaning", "slot_id": slot, "patient_name": "Jane Doe",
-                                         "phone": "5551234567", "confirmed": False})  # fmt: skip
+        box.execute(
+            "book_appointment",
+            {
+                "service": "cleaning",
+                "slot_id": slot,
+                "patient_name": "Jane Doe",
+                "phone": "5551234567",
+                "confirmed": False,
+            },
+        )
         box.ctx.turn += 1
         box.register_reply(affirmed=False, declined=True)
         assert box.ctx.pending is None
 
     def test_only_offered_slots_can_be_booked(self, runtime: Runtime) -> None:
         box = toolbox(runtime)
-        result = box.execute("book_appointment", {"service": "cleaning", "slot_id": "2026-10-13T15:00",
-                                                  "patient_name": "Jane Doe", "phone": "5551234567", "confirmed": False})  # fmt: skip
+        result = box.execute(
+            "book_appointment",
+            {
+                "service": "cleaning",
+                "slot_id": "2026-10-13T15:00",
+                "patient_name": "Jane Doe",
+                "phone": "5551234567",
+                "confirmed": False,
+            },
+        )
         assert result.data["status"] == "error" and "not offered" in result.data["error"]
         assert box.ctx.outcome.blocked_unoffered == 1
         offer(box)
-        wrong_service = box.execute("book_appointment", {"service": "filling", "slot_id": next(iter(box.ctx.offered)),
-                                                         "patient_name": "Jane Doe", "confirmed": False})  # fmt: skip
+        wrong_service = box.execute(
+            "book_appointment",
+            {
+                "service": "filling",
+                "slot_id": next(iter(box.ctx.offered)),
+                "patient_name": "Jane Doe",
+                "confirmed": False,
+            },
+        )
         assert wrong_service.data["status"] == "error"
 
     def test_caller_id_supplies_the_phone(self, runtime: Runtime) -> None:
@@ -152,8 +175,9 @@ class TestOtherTools:
     def test_reschedule_and_cancel_with_read_back(self, runtime: Runtime) -> None:
         cleaning = runtime.clinic.service("cleaning")
         assert cleaning is not None
-        from tests.conftest import NY
         from datetime import datetime
+
+        from tests.conftest import NY
 
         existing = runtime.calendar.book(cleaning, datetime(2026, 10, 8, 10, tzinfo=NY), "Sofia Rossi", "+15553492216")
         box = toolbox(runtime)
@@ -194,7 +218,8 @@ class TestOtherTools:
         assert answer.data["passages"][0]["title"] == "Insurance" and answer.say is None
         unknown = box.execute("answer_faq", {"question": "What's the meaning of life?"})
         assert unknown.data["status"] == "no_answer" and "take a message" in (unknown.say or "")
-        assert "8 AM" in box.ctx.known_times or "5 PM" in box.ctx.known_times or True
+        hours = box.execute("answer_faq", {"question": "What are your opening hours?"})
+        assert hours.data["passages"][0]["title"] == "Opening hours" and "5 PM" in box.ctx.known_times
 
     def test_transfer_open_vs_closed(self, runtime: Runtime) -> None:
         box = toolbox(runtime)
@@ -207,8 +232,10 @@ class TestOtherTools:
 
     def test_message_and_sms_outbox_are_masked(self, runtime: Runtime) -> None:
         box = toolbox(runtime)
-        result = box.execute("take_message", {"caller_name": "peter novak", "message": "Call me about my bill, 555 812 0965",
-                                              "phone": "555-812-0965"})  # fmt: skip
+        result = box.execute(
+            "take_message",
+            {"caller_name": "peter novak", "message": "Call me about my bill, 555 812 0965", "phone": "555-812-0965"},
+        )
         assert result.data["status"] == "message_taken" and "0 9 6 5" in (result.say or "")
         logged = box.ctx.tool_log[-1]
         assert logged["arguments"]["phone"] == "***-***-0965" and "812" not in str(logged)
@@ -223,12 +250,19 @@ class TestPolicies:
     @pytest.mark.parametrize(
         ("text", "expected"),
         [
-            ("Yes", Reply.YES), ("yeah that's right", Reply.YES), ("Correct.", Reply.YES), ("um, yes please", Reply.YES),
-            ("Sounds good, thanks!", Reply.YES), ("That sounds perfect.", Reply.YES),
-            ("Yes, but can we make it 3 instead?", Reply.YES_PLUS), ("No, I said Thursday", Reply.NO),
-            ("Actually, wait", Reply.NO), ("What about Friday?", Reply.OTHER), ("", Reply.OTHER),
+            ("Yes", Reply.YES),
+            ("yeah that's right", Reply.YES),
+            ("Correct.", Reply.YES),
+            ("um, yes please", Reply.YES),
+            ("Sounds good, thanks!", Reply.YES),
+            ("That sounds perfect.", Reply.YES),
+            ("Yes, but can we make it 3 instead?", Reply.YES_PLUS),
+            ("No, I said Thursday", Reply.NO),
+            ("Actually, wait", Reply.NO),
+            ("What about Friday?", Reply.OTHER),
+            ("", Reply.OTHER),
         ],
-    )  # fmt: skip
+    )
     def test_reply_classification(self, text: str, expected: Reply) -> None:
         assert classify_reply(text) == expected
 
@@ -242,9 +276,14 @@ class TestPolicies:
 
     @pytest.mark.parametrize(
         "text",
-        ["My face is swollen and it's hard to swallow", "I can't breathe properly", "the bleeding won't stop",
-         "I think I broke my jaw", "This is an emergency"],
-    )  # fmt: skip
+        [
+            "My face is swollen and it's hard to swallow",
+            "I can't breathe properly",
+            "the bleeding won't stop",
+            "I think I broke my jaw",
+            "This is an emergency",
+        ],
+    )
     def test_emergencies(self, text: str) -> None:
         assert analyze_turn(text).escalation is Escalation.EMERGENCY
 
@@ -355,7 +394,10 @@ class TestAgentStreaming:
 class TestChunking:
     def test_split_and_clean(self) -> None:
         assert split_sentences("Just to confirm: a cleaning on Tuesday. Is that right?") == [
-            "Just to confirm:", "a cleaning on Tuesday.", "Is that right?"]  # fmt: skip
+            "Just to confirm:",
+            "a cleaning on Tuesday.",
+            "Is that right?",
+        ]
         assert clean_for_speech("**Hours:** 8 AM – 5 PM 😀") == "Hours: 8 AM to 5 PM "
 
     @pytest.mark.parametrize("step", [1, 3, 7, 50])
@@ -393,10 +435,14 @@ def test_knowledge_base_retrieval() -> None:
 
     kb = KnowledgeBase.from_markdown(load_clinic().knowledge_text())
     cases = {
-        "do you take delta dental": "insurance", "where can I park": "parking", "are you open on sunday": "opening-hours",
-        "how much does whitening cost": "teeth-whitening", "do you speak spanish": "accessibility-and-languages",
-        "is there a fee if I cancel": "cancellation-policy", "do you do braces": "services",
-    }  # fmt: skip
+        "do you take delta dental": "insurance",
+        "where can I park": "parking",
+        "are you open on sunday": "opening-hours",
+        "how much does whitening cost": "teeth-whitening",
+        "do you speak spanish": "accessibility-and-languages",
+        "is there a fee if I cancel": "cancellation-policy",
+        "do you do braces": "services",
+    }
     for question, section in cases.items():
         assert kb.search(question)[0].passage.id == section, question
     assert kb.search("what is the meaning of life") == []

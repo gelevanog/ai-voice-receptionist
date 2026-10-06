@@ -49,8 +49,19 @@ def test_scenarios_are_valid_and_cover_the_categories() -> None:
 
 def test_report_renders(tmp_path: Path) -> None:
     ledger = tmp_path / "calls.jsonl"
-    ledger.write_text(json.dumps({"ts": "t", "tag": "agent", "requested_model": "a/b:free", "served_model": "a/b:free",
-                                  "status": "ok", "ttft_s": 1.2}) + "\n")  # fmt: skip
+    ledger.write_text(
+        json.dumps(
+            {
+                "ts": "t",
+                "tag": "agent",
+                "requested_model": "a/b:free",
+                "served_model": "a/b:free",
+                "status": "ok",
+                "ttft_s": 1.2,
+            }
+        )
+        + "\n"
+    )
     summary = {"calls": ledger_summary(ledger)}
     assert summary["calls"]["all_requested_free"] and summary["calls"]["calls"] == 1
     assert "1 real requests" in render_markdown(summary)
@@ -66,8 +77,17 @@ def test_cli_text_call_books_with_the_fake_model(monkeypatch: pytest.MonkeyPatch
     from callie.config import get_settings
 
     get_settings.cache_clear()
-    result = runner.invoke(app, ["call", "I'd like a cleaning next Tuesday after lunch", "The 3 PM one",
-                                 "My name is Jane Doe, 555 123 4567", "Yes", "No, that's all, thanks"])  # fmt: skip
+    result = runner.invoke(
+        app,
+        [
+            "call",
+            "I'd like a cleaning next Tuesday after lunch",
+            "The 3 PM one",
+            "My name is Jane Doe, 555 123 4567",
+            "Yes",
+            "No, that's all, thanks",
+        ],
+    )
     get_settings.cache_clear()
     assert result.exit_code == 0, result.output
     assert "Just to confirm" in result.output and "outcome: booked" in result.output
@@ -77,3 +97,36 @@ def test_cli_lists_scenarios_and_help() -> None:
     assert runner.invoke(app, ["--help"]).exit_code == 0
     listing = runner.invoke(app, ["eval", "scenarios"])
     assert listing.exit_code == 0 and "book_basic" in listing.output
+
+
+def test_import_calls_copies_records_and_bookings(tmp_path: Path) -> None:
+    from datetime import UTC, datetime
+
+    from callie.eval.importer import import_calls
+    from callie.scheduling.db import Appointment, CallRecord, make_session_factory
+
+    source = tmp_path / "eval"
+    source.mkdir()
+    origin = make_session_factory(f"sqlite:///{source / 'a.db'}")
+    start = datetime(2026, 10, 13, 18, 30, tzinfo=UTC)
+    with origin() as db, db.begin():
+        db.add(
+            CallRecord(
+                id="sim_a", transport="simulated", outcome="booked", transcript=[], tool_calls=[], turns=[], stack={}
+            )
+        )
+        db.add(
+            Appointment(
+                id="A-1",
+                service_id="cleaning",
+                resource_id="hygienist",
+                start=start,
+                end=start.replace(hour=19),
+                patient_name="Jane Doe",
+                phone=None,
+                source="call",
+            )
+        )
+    target = tmp_path / "dash.db"
+    assert import_calls(source, target) == {"calls": 1, "bookings": 1, "skipped_overlapping_bookings": 0}
+    assert import_calls(source, target)["calls"] == 0  # idempotent

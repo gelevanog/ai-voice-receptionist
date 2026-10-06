@@ -1,0 +1,711 @@
+{
+ "run": {
+  "started": "2026-10-06T12:57:06+00:00",
+  "finished": "2026-10-06T13:01:35+00:00",
+  "agent_llm": "openrouter/inclusionai/ling-3.0-flash-sante:free",
+  "agent_fallbacks": [
+   "nvidia/nemotron-3-super-120b-a12b:free"
+  ],
+  "caller": "openrouter/liquid/lfm-2.5-2.6b:free",
+  "stt": "faster-whisper/base.en/int8",
+  "tts_agent": "kokoro-82m/af_heart",
+  "tts_caller": "piper/en_US-libritts_r-medium (one speaker per scenario)",
+  "vad": "silero",
+  "endpoint_silence_ms": 550,
+  "barge_in_min_speech_ms": 250,
+  "cpu_count": 16,
+  "load_avg_1m": {
+   "mean": 0.7,
+   "max": 1.2216796875
+  },
+  "clinic_clock": "2026-10-06T09:30"
+ },
+ "scenarios": [
+  {
+   "scenario": "book_basic",
+   "category": "booking",
+   "channel": "clean",
+   "passed": true,
+   "problems": [],
+   "outcome": "booked",
+   "transferred": false,
+   "caller_turns": 7,
+   "confirmation": {
+    "changes": 1,
+    "with_readback_and_yes": 1,
+    "blocked_unconfirmed": 0
+   },
+   "grounding": {
+    "unsupported_time_mentions": [],
+    "unoffered_slot_attempts": 0
+   },
+   "false_claims": 0,
+   "replaced_advice": 0,
+   "call_id": "sim_book_basic_1791291426",
+   "end_reason": "agent_hung_up",
+   "transcript": [
+    {
+     "t": 1.75,
+     "role": "agent",
+     "turn": 0,
+     "text": "Thanks for calling Brightside Dental. I'm Callie, the clinic's AI assistant, and this call may be recorded. How can I help you today?"
+    },
+    {
+     "t": 14.51,
+     "role": "caller",
+     "turn": 1,
+     "text": "Hi, I'd like to book a cleaning for next Tuesday afternoon, please.",
+     "typed": false
+    },
+    {
+     "t": 14.52,
+     "role": "agent",
+     "turn": 1,
+     "text": "I have Tuesday, October 13th at 2:30 PM, 3 PM or 3:30 PM. Which would you prefer?"
+    },
+    {
+     "t": 28.05,
+     "role": "caller",
+     "turn": 2,
+     "text": "I'd like the 2.30 pm slot on Tuesday, October 13th. Is that still available?",
+     "typed": false
+    },
+    {
+     "t": 30.41,
+     "role": "agent",
+     "turn": 2,
+     "text": "One moment. Yes, Tuesday, October 13th at 2:30 PM is open. Would you like me to book it?"
+    },
+    {
+     "t": 43.45,
+     "role": "caller",
+     "turn": 3,
+     "text": "Yes, let me book that for you. I'll confirm the appointment for Tuesday, October 13 at 2.30 pm.",
+     "typed": false
+    },
+    {
+     "t": 46.5,
+     "role": "agent",
+     "turn": 3,
+     "text": "Let me check. Great, I'd be happy to book that for you. Could you please give me your full name and phone number for the confirmation text?"
+    },
+    {
+     "t": 63.19,
+     "role": "caller",
+     "turn": 4,
+     "text": "My name is M**** G*******, and my phone number is 5. ***-***-8839.",
+     "typed": false
+    },
+    {
+     "t": 67.12,
+     "role": "agent",
+     "turn": 4,
+     "text": "Sure, one second. Sorry, I got 12 digits instead of 10. Could you say your number again, one digit at a time?"
+    },
+    {
+     "t": 84.06,
+     "role": "caller",
+     "turn": 5,
+     "text": "***-***-8839. That's my phone number. My name is M**** G*******. Is that correct?",
+     "typed": false
+    },
+    {
+     "t": 86.41,
+     "role": "agent",
+     "turn": 5,
+     "text": "One moment. Just to confirm: a cleaning and checkup for M**** G******* on Tuesday, October 13th at 2:30 PM, and I'll text the confirmation to the number ending in 8 8 3 9. Is that right?"
+    },
+    {
+     "t": 104.78,
+     "role": "caller",
+     "turn": 6,
+     "text": "Yes.",
+     "typed": false
+    },
+    {
+     "t": 104.79,
+     "role": "agent",
+     "turn": 6,
+     "text": "You're all set for Tuesday, October 13th at 2:30 PM. I've sent you a confirmation text. Is there anything else I can help you with?"
+    },
+    {
+     "t": 115.37,
+     "role": "caller",
+     "turn": 7,
+     "text": "Okay, thanks. Bye.",
+     "typed": false
+    },
+    {
+     "t": 115.37,
+     "role": "agent",
+     "turn": 7,
+     "text": "Thanks for calling Brightside Dental. Have a great day. Goodbye!"
+    }
+   ],
+   "tool_calls": [
+    {
+     "turn": 1,
+     "name": "check_availability",
+     "arguments": {
+      "service": "cleaning",
+      "when": "next Tuesday afternoon"
+     },
+     "result": {
+      "status": "ok",
+      "service": "cleaning",
+      "understood_as": "Tuesday, October 13th, noon to 6 PM",
+      "assumptions": [],
+      "slots": [
+       {
+        "slot_id": "2026-10-13T14:30",
+        "time": "Tuesday, October 13th at 2:30 PM"
+       },
+       {
+        "slot_id": "2026-10-13T15:00",
+        "time": "Tuesday, October 13th at 3 PM"
+       },
+       {
+        "slot_id": "2026-10-13T15:30",
+        "time": "Tuesday, October 13th at 3:30 PM"
+       }
+      ],
+      "alternatives": []
+     },
+     "say": "I have Tuesday, October 13th at 2:30 PM, 3 PM or 3:30 PM. Which would you prefer?",
+     "ms": 2.48
+    },
+    {
+     "turn": 2,
+     "name": "check_availability",
+     "arguments": {
+      "service": "cleaning",
+      "when": "Tuesday, October 13th at 2:30 PM"
+     },
+     "result": {
+      "status": "ok",
+      "service": "cleaning",
+      "understood_as": "Tuesday, October 13th, at 2:30 PM",
+      "assumptions": [],
+      "slots": [
+       {
+        "slot_id": "2026-10-13T14:30",
+        "time": "Tuesday, October 13th at 2:30 PM"
+       },
+       {
+        "slot_id": "2026-10-13T15:00",
+        "time": "Tuesday, October 13th at 3 PM"
+       },
+       {
+        "slot_id": "2026-10-13T15:30",
+        "time": "Tuesday, October 13th at 3:30 PM"
+       }
+      ],
+      "alternatives": [],
+      "exact_match": "2026-10-13T14:30"
+     },
+     "say": "Yes, Tuesday, October 13th at 2:30 PM is open. Would you like me to book it?",
+     "ms": 1.1
+    },
+    {
+     "turn": 4,
+     "name": "book_appointment",
+     "arguments": {
+      "confirmed": false,
+      "patient_name": "M**** G*******",
+      "phone": "***-***-8839",
+      "service": "cleaning",
+      "slot_id": "2026-10-13T14:30"
+     },
+     "result": {
+      "status": "phone_unclear",
+      "heard_digits": 12
+     },
+     "say": "Sorry, I got 12 digits instead of 10. Could you say your number again, one digit at a time?",
+     "ms": 0.04
+    },
+    {
+     "turn": 5,
+     "name": "book_appointment",
+     "arguments": {
+      "confirmed": false,
+      "patient_name": "M**** G*******",
+      "phone": "***-***-8839",
+      "service": "cleaning",
+      "slot_id": "2026-10-13T14:30"
+     },
+     "result": {
+      "status": "needs_confirmation",
+      "read_back": "Just to confirm: a cleaning and checkup for M**** G******* on Tuesday, October 13th at 2:30 PM, and I'll text the confirmation to the number ending in 8 8 3 9. Is that right?"
+     },
+     "say": "Just to confirm: a cleaning and checkup for M**** G******* on Tuesday, October 13th at 2:30 PM, and I'll text the confirmation to the number ending in 8 8 3 9. Is that right?",
+     "ms": 0.06
+    },
+    {
+     "turn": 6,
+     "name": "book_appointment",
+     "arguments": {
+      "service": "cleaning",
+      "slot_id": "2026-10-13T14:30",
+      "patient_name": "M**** G*******",
+      "phone": "***-***-8839",
+      "confirmed": true
+     },
+     "result": {
+      "status": "booked",
+      "appointment_id": "A-F580D8",
+      "time": "Tuesday, October 13th at 2:30 PM",
+      "sms": "dry_run"
+     },
+     "say": "You're all set for Tuesday, October 13th at 2:30 PM. I've sent you a confirmation text. Is there anything else I can help you with?",
+     "ms": 13.14
+    },
+    {
+     "turn": 7,
+     "name": "end_call",
+     "arguments": {
+      "reason": "caller said goodbye"
+     },
+     "result": {
+      "status": "ending"
+     },
+     "say": "Thanks for calling Brightside Dental. Have a great day. Goodbye!",
+     "ms": 0.01
+    }
+   ],
+   "turns": [
+    {
+     "turn": 1,
+     "path": "llm",
+     "model": "inclusionai/ling-3.0-flash-sante:free",
+     "cached": true,
+     "llm_calls": 1,
+     "typed": false,
+     "endpointing_ms": 544,
+     "stt_ms": 510,
+     "llm_first_token_ms": 0,
+     "to_first_sentence_ms": 4,
+     "agent_ms": 4,
+     "tts_ms": 754,
+     "tts_first_audio_ms": 754,
+     "send_ms": 0,
+     "voice_to_voice_ms": 1813,
+     "first_audio_ms": 1813,
+     "filler": false,
+     "interrupted": false
+    },
+    {
+     "turn": 2,
+     "path": "llm",
+     "model": "inclusionai/ling-3.0-flash-sante:free",
+     "cached": false,
+     "llm_calls": 1,
+     "typed": false,
+     "endpointing_ms": 544,
+     "stt_ms": 468,
+     "llm_first_token_ms": 2363,
+     "to_first_sentence_ms": 2,
+     "agent_ms": 2365,
+     "tts_ms": 866,
+     "tts_first_audio_ms": 866,
+     "send_ms": 0,
+     "voice_to_voice_ms": 4243,
+     "first_audio_ms": 3183,
+     "filler": true,
+     "interrupted": false
+    },
+    {
+     "turn": 3,
+     "path": "llm",
+     "model": "inclusionai/ling-3.0-flash-sante:free",
+     "cached": false,
+     "llm_calls": 1,
+     "typed": false,
+     "endpointing_ms": 545,
+     "stt_ms": 484,
+     "llm_first_token_ms": 2177,
+     "to_first_sentence_ms": 103,
+     "agent_ms": 2280,
+     "tts_ms": 780,
+     "tts_first_audio_ms": 473,
+     "send_ms": 307,
+     "voice_to_voice_ms": 4089,
+     "first_audio_ms": 3172,
+     "filler": true,
+     "interrupted": false
+    },
+    {
+     "turn": 4,
+     "path": "llm",
+     "model": "inclusionai/ling-3.0-flash-sante:free",
+     "cached": false,
+     "llm_calls": 1,
+     "typed": false,
+     "endpointing_ms": 545,
+     "stt_ms": 410,
+     "llm_first_token_ms": 3930,
+     "to_first_sentence_ms": 1,
+     "agent_ms": 3931,
+     "tts_ms": 627,
+     "tts_first_audio_ms": 627,
+     "send_ms": 0,
+     "voice_to_voice_ms": 5514,
+     "first_audio_ms": 3074,
+     "filler": true,
+     "interrupted": false
+    },
+    {
+     "turn": 5,
+     "path": "llm",
+     "model": "inclusionai/ling-3.0-flash-sante:free",
+     "cached": false,
+     "llm_calls": 1,
+     "typed": false,
+     "endpointing_ms": 545,
+     "stt_ms": 517,
+     "llm_first_token_ms": 2352,
+     "to_first_sentence_ms": 1,
+     "agent_ms": 2354,
+     "tts_ms": 660,
+     "tts_first_audio_ms": 295,
+     "send_ms": 365,
+     "voice_to_voice_ms": 4076,
+     "first_audio_ms": 3180,
+     "filler": true,
+     "interrupted": false
+    },
+    {
+     "turn": 6,
+     "path": "fast_confirm",
+     "model": "",
+     "cached": false,
+     "llm_calls": 0,
+     "typed": false,
+     "endpointing_ms": 544,
+     "stt_ms": 334,
+     "llm_first_token_ms": null,
+     "to_first_sentence_ms": null,
+     "agent_ms": 13,
+     "tts_ms": 337,
+     "tts_first_audio_ms": 337,
+     "send_ms": 0,
+     "voice_to_voice_ms": 1229,
+     "first_audio_ms": 1229,
+     "filler": false,
+     "interrupted": false
+    },
+    {
+     "turn": 7,
+     "path": "rules",
+     "model": "",
+     "cached": false,
+     "llm_calls": 0,
+     "typed": false,
+     "endpointing_ms": 545,
+     "stt_ms": 404,
+     "llm_first_token_ms": null,
+     "to_first_sentence_ms": null,
+     "agent_ms": 1,
+     "tts_ms": 476,
+     "tts_first_audio_ms": 476,
+     "send_ms": 0,
+     "voice_to_voice_ms": 1425,
+     "first_audio_ms": 1425,
+     "filler": false,
+     "interrupted": false
+    }
+   ],
+   "stats": {
+    "barge_ins": [],
+    "backchannels": 0,
+    "silence_prompts": 0,
+    "unsupported_times": [],
+    "replaced_advice": 0
+   },
+   "barge_in_truth": [],
+   "pipeline_wer": 0.0588,
+   "caller_errors": [],
+   "recording": "data/eval/recordings/sim_book_basic_1791291426.wav",
+   "stack": {
+    "stt": "faster-whisper/base.en/int8",
+    "tts": "kokoro-82m/af_heart",
+    "vad": "silero",
+    "llm": "openrouter/inclusionai/ling-3.0-flash-sante:free"
+   },
+   "wall_s": 120.1
+  },
+  {
+   "scenario": "book_specific_time",
+   "category": "booking",
+   "channel": "clean",
+   "passed": false,
+   "problems": [
+    "expected 1 new booking, found 0"
+   ],
+   "outcome": "info_only",
+   "transferred": false,
+   "caller_turns": 5,
+   "confirmation": {
+    "changes": 0,
+    "with_readback_and_yes": 0,
+    "blocked_unconfirmed": 0
+   },
+   "grounding": {
+    "unsupported_time_mentions": [],
+    "unoffered_slot_attempts": 0
+   },
+   "false_claims": 0,
+   "replaced_advice": 0,
+   "call_id": "sim_book_specific_time_1791291546",
+   "end_reason": "agent_hung_up",
+   "transcript": [
+    {
+     "t": 1.88,
+     "role": "agent",
+     "turn": 0,
+     "text": "Thanks for calling Brightside Dental. I'm Callie, the clinic's AI assistant, and this call may be recorded. How can I help you today?"
+    },
+    {
+     "t": 14.79,
+     "role": "caller",
+     "turn": 1,
+     "text": "Hello, I need a filling. Do you have this Thursday at 2.30?",
+     "typed": false
+    },
+    {
+     "t": 14.79,
+     "role": "agent",
+     "turn": 1,
+     "text": "I have Thursday, October 8th at 2:30 PM. Does that work?"
+    },
+    {
+     "t": 23.8,
+     "role": "caller",
+     "turn": 2,
+     "text": "That works for me, Thursday at 2.30p and is perfect.",
+     "typed": false
+    },
+    {
+     "t": 26.5,
+     "role": "agent",
+     "turn": 2,
+     "text": "One moment. Great, I'd be happy to book that for you. Could you please give me your full name and a phone number for the confirmation text?"
+    },
+    {
+     "t": 52.12,
+     "role": "caller",
+     "turn": 3,
+     "text": "Daniel Alcoffer. 5. 5. 5. 5. ***-***-7742.",
+     "typed": false
+    },
+    {
+     "t": 54.35,
+     "role": "agent",
+     "turn": 3,
+     "text": "Let me check. Sorry, I got 11 digits instead of 10. Could you say your number again, one digit at a time?"
+    },
+    {
+     "t": 80.79,
+     "role": "caller",
+     "turn": 4,
+     "text": "Thursday at 2.30pm, works perfectly. That's all I need to confirm your appointment at Brightside Dental. See you then.",
+     "typed": false
+    },
+    {
+     "t": 122.24,
+     "role": "agent",
+     "turn": 4,
+     "text": "Sure, one second. I need your phone number to send the confirmation text. Could you please say your number again, one digit at a time?"
+    },
+    {
+     "t": 143.97,
+     "role": "caller",
+     "turn": 5,
+     "text": "Sorry, I have to go. Bye.",
+     "typed": false
+    },
+    {
+     "t": 143.97,
+     "role": "agent",
+     "turn": 5,
+     "text": "Thanks for calling Brightside Dental. Have a great day. Goodbye!"
+    }
+   ],
+   "tool_calls": [
+    {
+     "turn": 1,
+     "name": "check_availability",
+     "arguments": {
+      "service": "filling",
+      "when": "this Thursday at 2.30"
+     },
+     "result": {
+      "status": "ok",
+      "service": "filling",
+      "understood_as": "Thursday, October 8th",
+      "assumptions": [],
+      "slots": [
+       {
+        "slot_id": "2026-10-08T14:30",
+        "time": "Thursday, October 8th at 2:30 PM"
+       }
+      ],
+      "alternatives": []
+     },
+     "say": "I have Thursday, October 8th at 2:30 PM. Does that work?",
+     "ms": 1.14
+    },
+    {
+     "turn": 3,
+     "name": "book_appointment",
+     "arguments": {
+      "confirmed": false,
+      "patient_name": "Daniel Alcoffer",
+      "phone": "***-***-7742",
+      "service": "filling",
+      "slot_id": "2026-10-08T14:30"
+     },
+     "result": {
+      "status": "phone_unclear",
+      "heard_digits": 11
+     },
+     "say": "Sorry, I got 11 digits instead of 10. Could you say your number again, one digit at a time?",
+     "ms": 0.04
+    },
+    {
+     "turn": 5,
+     "name": "end_call",
+     "arguments": {
+      "reason": "caller said goodbye"
+     },
+     "result": {
+      "status": "ending"
+     },
+     "say": "Thanks for calling Brightside Dental. Have a great day. Goodbye!",
+     "ms": 0.01
+    }
+   ],
+   "turns": [
+    {
+     "turn": 1,
+     "path": "llm",
+     "model": "inclusionai/ling-3.0-flash-sante:free",
+     "cached": true,
+     "llm_calls": 1,
+     "typed": false,
+     "endpointing_ms": 544,
+     "stt_ms": 409,
+     "llm_first_token_ms": 0,
+     "to_first_sentence_ms": 2,
+     "agent_ms": 2,
+     "tts_ms": 705,
+     "tts_first_audio_ms": 705,
+     "send_ms": 0,
+     "voice_to_voice_ms": 1660,
+     "first_audio_ms": 1660,
+     "filler": false,
+     "interrupted": false
+    },
+    {
+     "turn": 2,
+     "path": "llm",
+     "model": "inclusionai/ling-3.0-flash-sante:free",
+     "cached": false,
+     "llm_calls": 1,
+     "typed": false,
+     "endpointing_ms": 545,
+     "stt_ms": 414,
+     "llm_first_token_ms": 2527,
+     "to_first_sentence_ms": 171,
+     "agent_ms": 2698,
+     "tts_ms": 495,
+     "tts_first_audio_ms": 495,
+     "send_ms": 0,
+     "voice_to_voice_ms": 4151,
+     "first_audio_ms": 3136,
+     "filler": true,
+     "interrupted": false
+    },
+    {
+     "turn": 3,
+     "path": "llm",
+     "model": "inclusionai/ling-3.0-flash-sante:free",
+     "cached": false,
+     "llm_calls": 1,
+     "typed": false,
+     "endpointing_ms": 545,
+     "stt_ms": 418,
+     "llm_first_token_ms": 2228,
+     "to_first_sentence_ms": 1,
+     "agent_ms": 2229,
+     "tts_ms": 831,
+     "tts_first_audio_ms": 594,
+     "send_ms": 237,
+     "voice_to_voice_ms": 4023,
+     "first_audio_ms": 3106,
+     "filler": true,
+     "interrupted": false
+    },
+    {
+     "turn": 4,
+     "path": "llm",
+     "model": "nvidia/nemotron-3-super-120b-a12b:free",
+     "cached": false,
+     "llm_calls": 1,
+     "typed": false,
+     "endpointing_ms": 545,
+     "stt_ms": 388,
+     "llm_first_token_ms": 41129,
+     "to_first_sentence_ms": 245,
+     "agent_ms": 41375,
+     "tts_ms": 736,
+     "tts_first_audio_ms": 736,
+     "send_ms": 0,
+     "voice_to_voice_ms": 43043,
+     "first_audio_ms": 3133,
+     "filler": true,
+     "interrupted": false
+    },
+    {
+     "turn": 5,
+     "path": "rules",
+     "model": "",
+     "cached": false,
+     "llm_calls": 0,
+     "typed": false,
+     "endpointing_ms": 545,
+     "stt_ms": 383,
+     "llm_first_token_ms": null,
+     "to_first_sentence_ms": null,
+     "agent_ms": 0,
+     "tts_ms": 452,
+     "tts_first_audio_ms": 452,
+     "send_ms": 0,
+     "voice_to_voice_ms": 1380,
+     "first_audio_ms": 1380,
+     "filler": false,
+     "interrupted": false
+    }
+   ],
+   "stats": {
+    "barge_ins": [],
+    "backchannels": 0,
+    "silence_prompts": 0,
+    "unsupported_times": [],
+    "replaced_advice": 0
+   },
+   "barge_in_truth": [],
+   "pipeline_wer": 0.1587,
+   "caller_errors": [
+    "rate limited: liquid/lfm-2.5-2.6b:free is temporarily rate-limited upstream. Please retry shortly, or add your own key to accumulate your rate limits: https://openrouter.ai/settings/integrations"
+   ],
+   "recording": "data/eval/recordings/sim_book_specific_time_1791291546.wav",
+   "stack": {
+    "stt": "faster-whisper/base.en/int8",
+    "tts": "kokoro-82m/af_heart",
+    "vad": "silero",
+    "llm": "openrouter/inclusionai/ling-3.0-flash-sante:free"
+   },
+   "wall_s": 148.7
+  }
+ ]
+}
