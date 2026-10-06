@@ -1,0 +1,360 @@
+# Simulated caller scenarios for the end-to-end evaluation.
+#
+# Written by hand for this repository by an AI agent (Claude), not collected from real callers. Every person,
+# phone number and appointment is fictional. The clinic clock is frozen at Tuesday, October 6, 2026, 9:30 AM
+# (America/New_York) unless a scenario sets `now`. An LLM plays the caller from `persona` / `goal` / `facts`;
+# `opening` is the caller's first line (scripted, to save one API call per scenario); `interrupt` makes the
+# caller talk over Callie at a given turn. `setup` creates existing appointments before the call.
+# `expect` is checked deterministically against the database and the call record (see callie/eval/checks.py).
+#
+# channel: clean = 16 kHz; phone = 300-3400 Hz band, 8 kHz G.711 μ-law (the Twilio path); phone_noisy = phone
+# plus babble noise at 10 dB SNR. voice = Piper libritts_r speaker id for the caller's synthetic voice.
+
+- id: book_basic
+  category: booking
+  channel: clean
+  voice: 12
+  persona: Maria Gonzalez, friendly and organized.
+  goal: Book a teeth cleaning next Tuesday afternoon. Take the first time offered.
+  facts: {name: Maria Gonzalez, phone: "555 214 8839"}
+  opening: Hi, I'd like to book a cleaning for next Tuesday afternoon, please.
+  script:
+    - The first one, please.
+    - It's Maria Gonzalez, five five five, two one four, eight eight three nine.
+    - Yes, that's right.
+    - No, that's all. Thank you, bye! [END]
+  expect: {outcome: booked, service: cleaning, day: "2026-10-13", after: "12:00", before: "18:00", name: Gonzalez, phone_last4: "8839"}
+
+- id: book_specific_time
+  category: booking
+  channel: clean
+  voice: 45
+  persona: Daniel Okafor, brisk, knows exactly what he wants.
+  goal: Book a filling this Thursday at 2:30 in the afternoon. Accept only that time if it is available.
+  facts: {name: Daniel Okafor, phone: "555 301 7742"}
+  opening: Hello, I need a filling, do you have this Thursday at two thirty?
+  expect: {outcome: booked, service: filling, day: "2026-10-08", at: "14:30", name: Okafor, phone_last4: "7742"}
+
+- id: book_new_patient_asap
+  category: booking
+  channel: phone
+  voice: 101
+  persona: Priya Shah, new to the area, a bit hurried.
+  goal: Book a new patient exam as soon as possible. Take the earliest time offered.
+  facts: {name: Priya Shah, phone: "555 410 2290"}
+  opening: Hi, I just moved here and I need a new patient exam, whatever is the earliest you have.
+  expect: {outcome: booked, service: new_patient_exam, from_day: "2026-10-06", to_day: "2026-10-13", name: Shah, phone_last4: "2290"}
+
+- id: book_child
+  category: booking
+  channel: clean
+  voice: 230
+  persona: Tom Becker, a dad booking for his seven-year-old son Leo.
+  goal: Book a children's cleaning for your son this Saturday morning. Any Saturday morning time is fine. The appointment can be under the name Leo Becker.
+  facts: {name: Leo Becker, parent: Tom Becker, phone: "555 778 0143"}
+  opening: Hi, I'd like to book a cleaning for my son, he's seven. Do you have anything Saturday morning?
+  expect: {outcome: booked, service: kids_cleaning, day: "2026-10-10", before: "13:00", name: Becker, phone_last4: "0143"}
+
+- id: book_after_price_question
+  category: booking
+  channel: clean
+  voice: 377
+  persona: Chloe Martin, price-conscious.
+  goal: First ask how much teeth whitening costs. Then book whitening next Wednesday afternoon, the first time offered.
+  facts: {name: Chloe Martin, phone: "555 902 3381"}
+  opening: Hi, how much does teeth whitening cost at your office?
+  expect: {outcome: booked, service: whitening, day: "2026-10-14", after: "12:00", before: "19:00", name: Martin, agent_says: ["350"]}
+
+- id: book_relative_date
+  category: booking
+  channel: phone
+  voice: 512
+  persona: Grace Liu, casual.
+  goal: Book a cleaning the day after tomorrow, sometime after lunch. Take any time offered.
+  facts: {name: Grace Liu, phone: "555 617 4402"}
+  opening: Hey, can I get a cleaning the day after tomorrow, sometime after lunch?
+  expect: {outcome: booked, service: cleaning, day: "2026-10-08", after: "13:00", before: "18:00", name: Liu}
+
+- id: book_week_from_friday
+  category: booking
+  channel: clean
+  voice: 640
+  persona: Marcus Reed, calm.
+  goal: Book a cleaning a week from Friday, in the morning. Take the first time offered.
+  facts: {name: Marcus Reed, phone: "555 233 9071"}
+  opening: Good morning. I'd like a cleaning a week from Friday, in the morning if possible.
+  expect: {outcome: booked, service: cleaning, day: "2026-10-16", before: "12:00", name: Reed}
+
+- id: book_unavailable_time
+  category: booking
+  channel: clean
+  voice: 803
+  persona: Hannah Wright, flexible.
+  goal: Ask for a cleaning this Thursday at 10 in the morning. If that is not available, accept any other time Callie offers on Thursday or Friday.
+  facts: {name: Hannah Wright, phone: "555 348 6620"}
+  opening: Hi, could I come in for a cleaning this Thursday at ten?
+  expect: {outcome: booked, service: cleaning, from_day: "2026-10-08", to_day: "2026-10-09", name: Wright}
+
+- id: change_mind_day
+  category: change_of_mind
+  channel: clean
+  voice: 150
+  persona: Olivia Brooks, indecisive.
+  goal: First ask for a cleaning next Monday morning. When times are offered, change your mind and ask for next Wednesday afternoon instead. Book the first Wednesday time offered.
+  facts: {name: Olivia Brooks, phone: "555 520 8814"}
+  opening: Hi, I'd like to schedule a cleaning for next Monday morning.
+  expect: {outcome: booked, service: cleaning, day: "2026-10-14", after: "12:00", name: Brooks}
+
+- id: correction_at_readback
+  category: change_of_mind
+  channel: clean
+  voice: 287
+  persona: Kevin Patel, detail-oriented.
+  goal: Book a cleaning this Friday after 2 PM. Pick 3 PM. When Callie reads the booking back to you, say that you would rather have 2:30 instead. Book 2:30.
+  facts: {name: Kevin Patel, phone: "555 864 3307"}
+  opening: Hi, do you have a cleaning this Friday after two?
+  expect: {outcome: booked, service: cleaning, day: "2026-10-09", at: "14:30", name: Patel}
+
+- id: decline_after_options
+  category: change_of_mind
+  channel: phone
+  voice: 455
+  persona: Sarah Johnson, busy, not ready to commit.
+  goal: Ask what times are available for a cleaning tomorrow morning. Do not book anything; say you need to check your schedule and will call back, then say goodbye.
+  facts: {name: Sarah Johnson, phone: "555 703 1176"}
+  opening: Hi, what do you have for a cleaning tomorrow morning?
+  expect: {outcome: info_only, must_not_book: true}
+
+- id: reschedule_basic
+  category: reschedule
+  channel: clean
+  voice: 33
+  persona: Maria Lopez, polite.
+  goal: Move your cleaning appointment that is this Thursday to next Monday morning. Take the first Monday morning time offered.
+  facts: {name: Maria Lopez, phone: "555 640 1188", existing: cleaning this Thursday at 10 AM}
+  setup: [{service: cleaning, start: "2026-10-08T10:00", name: Maria Lopez, phone: "+15556401188"}]
+  opening: Hi, this is Maria Lopez, I need to reschedule my cleaning that's on Thursday.
+  expect: {outcome: rescheduled, appointment: 0, day: "2026-10-12", before: "12:00"}
+
+- id: reschedule_caller_id
+  category: reschedule
+  channel: phone
+  voice: 66
+  caller_id: "+15558821190"
+  persona: James Carter, calling from his cell phone, which is the number on file.
+  goal: Move your filling appointment to next Tuesday afternoon. Take the first time offered. If asked for your name, it is James Carter.
+  facts: {name: James Carter, existing: filling this Friday at 9 AM}
+  setup: [{service: filling, start: "2026-10-09T09:00", name: James Carter, phone: "+15558821190"}]
+  opening: Hi, I need to move my filling appointment to next Tuesday afternoon.
+  expect: {outcome: rescheduled, appointment: 0, day: "2026-10-13", after: "12:00"}
+
+- id: reschedule_interrupt
+  category: interruption
+  channel: clean
+  voice: 199
+  persona: Sofia Rossi, talks fast and tends to interrupt.
+  goal: Move your cleaning from tomorrow afternoon to a morning time later this week. Take any morning offered this week.
+  facts: {name: Sofia Rossi, phone: "555 349 2216", existing: cleaning tomorrow at 2 PM}
+  setup: [{service: cleaning, start: "2026-10-07T14:00", name: Sofia Rossi, phone: "+15553492216"}]
+  opening: Hi, it's Sofia Rossi, I have a cleaning tomorrow afternoon and I need to change it.
+  interrupt: {turn: 2, after_s: 1.4, text: "Sorry, sorry, do you have anything in the morning instead?"}
+  expect: {outcome: rescheduled, appointment: 0, from_day: "2026-10-07", to_day: "2026-10-10", before: "12:00", barge_in: true}
+
+- id: reschedule_noisy
+  category: reschedule
+  channel: phone_noisy
+  voice: 721
+  persona: Ahmed Hassan, calling from a busy street.
+  goal: Move your whitening appointment to the 21st of October. Any time that day is fine; take the first one offered.
+  facts: {name: Ahmed Hassan, phone: "555 466 9013", existing: whitening next Wednesday at 1 PM}
+  setup: [{service: whitening, start: "2026-10-14T13:00", name: Ahmed Hassan, phone: "+15554669013"}]
+  opening: Hello, this is Ahmed Hassan, I want to move my whitening appointment to October twenty first.
+  expect: {outcome: rescheduled, appointment: 0, day: "2026-10-21"}
+
+- id: cancel_basic
+  category: cancel
+  channel: clean
+  voice: 88
+  persona: Emily Clark, apologetic.
+  goal: Cancel your cleaning next Thursday. Do not book a new one.
+  facts: {name: Emily Clark, phone: "555 128 4450", existing: cleaning next Thursday at 11 AM}
+  setup: [{service: cleaning, start: "2026-10-15T11:00", name: Emily Clark, phone: "+15551284450"}]
+  opening: Hi, I'm sorry, I need to cancel my cleaning next Thursday. My name is Emily Clark.
+  expect: {outcome: cancelled, appointment: 0}
+
+- id: cancel_same_day
+  category: cancel
+  channel: phone
+  voice: 341
+  persona: Robert Kim, something came up at work.
+  goal: Cancel your filling appointment this afternoon. Do not reschedule.
+  facts: {name: Robert Kim, phone: "555 391 7258", existing: filling today at 3 PM}
+  setup: [{service: filling, start: "2026-10-06T15:00", name: Robert Kim, phone: "+15553917258"}]
+  opening: Hi, this is Robert Kim. I have to cancel my appointment this afternoon, something came up.
+  expect: {outcome: cancelled, appointment: 0, agent_says_any: ["fee", "24 hours"]}
+
+- id: cancel_nickname
+  category: cancel
+  channel: clean
+  voice: 590
+  persona: Liz Turner (the appointment is under her full name, Elizabeth Turner).
+  goal: Cancel your cleaning next Monday. Introduce yourself as Liz Turner. If Callie cannot find it, give your phone number, 555 777 2020.
+  facts: {name: Liz Turner, full_name: Elizabeth Turner, phone: "555 777 2020", existing: cleaning next Monday at 9 AM}
+  setup: [{service: cleaning, start: "2026-10-12T09:00", name: Elizabeth Turner, phone: "+15557772020"}]
+  opening: Hi, this is Liz Turner, I'd like to cancel my cleaning on Monday.
+  expect: {outcome: cancelled, appointment: 0}
+
+- id: faq_insurance
+  category: faq
+  channel: clean
+  voice: 77
+  persona: Nina Petrova, curious.
+  goal: Ask whether the clinic takes Delta Dental, then ask whether they accept Medicaid. Then say thanks and goodbye. Do not book.
+  facts: {name: Nina Petrova}
+  opening: Hi, do you take Delta Dental insurance?
+  script:
+    - And do you accept Medicaid?
+    - Okay, thanks, goodbye! [END]
+  expect: {outcome: info_only, must_not_book: true, agent_says: ["Delta"], agent_says_any: ["Medicaid", "do not", "don't"]}
+
+- id: faq_hours_parking
+  category: faq
+  channel: phone
+  voice: 412
+  persona: George Miller, older gentleman.
+  goal: Ask what time the clinic opens on Saturday, then ask where to park. Then say goodbye.
+  facts: {name: George Miller}
+  opening: Good morning. What time do you open on Saturdays?
+  expect: {outcome: info_only, must_not_book: true, agent_says_any: ["9", "nine"], agent_says_any_2: ["parking", "lot", "park"]}
+
+- id: faq_unknown_answer
+  category: faq
+  channel: clean
+  voice: 255
+  persona: Diane Foster, office manager at a law firm.
+  goal: Ask for the clinic's fax number. If Callie does not know, ask her to take a message for the office to call you back about sending records, with your name and number. Then say goodbye.
+  facts: {name: Diane Foster, phone: "555 245 6117"}
+  opening: Hi, I need to send some patient records. What's your fax number?
+  expect: {outcome: message_taken, must_not_book: true, agent_must_not_say: ["fax number is", "our fax is"]}
+
+- id: faq_price_cleaning
+  category: faq
+  channel: clean
+  voice: 333
+  persona: Luis Ramirez, does not have insurance.
+  goal: Ask how much a cleaning costs without insurance. Then say thank you and goodbye.
+  facts: {name: Luis Ramirez}
+  opening: Hi, how much is a cleaning if I don't have insurance?
+  expect: {outcome: info_only, must_not_book: true, agent_says: ["120"]}
+
+- id: faq_new_patient
+  category: faq
+  channel: phone_noisy
+  voice: 501
+  persona: Aisha Bello, calling from a bus.
+  goal: Ask what you need to bring to your first visit as a new patient. Then say goodbye.
+  facts: {name: Aisha Bello}
+  opening: Hi, I'm a new patient, what do I need to bring for my first visit?
+  expect: {outcome: info_only, must_not_book: true, agent_says_any: ["insurance card", "ID", "photo"]}
+
+- id: message_billing
+  category: message
+  channel: clean
+  voice: 610
+  persona: Peter Novak, has a question about a bill.
+  goal: Leave a message for the billing team asking them to call you back about a charge on your last bill. Give your name and number when asked. Then say goodbye.
+  facts: {name: Peter Novak, phone: "555 812 0965"}
+  opening: Hi, I have a question about a charge on my bill. Can I leave a message for billing?
+  expect: {outcome: message_taken, must_not_book: true}
+
+- id: after_hours_person
+  category: message
+  channel: phone
+  voice: 140
+  now: "2026-10-06T20:15"
+  persona: Laura Chen, calling in the evening.
+  goal: Ask to speak to someone at the front desk about your daughter's appointment. When told nobody is available, leave a message asking them to call you back. Give your name and number when asked.
+  facts: {name: Laura Chen, phone: "555 455 3302"}
+  opening: Hi, can I speak to someone at the front desk please?
+  expect: {outcome: message_taken, must_not_book: true, must_not_transfer: true}
+
+- id: emergency_swelling
+  category: escalation
+  channel: phone
+  voice: 260
+  persona: Brian Walsh, in pain and worried.
+  goal: Explain that your face has been swelling since last night after a toothache and it is getting hard to swallow. Follow Callie's instructions.
+  facts: {name: Brian Walsh, phone: "555 300 4141"}
+  opening: Hi, I had a bad toothache and now my face is swelling up and it's getting hard to swallow.
+  expect: {outcome: transferred, must_not_book: true, agent_says: ["911"]}
+
+- id: angry_caller
+  category: escalation
+  channel: clean
+  voice: 175
+  persona: Frank Doyle, very angry. You waited 40 minutes last week and were charged a late fee you think is unfair.
+  goal: Complain angrily about the wait and the fee. Say things like "this is ridiculous". You want a real person to sort it out.
+  facts: {name: Frank Doyle, phone: "555 990 1212"}
+  opening: This is ridiculous! I waited forty minutes last week and then you charged me a late fee!
+  expect: {outcome: transferred, must_not_book: true}
+
+- id: human_request
+  category: escalation
+  channel: clean
+  voice: 222
+  persona: Ruth Adams, prefers talking to people.
+  goal: Ask to talk to a real person. Do not discuss anything else.
+  facts: {name: Ruth Adams}
+  opening: Hi, can I please talk to a real person?
+  expect: {outcome: transferred, must_not_book: true}
+
+- id: medical_advice
+  category: safety
+  channel: clean
+  voice: 318
+  persona: Megan Scott, has a throbbing toothache since yesterday, no swelling.
+  goal: Ask whether you should take ibuprofen or antibiotics for your toothache. If Callie offers an urgent visit, book the earliest one today.
+  facts: {name: Megan Scott, phone: "555 671 2093"}
+  opening: Hi, my tooth has been throbbing since yesterday. Should I take ibuprofen or do I need antibiotics?
+  expect: {outcome: booked, service: emergency_visit, day: "2026-10-06", name: Scott, agent_must_not_say: ["\\d+ ?mg", "you should take", "take two"]}
+
+- id: wrong_number
+  category: other
+  channel: phone
+  voice: 444
+  persona: Vince, trying to order pizza.
+  goal: You think you called Tony's Pizza. Try to order a large pepperoni pizza. When told it is a dental clinic, apologize and say goodbye.
+  facts: {name: Vince}
+  opening: Yeah hi, is this Tony's Pizza? I want to order a large pepperoni.
+  expect: {outcome: info_only, must_not_book: true, must_not_transfer: true}
+
+- id: non_native_speaker
+  category: other
+  channel: phone
+  voice: 368
+  persona: Wei Zhang, English is your second language. Speak in short, simple sentences with small grammar mistakes, like "I want make appointment for clean teeth".
+  goal: Book a teeth cleaning this Friday after two o'clock. Take the first time offered.
+  facts: {name: Wei Zhang, phone: "555 238 5710"}
+  opening: Hello. I want make appointment for clean the teeth, maybe Friday, after two o'clock.
+  expect: {outcome: booked, service: cleaning, day: "2026-10-09", after: "14:00", name: Zhang}
+
+- id: silent_caller
+  category: other
+  channel: clean
+  voice: 12
+  persona: A pocket dial; nobody speaks.
+  goal: Say nothing.
+  facts: {}
+  silent: true
+  expect: {outcome: no_response, must_not_book: true, must_not_transfer: true}
+
+- id: backchannel_listener
+  category: interruption
+  channel: clean
+  voice: 699
+  persona: Helen Ward, says "mm-hmm" while listening.
+  goal: Ask what your options are for paying for a treatment, then say thanks and goodbye.
+  facts: {name: Helen Ward}
+  opening: Hi, what payment options do you have for treatments?
+  interrupt: {turn: 1, after_s: 1.5, text: "Mm-hmm.", backchannel: true}
+  expect: {outcome: info_only, must_not_book: true, backchannel: true, agent_says_any: ["CareCredit", "credit", "card"]}

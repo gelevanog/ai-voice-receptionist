@@ -1,0 +1,148 @@
+{
+  "date": "2026-10-06T12:12:21+00:00",
+  "free_models": [
+    {
+      "id": "apodex/apodex-1.1-mini:free",
+      "context_length": 262144,
+      "tools": true,
+      "created": 1790875335
+    },
+    {
+      "id": "inclusionai/ling-3.0-flash-sante:free",
+      "context_length": 262144,
+      "tools": true,
+      "created": 1788545946
+    },
+    {
+      "id": "dots-studio/dots-3-note-preview:free",
+      "context_length": 512000,
+      "tools": true,
+      "created": 1786680361
+    },
+    {
+      "id": "liquid/lfm-2.5-2.6b:free",
+      "context_length": 65536,
+      "tools": true,
+      "created": 1786470519
+    },
+    {
+      "id": "nvidia/nemotron-3.5-lightning:free",
+      "context_length": 1000000,
+      "tools": true,
+      "created": 1786452751
+    },
+    {
+      "id": "thinkingmachines/inkling-small:free",
+      "context_length": 1048576,
+      "tools": true,
+      "created": 1785443117
+    },
+    {
+      "id": "poolside/laguna-s-2.1:free",
+      "context_length": 262144,
+      "tools": true,
+      "created": 1784652683
+    },
+    {
+      "id": "thinkingmachines/inkling:free",
+      "context_length": 1048576,
+      "tools": true,
+      "created": 1784325956
+    },
+    {
+      "id": "poolside/laguna-xs-2.1:free",
+      "context_length": 262144,
+      "tools": true,
+      "created": 1783002429
+    },
+    {
+      "id": "cohere/north-mini-code:free",
+      "context_length": 256000,
+      "tools": true,
+      "created": 1781723748
+    },
+    {
+      "id": "nvidia/nemotron-3.5-content-safety:free",
+      "context_length": 128000,
+      "tools": false,
+      "created": 1780581864
+    },
+    {
+      "id": "nvidia/nemotron-3-ultra-550b-a55b:free",
+      "context_length": 1000000,
+      "tools": true,
+      "created": 1780551208
+    },
+    {
+      "id": "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free",
+      "context_length": 256000,
+      "tools": true,
+      "created": 1777393095
+    },
+    {
+      "id": "google/gemma-4-26b-a4b-it:free",
+      "context_length": 262144,
+      "tools": true,
+      "created": 1775227989
+    },
+    {
+      "id": "google/gemma-4-31b-it:free",
+      "context_length": 262144,
+      "tools": true,
+      "created": 1775148486
+    },
+    {
+      "id": "nvidia/nemotron-3-super-120b-a12b:free",
+      "context_length": 262144,
+      "tools": true,
+      "created": 1773245239
+    }
+  ],
+  "smoke": [
+    {
+      "model": "nvidia/nemotron-3.5-lightning:free",
+      "ok": true,
+      "tool": "check_availability",
+      "when": "next Tuesday afternoon",
+      "text": "",
+      "ttft_s": 18.08,
+      "total_s": 18.08
+    },
+    {
+      "model": "thinkingmachines/inkling-small:free",
+      "ok": false,
+      "error": "upstream 403: thinkingmachines/inkling-small:free is only available on agentic harnesses. Try plugging it into a coding agent or productivity app listed on https://openrouter.ai/apps",
+      "total_s": 0.55
+    },
+    {
+      "model": "google/gemma-4-26b-a4b-it:free",
+      "ok": false,
+      "error": "rate limited: google/gemma-4-26b-a4b-it:free is temporarily rate-limited upstream. Please retry shortly, or add your own key to accumulate your rate limits: https://openrouter.ai/settings/integrations",
+      "total_s": 24.01
+    },
+    {
+      "model": "google/gemma-4-31b-it:free",
+      "ok": false,
+      "error": "rate limited: google/gemma-4-31b-it:free is temporarily rate-limited upstream. Please retry shortly, or add your own key to accumulate your rate limits: https://openrouter.ai/settings/integrations",
+      "total_s": 20.64
+    },
+    {
+      "model": "liquid/lfm-2.5-2.6b:free",
+      "ok": true,
+      "tool": "check_availability",
+      "when": "Tuesday, October 12, 2027 afternoon",
+      "text": "",
+      "ttft_s": 1.43,
+      "total_s": 1.43
+    },
+    {
+      "model": "inclusionai/ling-3.0-flash-sante:free",
+      "ok": true,
+      "tool": "check_availability",
+      "when": "next Tuesday afternoon",
+      "text": "",
+      "ttft_s": 1.91,
+      "total_s": 1.91
+    }
+  ]
+}

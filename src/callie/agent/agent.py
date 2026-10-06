@@ -135,7 +135,10 @@ class Agent:
         self.messages.append({"role": "assistant", "content": text})
 
     # -- the turn ----------------------------------------------------------------------------------------------
-    async def respond(self, user_text: str, *, merge: bool = False) -> AsyncIterator[AgentEvent]:
+    async def respond(
+        self, user_text: str, *, merge: bool = False, turn: int | None = None
+    ) -> AsyncIterator[AgentEvent]:
+        """`turn` is the caller-turn number (the session's count); merged utterances keep their turn."""
         stats = TurnStats()
         self.last_stats = stats
         self.turn_committed = False
@@ -143,8 +146,11 @@ class Agent:
             self.messages[-1]["content"] = f"{self.messages[-1]['content']} {user_text}".strip()
             user_text = self.messages[-1]["content"]
         else:
-            self.ctx.turn += 1
             self.messages.append({"role": "user", "content": user_text})
+        if turn is not None:
+            self.ctx.turn = turn
+        elif not merge:
+            self.ctx.turn += 1
         self.ctx.known_times.update(extract_times(user_text))
         reply = classify_reply(user_text)
         self.tools.register_reply(affirmed=reply is Reply.YES or reply is Reply.YES_PLUS, declined=reply is Reply.NO)
@@ -182,7 +188,8 @@ class Agent:
         }[escalation]
         if lead:
             self.messages.append({"role": "assistant", "content": lead})
-            yield Sentence(lead, "rules")
+            for part in split_sentences(lead):
+                yield Sentence(part, "rules")
         reason = {Escalation.EMERGENCY: "emergency, 911 advised"}.get(escalation, escalation.value.replace("_", " "))
         async for event in self._run_rule_tool("transfer_to_human", {"reason": reason}):
             yield event
@@ -205,7 +212,8 @@ class Agent:
             self.messages.append({"role": "assistant", "content": result.say})
         yield ToolEvent(result)
         if result.say:
-            yield Sentence(result.say, "tool")
+            for part in split_sentences(result.say):
+                yield Sentence(part, "tool")
         if result.action:
             yield CallAction(result.action, str(arguments.get("reason", "")))  # type: ignore[arg-type]
 
@@ -310,7 +318,8 @@ class Agent:
             for result in results:
                 yield ToolEvent(result)
             if says:
-                yield Sentence(says, "tool")
+                for part in split_sentences(says):
+                    yield Sentence(part, "tool")
                 for result in results:
                     if result.action:
                         yield CallAction(result.action, str(result.arguments.get("reason", "")))  # type: ignore[arg-type]
@@ -328,6 +337,12 @@ class Agent:
         stats.unsupported_times.extend(unsupported_times(sentence, self.ctx.known_times))
         spoken.append(sentence)
         yield Sentence(sentence, "llm")
+
+
+def split_sentences(text: str) -> list[str]:
+    """Speak code-written text sentence by sentence too, so TTS starts on the first clause."""
+    chunker = SentenceChunker()
+    return [*chunker.push(text), *chunker.flush()] or [text]
 
 
 async def _prepend(first: asyncio.Future[Any], rest: AsyncIterator[Any]) -> AsyncIterator[Any]:

@@ -190,6 +190,7 @@ class CallSession:
         self.started_wall = clock()
         self.started_at = datetime.now(UTC)
         self.transcript: list[JsonDict] = []
+        self.raw_caller: list[str] = []  # unmasked STT output, in memory only (for the evaluation's WER)
         self.turns: list[TurnMetrics] = []
         self.stats = SessionStats()
         self.closed = asyncio.Event()
@@ -299,6 +300,8 @@ class CallSession:
                 and event.speech_s >= self.config.hard_interrupt_s
             ):
                 barge.hard = True
+                if self.stats.barge_ins:
+                    self.stats.barge_ins[-1]["result"] = "interrupted"
                 self._spawn(self._interrupt(), "barge-hard")
         elif event.kind == "speech_end":
             self._last_activity = now
@@ -323,6 +326,8 @@ class CallSession:
         metrics.stt_done = self.clock()
         metrics.stt_s = transcript.seconds
         text = transcript.text.strip()
+        if text:
+            self.raw_caller.append(text)
         barge = self._barge
         self._barge = None
         if barge is not None and barge.paused_wall is not None:
@@ -425,7 +430,7 @@ class CallSession:
         spoken: list[str] = []
         await self._emit({"type": "state", "state": "thinking"})
         try:
-            async for event in self.agent.respond(text, merge=merge):
+            async for event in self.agent.respond(text, merge=merge, turn=turn):
                 if isinstance(event, Sentence):
                     if event.source != "filler" and metrics.first_sentence is None:
                         metrics.first_sentence = self.clock()
@@ -558,7 +563,13 @@ class CallSession:
         with contextlib.suppress(Exception):
             await self.transport.send_event({"t": self._since_start(), **event})
 
+    def _remask(self) -> None:
+        """Names learned later in the call (e.g. at booking) are masked in earlier transcript lines too."""
+        for entry in self.transcript:
+            entry["text"] = self.ctx.masker.mask(entry["text"])
+
     def summary(self) -> JsonDict:
+        self._remask()
         return {
             "call_id": self.call_id,
             "outcome": self.ctx.outcome.label(),
@@ -572,6 +583,7 @@ class CallSession:
         }
 
     def _save(self, outcome: str) -> None:
+        self._remask()
         recording = None
         if self.recorder is not None and self.recorder.seconds > 0.5:
             path = self.config.recordings_dir / f"{self.call_id}.wav"

@@ -32,7 +32,7 @@ _SPOKEN_DIGITS_RE = re.compile(
 )
 _EMAIL_RE = re.compile(r"\b[\w.+-]+@[\w-]+\.[\w.-]+\b")
 _INTRO_NAME_RE = re.compile(
-    r"\b(my name is|my name's|this is|i'm|i am|name is|it's|under)\s+([A-Z][a-z'’-]+(?:\s+[A-Z][a-z'’-]+)?)"
+    r"\b((?i:my name is|my name's|this is|i'm|i am|name is|it's|it is|under))\s+([A-Z][a-z'’-]+(?:\s+[A-Z][a-z'’-]+)?)"
 )
 _NOT_NAMES = {"Callie", "Brightside", "Dental", "Calling", "Just", "Sure", "Yes", "Fine", "Good", "Sorry", "Not"}
 

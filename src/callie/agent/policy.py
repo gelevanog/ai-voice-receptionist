@@ -103,9 +103,11 @@ def is_backchannel(text: str) -> bool:
         return True  # breath, cough or noise the STT turned into nothing
     if len(cleaned.split()) > 3:
         return False
-    return cleaned in _BACKCHANNELS or all(
-        word in {"mm", "hmm", "uh", "huh", "yeah", "okay"} for word in cleaned.split()
-    )
+    if cleaned in _BACKCHANNELS or all(word in {"mm", "hmm", "uh", "huh", "yeah", "okay"} for word in cleaned.split()):
+        return True
+    # Speech recognizers spell "mm-hmm" many ways: "M.H.M.", "and mhm", "Mm hm", "uh huh".
+    letters = re.sub(r"[^a-z]", "", cleaned)
+    return bool(re.fullmatch(r"(and|so)?(m+h*m+|h?m+h+m+|u+h+h+u+h+|mh+m+|hm+)", letters))
 
 
 class Escalation(StrEnum):
