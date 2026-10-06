@@ -143,18 +143,22 @@ class Calendar:
             for slot in slots:
                 by_day.setdefault(slot.start.date(), []).append(slot)
         days = sorted(by_day)
-        # Round-robin over days: first slot of each day, then a later one (>= 2h after the previous pick).
-        for round_index in range(3):
-            for day in days:
-                if len(chosen) >= limit:
-                    break
-                picked_today = [s for s in chosen if s.start.date() == day]
-                if len(picked_today) != round_index:
-                    continue
-                for slot in by_day[day]:
-                    if all(abs((slot.start - p.start).total_seconds()) >= 2 * 3600 for p in picked_today):
-                        chosen.append(slot)
+        # Round-robin over days (first slot of each day, then later ones), preferring options at least two hours
+        # apart; the spacing is relaxed when the window is too small to give `limit` different options.
+        for gap_hours in (2.0, 1.0, 0.5):
+            for round_index in range(3):
+                for day in days:
+                    if len(chosen) >= limit:
                         break
+                    picked_today = [s for s in chosen if s.start.date() == day]
+                    if len(picked_today) != round_index:
+                        continue
+                    for slot in by_day[day]:
+                        if slot in chosen:
+                            continue
+                        if all(abs((slot.start - p.start).total_seconds()) >= gap_hours * 3600 for p in picked_today):
+                            chosen.append(slot)
+                            break
             if len(chosen) >= limit:
                 break
         return sorted(chosen, key=lambda s: s.start)

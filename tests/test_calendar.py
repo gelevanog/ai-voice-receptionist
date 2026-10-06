@@ -95,7 +95,8 @@ class TestAvailability:
     def test_options_are_spread_out(self, calendar: Calendar, clinic: Clinic) -> None:
         cleaning = service(clinic, "cleaning")
         options = calendar.find_slots(cleaning, parse_when("next tuesday after lunch", FROZEN_NOW))
-        assert len(options) == 2  # 1 PM and 3 PM: the window allows two options two hours apart
+        # 1 PM and 3 PM are two hours apart; the third option relaxes the spacing to one hour.
+        assert [s.start for s in options] == [at(13, 13), at(13, 14), at(13, 15)]
         week = calendar.find_slots(cleaning, parse_when("next week", FROZEN_NOW))
         assert len(week) == 3 and len({s.start.date() for s in week}) == 3
 
