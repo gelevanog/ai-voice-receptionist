@@ -9,8 +9,11 @@ from __future__ import annotations
 
 import re
 
+from callie.clinic import Clinic
+from callie.config import Settings
 from callie.eval.scenarios import Scenario
-from callie.llm.base import ChatModel, JsonDict, ProviderError, TextDelta
+from callie.llm.base import ChatModel, JsonDict, ProviderError, TextDelta, ensure_models_allowed
+from callie.llm.factory import build_chat_model
 
 END = "[END]"
 _FAREWELL = re.compile(
@@ -32,6 +35,33 @@ def caller_system_prompt(scenario: Scenario) -> str:
         "correct, confirm with a short yes. You are the caller, not the receptionist: never offer to book, check or "
         "confirm anything yourself. Only when your goal is done and Callie asks if there is anything else, or says "
         f"goodbye, say a short goodbye and end that message with {END}. Never say that you are an AI or a test."
+    )
+
+
+def build_caller_llm(
+    settings: Settings, clinic: Clinic, *, provider: str, model: str, send_temperature: bool = True
+) -> ChatModel:
+    """The caller's model: a free OpenRouter model by default; any other provider needs `allow_paid_models`."""
+    ensure_models_allowed(
+        provider, [model], allow_paid=settings.allow_paid_models, require_free=settings.require_free_models
+    )
+    return build_chat_model(
+        settings.model_copy(update={"llm_max_retries": 3, "llm_send_temperature": send_temperature}),
+        clinic,
+        provider=provider,
+        model=model,
+        fallback_models=[],
+        tag="caller",
+    )
+
+
+def ensure_agent_allowed(settings: Settings) -> None:
+    """The evaluation spends real API calls: the agent model must be free unless paid models were allowed."""
+    ensure_models_allowed(
+        settings.llm_provider,
+        [settings.resolved_llm_model(), *settings.llm_fallback_models],
+        allow_paid=settings.allow_paid_models,
+        require_free=settings.require_free_models,
     )
 
 

@@ -43,6 +43,7 @@ class OpenAICompatibleChat:
         require_free: bool = True,
         timeout_seconds: float = 60.0,
         extra_body: JsonDict | None = None,
+        send_temperature: bool = True,
         transport: httpx.AsyncBaseTransport | None = None,
     ) -> None:
         local = any(host in base_url for host in ("localhost", "127.0.0.1", "0.0.0.0", "ollama"))
@@ -60,6 +61,7 @@ class OpenAICompatibleChat:
             self._headers |= OPENROUTER_HEADERS
         self._timeout = timeout_seconds
         self._extra = dict(extra_body or {})
+        self.send_temperature = send_temperature
         self._transport = transport
 
     @property
@@ -77,10 +79,11 @@ class OpenAICompatibleChat:
             "model": self.model,
             "messages": messages,
             "max_tokens": max_tokens,
-            "temperature": temperature,
             "stream": True,
             **self._extra,
         }
+        if self.send_temperature:
+            body["temperature"] = temperature
         if tools:
             body["tools"] = tools
             body["tool_choice"] = "auto"
@@ -190,13 +193,16 @@ def raise_for_status(status: int, text: str, retry_after: str | None) -> None:
             message = str(raw or error.get("message") or error)[:300]
     except (json.JSONDecodeError, AttributeError):
         pass
+    if status == 429 and "budget_exhausted" in text:
+        raise ProviderError(f"budget exhausted: {message}", 429)  # a spending cap: retrying cannot help
     if status == 429:
         try:
             delay = float(retry_after) if retry_after else None
         except ValueError:
             delay = None
         raise RetryableError(f"rate limited: {message}", retry_after=delay, status_code=429)
-    if status >= 500 or status in {408, 409}:
+    if status >= 500 or status in {408, 409} or (status == 403 and "request not allowed" in message.lower()):
+        # Some gateways answer a transient "403 Request not allowed"; a retry with backoff clears it.
         raise RetryableError(f"upstream {status}: {message}", status_code=502)
     raise ProviderError(f"upstream {status}: {message}", status)
 

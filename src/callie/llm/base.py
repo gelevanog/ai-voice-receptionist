@@ -77,6 +77,24 @@ def ensure_free_models(model_ids: Iterable[str]) -> None:
         )
 
 
+def ensure_models_allowed(
+    provider: str, model_ids: Iterable[str], *, allow_paid: bool, require_free: bool = True
+) -> None:
+    """The evaluation's spending guard: only the offline fake model or free OpenRouter ids, unless paid models
+    were explicitly allowed (`CALLIE_ALLOW_PAID_MODELS=1`). OpenAI-compatible and Anthropic endpoints count as paid;
+    for OpenRouter, switching the free-only guard off (`CALLIE_REQUIRE_FREE_MODELS=false`) also allows paid ids."""
+    if allow_paid or provider == "fake":
+        return
+    if provider == "openrouter":
+        if require_free:
+            ensure_free_models(model_ids)
+        return
+    raise FreeModelGuardError(
+        f"free-only guard: provider {provider!r} ({', '.join(str(m) for m in model_ids) or 'default model'}) "
+        "is not a free OpenRouter model; set CALLIE_ALLOW_PAID_MODELS=1 to evaluate paid models deliberately"
+    )
+
+
 class ChatModel(Protocol):
     @property
     def label(self) -> str:

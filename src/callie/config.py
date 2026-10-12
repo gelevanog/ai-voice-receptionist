@@ -34,6 +34,11 @@ class Settings(BaseSettings):
     llm_max_tokens: int = 400
     llm_timeout_seconds: float = 60.0
     require_free_models: bool = True
+    # Explicit opt-in for non-free models in the evaluation (paid OpenRouter ids, or an OpenAI-compatible or
+    # Anthropic endpoint). Off by default: `callie eval` and the OpenRouter provider stay free-only.
+    allow_paid_models: bool = False
+    # Some models (e.g. Claude 5.5 behind an OpenAI-compatible gateway) reject `temperature`; false omits it.
+    llm_send_temperature: bool = True
     stt_provider: STTProviderName = "fake"
     stt_model: str = "base.en"
     stt_threads: int = 4
