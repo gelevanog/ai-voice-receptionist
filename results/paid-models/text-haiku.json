@@ -1,0 +1,5206 @@
+{
+ "run": {
+  "mode": "text (no audio: caller text in, agent text out; perfect speech recognition by construction)",
+  "started": "2026-10-12T09:38:34+00:00",
+  "finished": "2026-10-12T09:43:14+00:00",
+  "agent_llm": "openai/claude-haiku-5-5",
+  "agent_fallbacks": [],
+  "agent_temperature": null,
+  "agent_max_tokens": 400,
+  "caller": "openai/claude-haiku-5-5",
+  "clinic_clock": "2026-10-06T09:30"
+ },
+ "scenarios": [
+  {
+   "scenario": "book_basic",
+   "category": "booking",
+   "channel": "clean",
+   "passed": true,
+   "problems": [],
+   "outcome": "booked",
+   "transferred": false,
+   "caller_turns": 6,
+   "confirmation": {
+    "changes": 1,
+    "with_readback_and_yes": 1,
+    "blocked_unconfirmed": 0
+   },
+   "grounding": {
+    "unsupported_time_mentions": [],
+    "unoffered_slot_attempts": 0
+   },
+   "false_claims": 0,
+   "name_check": "exact",
+   "replaced_advice": 0,
+   "call_id": "text_book_basic_1791797914",
+   "end_reason": "agent_hung_up",
+   "transcript": [
+    {
+     "t": 0.0,
+     "role": "agent",
+     "turn": 0,
+     "text": "Thanks for calling Brightside Dental. I'm Callie, the clinic's AI assistant, and this call may be recorded. How can I help you today?"
+    },
+    {
+     "t": 0.0,
+     "role": "caller",
+     "turn": 1,
+     "text": "Hi, I'd like to book a cleaning for next Tuesday afternoon, please.",
+     "typed": false
+    },
+    {
+     "t": 2.2,
+     "role": "agent",
+     "turn": 1,
+     "text": "I have Tuesday, October 13th at 2:30 PM, 3 PM or 3:30 PM. Which would you prefer?"
+    },
+    {
+     "t": 3.85,
+     "role": "caller",
+     "turn": 2,
+     "text": "Take the first time offered, so 2:30 PM works for me, thank you.",
+     "typed": false
+    },
+    {
+     "t": 5.53,
+     "role": "agent",
+     "turn": 2,
+     "text": "Great. May I have your full name, please?"
+    },
+    {
+     "t": 7.19,
+     "role": "caller",
+     "turn": 3,
+     "text": "Sure, it's M**** G*******.",
+     "typed": false
+    },
+    {
+     "t": 9.68,
+     "role": "agent",
+     "turn": 3,
+     "text": "And what's the best phone number for your confirmation text?"
+    },
+    {
+     "t": 11.38,
+     "role": "caller",
+     "turn": 4,
+     "text": "My number is ***-***-8839.",
+     "typed": false
+    },
+    {
+     "t": 13.4,
+     "role": "agent",
+     "turn": 4,
+     "text": "Just to confirm: a cleaning and checkup for M**** G******* on Tuesday, October 13th at 2:30 PM, and I'll text the confirmation to the number ending in 8 8 3 9. Is that right?"
+    },
+    {
+     "t": 15.07,
+     "role": "caller",
+     "turn": 5,
+     "text": "Yes, that's right, thank you so much.",
+     "typed": false
+    },
+    {
+     "t": 15.09,
+     "role": "agent",
+     "turn": 5,
+     "text": "You're all set for Tuesday, October 13th at 2:30 PM. I've sent you a confirmation text. Is there anything else I can help you with?"
+    },
+    {
+     "t": 16.66,
+     "role": "caller",
+     "turn": 6,
+     "text": "No, that's everything, thank you so much for your help. Have a great day!",
+     "typed": false
+    },
+    {
+     "t": 16.66,
+     "role": "agent",
+     "turn": 6,
+     "text": "Thanks for calling Brightside Dental. Have a great day. Goodbye!"
+    }
+   ],
+   "tool_calls": [
+    {
+     "turn": 1,
+     "name": "check_availability",
+     "arguments": {
+      "service": "cleaning",
+      "when": "next Tuesday afternoon"
+     },
+     "result": {
+      "status": "ok",
+      "service": "cleaning",
+      "understood_as": "Tuesday, October 13th, noon to 6 PM",
+      "assumptions": [],
+      "slots": [
+       {
+        "slot_id": "2026-10-13T14:30",
+        "time": "Tuesday, October 13th at 2:30 PM"
+       },
+       {
+        "slot_id": "2026-10-13T15:00",
+        "time": "Tuesday, October 13th at 3 PM"
+       },
+       {
+        "slot_id": "2026-10-13T15:30",
+        "time": "Tuesday, October 13th at 3:30 PM"
+       }
+      ],
+      "alternatives": []
+     },
+     "say": "I have Tuesday, October 13th at 2:30 PM, 3 PM or 3:30 PM. Which would you prefer?",
+     "ms": 2.44
+    },
+    {
+     "turn": 3,
+     "name": "book_appointment",
+     "arguments": {
+      "service": "cleaning",
+      "slot_id": "2026-10-13T14:30",
+      "patient_name": "M**** G*******",
+      "confirmed": false
+     },
+     "result": {
+      "status": "need_phone"
+     },
+     "say": "And what's the best phone number for your confirmation text?",
+     "ms": 0.04
+    },
+    {
+     "turn": 4,
+     "name": "book_appointment",
+     "arguments": {
+      "service": "cleaning",
+      "slot_id": "2026-10-13T14:30",
+      "patient_name": "M**** G*******",
+      "phone": "***-***-8839",
+      "confirmed": false
+     },
+     "result": {
+      "status": "needs_confirmation",
+      "read_back": "Just to confirm: a cleaning and checkup for M**** G******* on Tuesday, October 13th at 2:30 PM, and I'll text the confirmation to the number ending in 8 8 3 9. Is that right?"
+     },
+     "say": "Just to confirm: a cleaning and checkup for M**** G******* on Tuesday, October 13th at 2:30 PM, and I'll text the confirmation to the number ending in 8 8 3 9. Is that right?",
+     "ms": 0.07
+    },
+    {
+     "turn": 5,
+     "name": "book_appointment",
+     "arguments": {
+      "service": "cleaning",
+      "slot_id": "2026-10-13T14:30",
+      "patient_name": "M**** G*******",
+      "phone": "***-***-8839",
+      "confirmed": true
+     },
+     "result": {
+      "status": "booked",
+      "appointment_id": "A-1C0BD4",
+      "time": "Tuesday, October 13th at 2:30 PM",
+      "sms": "dry_run"
+     },
+     "say": "You're all set for Tuesday, October 13th at 2:30 PM. I've sent you a confirmation text. Is there anything else I can help you with?",
+     "ms": 13.12
+    },
+    {
+     "turn": 6,
+     "name": "end_call",
+     "arguments": {
+      "reason": "caller said goodbye"
+     },
+     "result": {
+      "status": "ending"
+     },
+     "say": "Thanks for calling Brightside Dental. Have a great day. Goodbye!",
+     "ms": 0.01
+    }
+   ],
+   "turns": [
+    {
+     "turn": 1,
+     "path": "llm",
+     "model": "claude-haiku-5-5",
+     "cached": false,
+     "llm_calls": 1,
+     "typed": false,
+     "llm_first_token_ms": 2196,
+     "agent_ms": 2203,
+     "turn_ms": 2203,
+     "filler": true,
+     "llm_errors": []
+    },
+    {
+     "turn": 2,
+     "path": "llm",
+     "model": "claude-haiku-5-5",
+     "cached": false,
+     "llm_calls": 1,
+     "typed": false,
+     "llm_first_token_ms": 1367,
+     "agent_ms": 1674,
+     "turn_ms": 1679,
+     "filler": false,
+     "llm_errors": []
+    },
+    {
+     "turn": 3,
+     "path": "llm",
+     "model": "claude-haiku-5-5",
+     "cached": false,
+     "llm_calls": 1,
+     "typed": false,
+     "llm_first_token_ms": 2485,
+     "agent_ms": 2485,
+     "turn_ms": 2485,
+     "filler": true,
+     "llm_errors": []
+    },
+    {
+     "turn": 4,
+     "path": "llm",
+     "model": "claude-haiku-5-5",
+     "cached": false,
+     "llm_calls": 1,
+     "typed": false,
+     "llm_first_token_ms": 2019,
+     "agent_ms": 2020,
+     "turn_ms": 2020,
+     "filler": true,
+     "llm_errors": []
+    },
+    {
+     "turn": 5,
+     "path": "fast_confirm",
+     "model": "",
+     "cached": false,
+     "llm_calls": 0,
+     "typed": false,
+     "llm_first_token_ms": null,
+     "agent_ms": 13,
+     "turn_ms": 13,
+     "filler": false,
+     "llm_errors": []
+    },
+    {
+     "turn": 6,
+     "path": "rules",
+     "model": "",
+     "cached": false,
+     "llm_calls": 0,
+     "typed": false,
+     "llm_first_token_ms": null,
+     "agent_ms": 0,
+     "turn_ms": 0,
+     "filler": false,
+     "llm_errors": []
+    }
+   ],
+   "stats": {
+    "barge_ins": [],
+    "backchannels": 0,
+    "silence_prompts": 0,
+    "unsupported_times": [],
+    "replaced_advice": 0
+   },
+   "tool_errors": [],
+   "caller_errors": [],
+   "stack": {
+    "mode": "text",
+    "llm": "openai/claude-haiku-5-5"
+   },
+   "wall_s": 16.8,
+   "usage": {
+    "agent": {
+     "requests": 4,
+     "failed": 0,
+     "input_tokens": 12184,
+     "output_tokens": 402
+    },
+    "caller": {
+     "requests": 5,
+     "failed": 0,
+     "input_tokens": 3292,
+     "output_tokens": 105
+    }
+   }
+  },
+  {
+   "scenario": "book_specific_time",
+   "category": "booking",
+   "channel": "clean",
+   "passed": true,
+   "problems": [],
+   "outcome": "booked",
+   "transferred": false,
+   "caller_turns": 6,
+   "confirmation": {
+    "changes": 1,
+    "with_readback_and_yes": 1,
+    "blocked_unconfirmed": 0
+   },
+   "grounding": {
+    "unsupported_time_mentions": [],
+    "unoffered_slot_attempts": 0
+   },
+   "false_claims": 0,
+   "name_check": "exact",
+   "replaced_advice": 0,
+   "call_id": "text_book_specific_time_1791797931",
+   "end_reason": "agent_hung_up",
+   "transcript": [
+    {
+     "t": 0.0,
+     "role": "agent",
+     "turn": 0,
+     "text": "Thanks for calling Brightside Dental. I'm Callie, the clinic's AI assistant, and this call may be recorded. How can I help you today?"
+    },
+    {
+     "t": 0.0,
+     "role": "caller",
+     "turn": 1,
+     "text": "Hello, I need a filling, do you have this Thursday at two thirty?",
+     "typed": false
+    },
+    {
+     "t": 1.78,
+     "role": "agent",
+     "turn": 1,
+     "text": "Yes, Thursday, October 8th at 2:30 PM is open. Would you like me to book it?"
+    },
+    {
+     "t": 3.35,
+     "role": "caller",
+     "turn": 2,
+     "text": "Yes, please book it. Put me down for a filling at two thirty.",
+     "typed": false
+    },
+    {
+     "t": 5.01,
+     "role": "agent",
+     "turn": 2,
+     "text": "Great. What's your full name?"
+    },
+    {
+     "t": 6.67,
+     "role": "caller",
+     "turn": 3,
+     "text": "D***** O*****.",
+     "typed": false
+    },
+    {
+     "t": 8.67,
+     "role": "agent",
+     "turn": 3,
+     "text": "Thank you, D*****. What's the best phone number to send your confirmation text to?"
+    },
+    {
+     "t": 10.29,
+     "role": "caller",
+     "turn": 4,
+     "text": "D***** O*****'s number is ***-***-7742.",
+     "typed": false
+    },
+    {
+     "t": 12.35,
+     "role": "agent",
+     "turn": 4,
+     "text": "Just to confirm: a filling for D***** O***** on Thursday, October 8th at 2:30 PM, and I'll text the confirmation to the number ending in 7 7 4 2. Is that right?"
+    },
+    {
+     "t": 14.04,
+     "role": "caller",
+     "turn": 5,
+     "text": "Yes, that's right. Thanks.",
+     "typed": false
+    },
+    {
+     "t": 14.05,
+     "role": "agent",
+     "turn": 5,
+     "text": "You're all set for Thursday, October 8th at 2:30 PM. I've sent you a confirmation text. Is there anything else I can help you with?"
+    },
+    {
+     "t": 15.61,
+     "role": "caller",
+     "turn": 6,
+     "text": "No, that's everything. Thanks, bye.",
+     "typed": false
+    },
+    {
+     "t": 15.61,
+     "role": "agent",
+     "turn": 6,
+     "text": "Thanks for calling Brightside Dental. Have a great day. Goodbye!"
+    }
+   ],
+   "tool_calls": [
+    {
+     "turn": 1,
+     "name": "check_availability",
+     "arguments": {
+      "service": "filling",
+      "when": "this Thursday at two thirty"
+     },
+     "result": {
+      "status": "ok",
+      "service": "filling",
+      "understood_as": "Thursday, October 8th, at 2:30 PM",
+      "assumptions": [
+       "2 o'clock read as 2 PM"
+      ],
+      "slots": [
+       {
+        "slot_id": "2026-10-08T14:30",
+        "time": "Thursday, October 8th at 2:30 PM"
+       }
+      ],
+      "alternatives": [],
+      "exact_match": "2026-10-08T14:30"
+     },
+     "say": "Yes, Thursday, October 8th at 2:30 PM is open. Would you like me to book it?",
+     "ms": 1.27
+    },
+    {
+     "turn": 4,
+     "name": "book_appointment",
+     "arguments": {
+      "service": "filling",
+      "slot_id": "2026-10-08T14:30",
+      "patient_name": "D***** O*****",
+      "phone": "***-***-7742",
+      "confirmed": false
+     },
+     "result": {
+      "status": "needs_confirmation",
+      "read_back": "Just to confirm: a filling for D***** O***** on Thursday, October 8th at 2:30 PM, and I'll text the confirmation to the number ending in 7 7 4 2. Is that right?"
+     },
+     "say": "Just to confirm: a filling for D***** O***** on Thursday, October 8th at 2:30 PM, and I'll text the confirmation to the number ending in 7 7 4 2. Is that right?",
+     "ms": 0.1
+    },
+    {
+     "turn": 5,
+     "name": "book_appointment",
+     "arguments": {
+      "service": "filling",
+      "slot_id": "2026-10-08T14:30",
+      "patient_name": "D***** O*****",
+      "phone": "***-***-7742",
+      "confirmed": true
+     },
+     "result": {
+      "status": "booked",
+      "appointment_id": "A-81E2C4",
+      "time": "Thursday, October 8th at 2:30 PM",
+      "sms": "dry_run"
+     },
+     "say": "You're all set for Thursday, October 8th at 2:30 PM. I've sent you a confirmation text. Is there anything else I can help you with?",
+     "ms": 12.99
+    },
+    {
+     "turn": 6,
+     "name": "end_call",
+     "arguments": {
+      "reason": "caller said goodbye"
+     },
+     "result": {
+      "status": "ending"
+     },
+     "say": "Thanks for calling Brightside Dental. Have a great day. Goodbye!",
+     "ms": 0.01
+    }
+   ],
+   "turns": [
+    {
+     "turn": 1,
+     "path": "llm",
+     "model": "claude-haiku-5-5",
+     "cached": false,
+     "llm_calls": 1,
+     "typed": false,
+     "llm_first_token_ms": 1782,
+     "agent_ms": 1784,
+     "turn_ms": 1784,
+     "filler": false,
+     "llm_errors": []
+    },
+    {
+     "turn": 2,
+     "path": "llm",
+     "model": "claude-haiku-5-5",
+     "cached": false,
+     "llm_calls": 1,
+     "typed": false,
+     "llm_first_token_ms": 1376,
+     "agent_ms": 1655,
+     "turn_ms": 1668,
+     "filler": false,
+     "llm_errors": []
+    },
+    {
+     "turn": 3,
+     "path": "llm",
+     "model": "claude-haiku-5-5",
+     "cached": false,
+     "llm_calls": 1,
+     "typed": false,
+     "llm_first_token_ms": 1627,
+     "agent_ms": 1643,
+     "turn_ms": 2000,
+     "filler": false,
+     "llm_errors": []
+    },
+    {
+     "turn": 4,
+     "path": "llm",
+     "model": "claude-haiku-5-5",
+     "cached": false,
+     "llm_calls": 1,
+     "typed": false,
+     "llm_first_token_ms": 2060,
+     "agent_ms": 2061,
+     "turn_ms": 2061,
+     "filler": true,
+     "llm_errors": []
+    },
+    {
+     "turn": 5,
+     "path": "fast_confirm",
+     "model": "",
+     "cached": false,
+     "llm_calls": 0,
+     "typed": false,
+     "llm_first_token_ms": null,
+     "agent_ms": 13,
+     "turn_ms": 13,
+     "filler": false,
+     "llm_errors": []
+    },
+    {
+     "turn": 6,
+     "path": "rules",
+     "model": "",
+     "cached": false,
+     "llm_calls": 0,
+     "typed": false,
+     "llm_first_token_ms": null,
+     "agent_ms": 0,
+     "turn_ms": 0,
+     "filler": false,
+     "llm_errors": []
+    }
+   ],
+   "stats": {
+    "barge_ins": [],
+    "backchannels": 0,
+    "silence_prompts": 0,
+    "unsupported_times": [],
+    "replaced_advice": 0
+   },
+   "tool_errors": [],
+   "caller_errors": [],
+   "stack": {
+    "mode": "text",
+    "llm": "openai/claude-haiku-5-5"
+   },
+   "wall_s": 15.8,
+   "usage": {
+    "agent": {
+     "requests": 4,
+     "failed": 0,
+     "input_tokens": 11733,
+     "output_tokens": 282
+    },
+    "caller": {
+     "requests": 5,
+     "failed": 0,
+     "input_tokens": 3257,
+     "output_tokens": 100
+    }
+   }
+  },
+  {
+   "scenario": "book_relative_date",
+   "category": "booking",
+   "channel": "phone",
+   "passed": true,
+   "problems": [],
+   "outcome": "booked",
+   "transferred": false,
+   "caller_turns": 6,
+   "confirmation": {
+    "changes": 1,
+    "with_readback_and_yes": 1,
+    "blocked_unconfirmed": 0
+   },
+   "grounding": {
+    "unsupported_time_mentions": [],
+    "unoffered_slot_attempts": 0
+   },
+   "false_claims": 0,
+   "name_check": "exact",
+   "replaced_advice": 0,
+   "call_id": "text_book_relative_date_1791797947",
+   "end_reason": "agent_hung_up",
+   "transcript": [
+    {
+     "t": 0.0,
+     "role": "agent",
+     "turn": 0,
+     "text": "Thanks for calling Brightside Dental. I'm Callie, the clinic's AI assistant, and this call may be recorded. How can I help you today?"
+    },
+    {
+     "t": 0.0,
+     "role": "caller",
+     "turn": 1,
+     "text": "Hey, can I get a cleaning the day after tomorrow, sometime after lunch?",
+     "typed": false
+    },
+    {
+     "t": 1.88,
+     "role": "agent",
+     "turn": 1,
+     "text": "I have Thursday, October 8th at 2 PM or 2:30 PM. Which would you prefer?"
+    },
+    {
+     "t": 3.3,
+     "role": "caller",
+     "turn": 2,
+     "text": "Um, 2:30 works for me, thanks.",
+     "typed": false
+    },
+    {
+     "t": 4.93,
+     "role": "agent",
+     "turn": 2,
+     "text": "Great. May I have your full name for the booking?"
+    },
+    {
+     "t": 6.38,
+     "role": "caller",
+     "turn": 3,
+     "text": "G**** L**, G-R-A-C-E, L-I-U.",
+     "typed": false
+    },
+    {
+     "t": 8.12,
+     "role": "agent",
+     "turn": 3,
+     "text": "Thanks, G****. What's the best phone number for the confirmation text?"
+    },
+    {
+     "t": 9.67,
+     "role": "caller",
+     "turn": 4,
+     "text": "Sure, it's ***-***-4402.",
+     "typed": false
+    },
+    {
+     "t": 12.52,
+     "role": "agent",
+     "turn": 4,
+     "text": "Just to confirm: a cleaning and checkup for G**** L** on Thursday, October 8th at 2:30 PM, and I'll text the confirmation to the number ending in 4 4 0 2. Is that right?"
+    },
+    {
+     "t": 13.83,
+     "role": "caller",
+     "turn": 5,
+     "text": "Yes, that's right, thanks.",
+     "typed": false
+    },
+    {
+     "t": 13.85,
+     "role": "agent",
+     "turn": 5,
+     "text": "You're all set for Thursday, October 8th at 2:30 PM. I've sent you a confirmation text. Is there anything else I can help you with?"
+    },
+    {
+     "t": 15.5,
+     "role": "caller",
+     "turn": 6,
+     "text": "No, that's everything, thanks so much!",
+     "typed": false
+    },
+    {
+     "t": 15.5,
+     "role": "agent",
+     "turn": 6,
+     "text": "Thanks for calling Brightside Dental. Have a great day. Goodbye!"
+    }
+   ],
+   "tool_calls": [
+    {
+     "turn": 1,
+     "name": "check_availability",
+     "arguments": {
+      "service": "cleaning",
+      "when": "the day after tomorrow, sometime after lunch"
+     },
+     "result": {
+      "status": "ok",
+      "service": "cleaning",
+      "understood_as": "Thursday, October 8th, 1 PM to 6 PM",
+      "assumptions": [],
+      "slots": [
+       {
+        "slot_id": "2026-10-08T14:00",
+        "time": "Thursday, October 8th at 2 PM"
+       },
+       {
+        "slot_id": "2026-10-08T14:30",
+        "time": "Thursday, October 8th at 2:30 PM"
+       }
+      ],
+      "alternatives": []
+     },
+     "say": "I have Thursday, October 8th at 2 PM or 2:30 PM. Which would you prefer?",
+     "ms": 0.87
+    },
+    {
+     "turn": 4,
+     "name": "book_appointment",
+     "arguments": {
+      "service": "cleaning",
+      "slot_id": "2026-10-08T14:30",
+      "patient_name": "G**** L**",
+      "phone": "***-***-4402",
+      "confirmed": false
+     },
+     "result": {
+      "status": "needs_confirmation",
+      "read_back": "Just to confirm: a cleaning and checkup for G**** L** on Thursday, October 8th at 2:30 PM, and I'll text the confirmation to the number ending in 4 4 0 2. Is that right?"
+     },
+     "say": "Just to confirm: a cleaning and checkup for G**** L** on Thursday, October 8th at 2:30 PM, and I'll text the confirmation to the number ending in 4 4 0 2. Is that right?",
+     "ms": 0.08
+    },
+    {
+     "turn": 5,
+     "name": "book_appointment",
+     "arguments": {
+      "service": "cleaning",
+      "slot_id": "2026-10-08T14:30",
+      "patient_name": "G**** L**",
+      "phone": "***-***-4402",
+      "confirmed": true
+     },
+     "result": {
+      "status": "booked",
+      "appointment_id": "A-82994B",
+      "time": "Thursday, October 8th at 2:30 PM",
+      "sms": "dry_run"
+     },
+     "say": "You're all set for Thursday, October 8th at 2:30 PM. I've sent you a confirmation text. Is there anything else I can help you with?",
+     "ms": 13.05
+    },
+    {
+     "turn": 6,
+     "name": "end_call",
+     "arguments": {
+      "reason": "caller said goodbye"
+     },
+     "result": {
+      "status": "ending"
+     },
+     "say": "Thanks for calling Brightside Dental. Have a great day. Goodbye!",
+     "ms": 0.01
+    }
+   ],
+   "turns": [
+    {
+     "turn": 1,
+     "path": "llm",
+     "model": "claude-haiku-5-5",
+     "cached": false,
+     "llm_calls": 1,
+     "typed": false,
+     "llm_first_token_ms": 1882,
+     "agent_ms": 1883,
+     "turn_ms": 1883,
+     "filler": true,
+     "llm_errors": []
+    },
+    {
+     "turn": 2,
+     "path": "llm",
+     "model": "claude-haiku-5-5",
+     "cached": false,
+     "llm_calls": 1,
+     "typed": false,
+     "llm_first_token_ms": 1310,
+     "agent_ms": 1310,
+     "turn_ms": 1630,
+     "filler": false,
+     "llm_errors": []
+    },
+    {
+     "turn": 3,
+     "path": "llm",
+     "model": "claude-haiku-5-5",
+     "cached": false,
+     "llm_calls": 1,
+     "typed": false,
+     "llm_first_token_ms": 1424,
+     "agent_ms": 1428,
+     "turn_ms": 1735,
+     "filler": false,
+     "llm_errors": []
+    },
+    {
+     "turn": 4,
+     "path": "llm",
+     "model": "claude-haiku-5-5",
+     "cached": false,
+     "llm_calls": 1,
+     "typed": false,
+     "llm_first_token_ms": 2847,
+     "agent_ms": 2848,
+     "turn_ms": 2848,
+     "filler": true,
+     "llm_errors": []
+    },
+    {
+     "turn": 5,
+     "path": "fast_confirm",
+     "model": "",
+     "cached": false,
+     "llm_calls": 0,
+     "typed": false,
+     "llm_first_token_ms": null,
+     "agent_ms": 13,
+     "turn_ms": 14,
+     "filler": false,
+     "llm_errors": []
+    },
+    {
+     "turn": 6,
+     "path": "rules",
+     "model": "",
+     "cached": false,
+     "llm_calls": 0,
+     "typed": false,
+     "llm_first_token_ms": null,
+     "agent_ms": 0,
+     "turn_ms": 0,
+     "filler": false,
+     "llm_errors": []
+    }
+   ],
+   "stats": {
+    "barge_ins": [],
+    "backchannels": 0,
+    "silence_prompts": 0,
+    "unsupported_times": [],
+    "replaced_advice": 0
+   },
+   "tool_errors": [],
+   "caller_errors": [],
+   "stack": {
+    "mode": "text",
+    "llm": "openai/claude-haiku-5-5"
+   },
+   "wall_s": 15.7,
+   "usage": {
+    "agent": {
+     "requests": 4,
+     "failed": 0,
+     "input_tokens": 11833,
+     "output_tokens": 292
+    },
+    "caller": {
+     "requests": 5,
+     "failed": 0,
+     "input_tokens": 3216,
+     "output_tokens": 95
+    }
+   }
+  },
+  {
+   "scenario": "change_mind_day",
+   "category": "change_of_mind",
+   "channel": "clean",
+   "passed": false,
+   "problems": [
+    "expected 1 new booking, found 0"
+   ],
+   "outcome": "info_only",
+   "transferred": false,
+   "caller_turns": 7,
+   "confirmation": {
+    "changes": 0,
+    "with_readback_and_yes": 0,
+    "blocked_unconfirmed": 0
+   },
+   "grounding": {
+    "unsupported_time_mentions": [],
+    "unoffered_slot_attempts": 0
+   },
+   "false_claims": 0,
+   "name_check": null,
+   "replaced_advice": 0,
+   "call_id": "text_change_mind_day_1791797963",
+   "end_reason": "caller_hung_up",
+   "transcript": [
+    {
+     "t": 0.0,
+     "role": "agent",
+     "turn": 0,
+     "text": "Thanks for calling Brightside Dental. I'm Callie, the clinic's AI assistant, and this call may be recorded. How can I help you today?"
+    },
+    {
+     "t": 0.0,
+     "role": "caller",
+     "turn": 1,
+     "text": "Hi, I'd like to schedule a cleaning for next Monday morning.",
+     "typed": false
+    },
+    {
+     "t": 1.71,
+     "role": "agent",
+     "turn": 1,
+     "text": "I have Monday, October 12th at 9 AM, 10 AM or 11 AM. Which would you prefer?"
+    },
+    {
+     "t": 3.51,
+     "role": "caller",
+     "turn": 2,
+     "text": "Hmm, actually, could we do Wednesday afternoon instead? Maybe the 14th?",
+     "typed": false
+    },
+    {
+     "t": 5.68,
+     "role": "agent",
+     "turn": 2,
+     "text": "I have Wednesday, October 14th at 1 PM, 4:30 PM or 5:30 PM. Which would you prefer?"
+    },
+    {
+     "t": 7.55,
+     "role": "caller",
+     "turn": 3,
+     "text": "Hmm, let's see... the 1 PM sounds good, I think. Wait, would 4:30 be better for me?",
+     "typed": false
+    },
+    {
+     "t": 9.56,
+     "role": "agent",
+     "turn": 3,
+     "text": "That depends on your schedule, so you know best. Would you like the 1 PM or the 4:30 PM slot?"
+    },
+    {
+     "t": 11.43,
+     "role": "caller",
+     "turn": 4,
+     "text": "Hmm, I think 1 PM is fine, but actually, 4:30 might work better after work. Ugh, sorry, let me go with 4:30.",
+     "typed": false
+    },
+    {
+     "t": 13.12,
+     "role": "agent",
+     "turn": 4,
+     "text": "Sounds good, the 4:30 PM slot it is. May I have your full name for the booking?"
+    },
+    {
+     "t": 15.1,
+     "role": "caller",
+     "turn": 5,
+     "text": "Sure, it's O***** B*****. Sorry, I keep going back and forth on this.",
+     "typed": false
+    },
+    {
+     "t": 16.83,
+     "role": "agent",
+     "turn": 5,
+     "text": "No need to apologize, O*****. What's the best phone number to reach you for the confirmation text?"
+    },
+    {
+     "t": 18.58,
+     "role": "caller",
+     "turn": 6,
+     "text": "Sure, it's ***-***-8814.",
+     "typed": false
+    },
+    {
+     "t": 20.97,
+     "role": "agent",
+     "turn": 6,
+     "text": "Just to confirm: a cleaning and checkup for O***** B***** on Wednesday, October 14th at 4:30 PM, and I'll text the confirmation to the number ending in 8 8 1 4. Is that right?"
+    },
+    {
+     "t": 20.97,
+     "role": "caller",
+     "turn": 7,
+     "text": "Okay, thanks, bye.",
+     "typed": false
+    },
+    {
+     "t": 23.76,
+     "role": "agent",
+     "turn": 7,
+     "text": "Before you go, I just need a yes to book it. Shall I confirm the Wednesday, October 14th cleaning at 4:30 PM?"
+    }
+   ],
+   "tool_calls": [
+    {
+     "turn": 1,
+     "name": "check_availability",
+     "arguments": {
+      "service": "cleaning",
+      "when": "next Monday morning"
+     },
+     "result": {
+      "status": "ok",
+      "service": "cleaning",
+      "understood_as": "Monday, October 12th, 7 AM to noon",
+      "assumptions": [],
+      "slots": [
+       {
+        "slot_id": "2026-10-12T09:00",
+        "time": "Monday, October 12th at 9 AM"
+       },
+       {
+        "slot_id": "2026-10-12T10:00",
+        "time": "Monday, October 12th at 10 AM"
+       },
+       {
+        "slot_id": "2026-10-12T11:00",
+        "time": "Monday, October 12th at 11 AM"
+       }
+      ],
+      "alternatives": []
+     },
+     "say": "I have Monday, October 12th at 9 AM, 10 AM or 11 AM. Which would you prefer?",
+     "ms": 0.78
+    },
+    {
+     "turn": 2,
+     "name": "check_availability",
+     "arguments": {
+      "service": "cleaning",
+      "when": "Wednesday afternoon, the 14th"
+     },
+     "result": {
+      "status": "ok",
+      "service": "cleaning",
+      "understood_as": "Wednesday, October 14th, noon to 6 PM",
+      "assumptions": [],
+      "slots": [
+       {
+        "slot_id": "2026-10-14T13:00",
+        "time": "Wednesday, October 14th at 1 PM"
+       },
+       {
+        "slot_id": "2026-10-14T16:30",
+        "time": "Wednesday, October 14th at 4:30 PM"
+       },
+       {
+        "slot_id": "2026-10-14T17:30",
+        "time": "Wednesday, October 14th at 5:30 PM"
+       }
+      ],
+      "alternatives": []
+     },
+     "say": "I have Wednesday, October 14th at 1 PM, 4:30 PM or 5:30 PM. Which would you prefer?",
+     "ms": 1.03
+    },
+    {
+     "turn": 6,
+     "name": "book_appointment",
+     "arguments": {
+      "service": "cleaning",
+      "slot_id": "2026-10-14T16:30",
+      "patient_name": "O***** B*****",
+      "phone": "***-***-8814",
+      "confirmed": false
+     },
+     "result": {
+      "status": "needs_confirmation",
+      "read_back": "Just to confirm: a cleaning and checkup for O***** B***** on Wednesday, October 14th at 4:30 PM, and I'll text the confirmation to the number ending in 8 8 1 4. Is that right?"
+     },
+     "say": "Just to confirm: a cleaning and checkup for O***** B***** on Wednesday, October 14th at 4:30 PM, and I'll text the confirmation to the number ending in 8 8 1 4. Is that right?",
+     "ms": 0.08
+    }
+   ],
+   "turns": [
+    {
+     "turn": 1,
+     "path": "llm",
+     "model": "claude-haiku-5-5",
+     "cached": false,
+     "llm_calls": 1,
+     "typed": false,
+     "llm_first_token_ms": 1708,
+     "agent_ms": 1710,
+     "turn_ms": 1710,
+     "filler": false,
+     "llm_errors": []
+    },
+    {
+     "turn": 2,
+     "path": "llm",
+     "model": "claude-haiku-5-5",
+     "cached": false,
+     "llm_calls": 1,
+     "typed": false,
+     "llm_first_token_ms": 2173,
+     "agent_ms": 2175,
+     "turn_ms": 2175,
+     "filler": true,
+     "llm_errors": []
+    },
+    {
+     "turn": 3,
+     "path": "llm",
+     "model": "claude-haiku-5-5",
+     "cached": false,
+     "llm_calls": 1,
+     "typed": false,
+     "llm_first_token_ms": 1824,
+     "agent_ms": 1824,
+     "turn_ms": 2012,
+     "filler": true,
+     "llm_errors": []
+    },
+    {
+     "turn": 4,
+     "path": "llm",
+     "model": "claude-haiku-5-5",
+     "cached": false,
+     "llm_calls": 1,
+     "typed": false,
+     "llm_first_token_ms": 1341,
+     "agent_ms": 1679,
+     "turn_ms": 1695,
+     "filler": false,
+     "llm_errors": []
+    },
+    {
+     "turn": 5,
+     "path": "llm",
+     "model": "claude-haiku-5-5",
+     "cached": false,
+     "llm_calls": 1,
+     "typed": false,
+     "llm_first_token_ms": 1345,
+     "agent_ms": 1710,
+     "turn_ms": 1726,
+     "filler": false,
+     "llm_errors": []
+    },
+    {
+     "turn": 6,
+     "path": "llm",
+     "model": "claude-haiku-5-5",
+     "cached": false,
+     "llm_calls": 1,
+     "typed": false,
+     "llm_first_token_ms": 2394,
+     "agent_ms": 2395,
+     "turn_ms": 2395,
+     "filler": true,
+     "llm_errors": []
+    },
+    {
+     "turn": 7,
+     "path": "llm",
+     "model": "claude-haiku-5-5",
+     "cached": false,
+     "llm_calls": 1,
+     "typed": false,
+     "llm_first_token_ms": 2637,
+     "agent_ms": 2637,
+     "turn_ms": 2790,
+     "filler": true,
+     "llm_errors": []
+    }
+   ],
+   "stats": {
+    "barge_ins": [],
+    "backchannels": 0,
+    "silence_prompts": 0,
+    "unsupported_times": [],
+    "replaced_advice": 0
+   },
+   "tool_errors": [],
+   "caller_errors": [],
+   "stack": {
+    "mode": "text",
+    "llm": "openai/claude-haiku-5-5"
+   },
+   "wall_s": 23.9,
+   "usage": {
+    "agent": {
+     "requests": 7,
+     "failed": 0,
+     "input_tokens": 24224,
+     "output_tokens": 664
+    },
+    "caller": {
+     "requests": 5,
+     "failed": 0,
+     "input_tokens": 3607,
+     "output_tokens": 182
+    }
+   }
+  },
+  {
+   "scenario": "decline_after_options",
+   "category": "change_of_mind",
+   "channel": "phone",
+   "passed": true,
+   "problems": [],
+   "outcome": "info_only",
+   "transferred": false,
+   "caller_turns": 2,
+   "confirmation": {
+    "changes": 0,
+    "with_readback_and_yes": 0,
+    "blocked_unconfirmed": 0
+   },
+   "grounding": {
+    "unsupported_time_mentions": [],
+    "unoffered_slot_attempts": 0
+   },
+   "false_claims": 0,
+   "name_check": null,
+   "replaced_advice": 0,
+   "call_id": "text_decline_after_options_1791797986",
+   "end_reason": "agent_hung_up",
+   "transcript": [
+    {
+     "t": 0.0,
+     "role": "agent",
+     "turn": 0,
+     "text": "Thanks for calling Brightside Dental. I'm Callie, the clinic's AI assistant, and this call may be recorded. How can I help you today?"
+    },
+    {
+     "t": 0.0,
+     "role": "caller",
+     "turn": 1,
+     "text": "Hi, what do you have for a cleaning tomorrow morning?",
+     "typed": false
+    },
+    {
+     "t": 1.67,
+     "role": "agent",
+     "turn": 1,
+     "text": "I have Wednesday, October 7th at 8 AM or 8:30 AM. Which would you prefer?"
+    },
+    {
+     "t": 3.44,
+     "role": "caller",
+     "turn": 2,
+     "text": "Okay, let me think. I need to check my schedule first, so I'll call back later. Thanks.",
+     "typed": false
+    },
+    {
+     "t": 5.23,
+     "role": "agent",
+     "turn": 2,
+     "text": "Sounds good, thanks for calling Brightside Dental. Have a great day! Thanks for calling Brightside Dental. Have a great day. Goodbye!"
+    }
+   ],
+   "tool_calls": [
+    {
+     "turn": 1,
+     "name": "check_availability",
+     "arguments": {
+      "service": "cleaning",
+      "when": "tomorrow morning"
+     },
+     "result": {
+      "status": "ok",
+      "service": "cleaning",
+      "understood_as": "Wednesday, October 7th, 7 AM to noon",
+      "assumptions": [],
+      "slots": [
+       {
+        "slot_id": "2026-10-07T08:00",
+        "time": "Wednesday, October 7th at 8 AM"
+       },
+       {
+        "slot_id": "2026-10-07T08:30",
+        "time": "Wednesday, October 7th at 8:30 AM"
+       }
+      ],
+      "alternatives": []
+     },
+     "say": "I have Wednesday, October 7th at 8 AM or 8:30 AM. Which would you prefer?",
+     "ms": 0.99
+    },
+    {
+     "turn": 2,
+     "name": "end_call",
+     "arguments": {
+      "reason": "Caller will check their schedule and call back later."
+     },
+     "result": {
+      "status": "ending"
+     },
+     "say": "Thanks for calling Brightside Dental. Have a great day. Goodbye!",
+     "ms": 0.0
+    }
+   ],
+   "turns": [
+    {
+     "turn": 1,
+     "path": "llm",
+     "model": "claude-haiku-5-5",
+     "cached": false,
+     "llm_calls": 1,
+     "typed": false,
+     "llm_first_token_ms": 1667,
+     "agent_ms": 1669,
+     "turn_ms": 1669,
+     "filler": false,
+     "llm_errors": []
+    },
+    {
+     "turn": 2,
+     "path": "llm",
+     "model": "claude-haiku-5-5",
+     "cached": false,
+     "llm_calls": 1,
+     "typed": false,
+     "llm_first_token_ms": 1312,
+     "agent_ms": 1558,
+     "turn_ms": 1782,
+     "filler": false,
+     "llm_errors": []
+    }
+   ],
+   "stats": {
+    "barge_ins": [],
+    "backchannels": 0,
+    "silence_prompts": 0,
+    "unsupported_times": [],
+    "replaced_advice": 0
+   },
+   "tool_errors": [],
+   "caller_errors": [],
+   "stack": {
+    "mode": "text",
+    "llm": "openai/claude-haiku-5-5"
+   },
+   "wall_s": 5.4,
+   "usage": {
+    "agent": {
+     "requests": 2,
+     "failed": 0,
+     "input_tokens": 5672,
+     "output_tokens": 166
+    },
+    "caller": {
+     "requests": 1,
+     "failed": 0,
+     "input_tokens": 538,
+     "output_tokens": 33
+    }
+   }
+  },
+  {
+   "scenario": "reschedule_basic",
+   "category": "reschedule",
+   "channel": "clean",
+   "passed": true,
+   "problems": [],
+   "outcome": "rescheduled",
+   "transferred": false,
+   "caller_turns": 5,
+   "confirmation": {
+    "changes": 1,
+    "with_readback_and_yes": 1,
+    "blocked_unconfirmed": 0
+   },
+   "grounding": {
+    "unsupported_time_mentions": [],
+    "unoffered_slot_attempts": 0
+   },
+   "false_claims": 0,
+   "name_check": null,
+   "replaced_advice": 0,
+   "call_id": "text_reschedule_basic_1791797992",
+   "end_reason": "agent_hung_up",
+   "transcript": [
+    {
+     "t": 0.0,
+     "role": "agent",
+     "turn": 0,
+     "text": "Thanks for calling Brightside Dental. I'm Callie, the clinic's AI assistant, and this call may be recorded. How can I help you today?"
+    },
+    {
+     "t": 0.0,
+     "role": "caller",
+     "turn": 1,
+     "text": "Hi, this is M**** L****, I need to reschedule my cleaning that's on Thursday.",
+     "typed": false
+    },
+    {
+     "t": 1.78,
+     "role": "agent",
+     "turn": 1,
+     "text": "I found your cleaning and checkup on Thursday, October 8th at 10 AM. What day and time would you like instead?"
+    },
+    {
+     "t": 3.43,
+     "role": "caller",
+     "turn": 2,
+     "text": "I'm hoping to move it to next Monday morning, if you have anything open then.",
+     "typed": false
+    },
+    {
+     "t": 5.22,
+     "role": "agent",
+     "turn": 2,
+     "text": "I have Monday, October 12th at 9 AM, 10 AM or 11 AM. Which would you prefer?"
+    },
+    {
+     "t": 6.73,
+     "role": "caller",
+     "turn": 3,
+     "text": "Let's take the first one, the 9 AM on Monday, please.",
+     "typed": false
+    },
+    {
+     "t": 8.66,
+     "role": "agent",
+     "turn": 3,
+     "text": "Just to confirm: I'll move your cleaning and checkup from Thursday, October 8th at 10 AM to Monday, October 12th at 9 AM. Is that right?"
+    },
+    {
+     "t": 10.14,
+     "role": "caller",
+     "turn": 4,
+     "text": "Yes, that's right, thank you so much.",
+     "typed": false
+    },
+    {
+     "t": 10.15,
+     "role": "agent",
+     "turn": 4,
+     "text": "Done. Your cleaning and checkup is now on Monday, October 12th at 9 AM. I've texted you the new time. Anything else?"
+    },
+    {
+     "t": 11.76,
+     "role": "caller",
+     "turn": 5,
+     "text": "No, that's everything, thank you so much for your help. Have a great day.",
+     "typed": false
+    },
+    {
+     "t": 11.76,
+     "role": "agent",
+     "turn": 5,
+     "text": "Thanks for calling Brightside Dental. Have a great day. Goodbye!"
+    }
+   ],
+   "tool_calls": [
+    {
+     "turn": 1,
+     "name": "find_appointment",
+     "arguments": {
+      "purpose": "reschedule",
+      "patient_name": "M**** L****"
+     },
+     "result": {
+      "status": "found",
+      "appointments": [
+       {
+        "appointment_id": "A-SETUP0",
+        "service": "cleaning",
+        "service_name": "cleaning and checkup",
+        "time": "Thursday, October 8th at 10 AM"
+       }
+      ]
+     },
+     "say": "I found your cleaning and checkup on Thursday, October 8th at 10 AM. What day and time would you like instead?",
+     "ms": 2.88
+    },
+    {
+     "turn": 2,
+     "name": "check_availability",
+     "arguments": {
+      "service": "cleaning",
+      "when": "next Monday morning",
+      "appointment_id": "A-SETUP0"
+     },
+     "result": {
+      "status": "ok",
+      "service": "cleaning",
+      "understood_as": "Monday, October 12th, 7 AM to noon",
+      "assumptions": [],
+      "slots": [
+       {
+        "slot_id": "2026-10-12T09:00",
+        "time": "Monday, October 12th at 9 AM"
+       },
+       {
+        "slot_id": "2026-10-12T10:00",
+        "time": "Monday, October 12th at 10 AM"
+       },
+       {
+        "slot_id": "2026-10-12T11:00",
+        "time": "Monday, October 12th at 11 AM"
+       }
+      ],
+      "alternatives": []
+     },
+     "say": "I have Monday, October 12th at 9 AM, 10 AM or 11 AM. Which would you prefer?",
+     "ms": 1.61
+    },
+    {
+     "turn": 3,
+     "name": "reschedule_appointment",
+     "arguments": {
+      "appointment_id": "A-SETUP0",
+      "slot_id": "2026-10-12T09:00",
+      "confirmed": false
+     },
+     "result": {
+      "status": "needs_confirmation",
+      "read_back": "Just to confirm: I'll move your cleaning and checkup from Thursday, October 8th at 10 AM to Monday, October 12th at 9 AM. Is that right?"
+     },
+     "say": "Just to confirm: I'll move your cleaning and checkup from Thursday, October 8th at 10 AM to Monday, October 12th at 9 AM. Is that right?",
+     "ms": 2.64
+    },
+    {
+     "turn": 4,
+     "name": "reschedule_appointment",
+     "arguments": {
+      "appointment_id": "A-SETUP0",
+      "slot_id": "2026-10-12T09:00",
+      "confirmed": true
+     },
+     "result": {
+      "status": "rescheduled",
+      "appointment_id": "A-SETUP0",
+      "time": "Monday, October 12th at 9 AM"
+     },
+     "say": "Done. Your cleaning and checkup is now on Monday, October 12th at 9 AM. I've texted you the new time. Anything else?",
+     "ms": 13.86
+    },
+    {
+     "turn": 5,
+     "name": "end_call",
+     "arguments": {
+      "reason": "caller said goodbye"
+     },
+     "result": {
+      "status": "ending"
+     },
+     "say": "Thanks for calling Brightside Dental. Have a great day. Goodbye!",
+     "ms": 0.0
+    }
+   ],
+   "turns": [
+    {
+     "turn": 1,
+     "path": "llm",
+     "model": "claude-haiku-5-5",
+     "cached": false,
+     "llm_calls": 1,
+     "typed": false,
+     "llm_first_token_ms": 1779,
+     "agent_ms": 1782,
+     "turn_ms": 1782,
+     "filler": false,
+     "llm_errors": []
+    },
+    {
+     "turn": 2,
+     "path": "llm",
+     "model": "claude-haiku-5-5",
+     "cached": false,
+     "llm_calls": 1,
+     "typed": false,
+     "llm_first_token_ms": 1782,
+     "agent_ms": 1784,
+     "turn_ms": 1785,
+     "filler": false,
+     "llm_errors": []
+    },
+    {
+     "turn": 3,
+     "path": "llm",
+     "model": "claude-haiku-5-5",
+     "cached": false,
+     "llm_calls": 1,
+     "typed": false,
+     "llm_first_token_ms": 1931,
+     "agent_ms": 1934,
+     "turn_ms": 1934,
+     "filler": true,
+     "llm_errors": []
+    },
+    {
+     "turn": 4,
+     "path": "fast_confirm",
+     "model": "",
+     "cached": false,
+     "llm_calls": 0,
+     "typed": false,
+     "llm_first_token_ms": null,
+     "agent_ms": 14,
+     "turn_ms": 14,
+     "filler": false,
+     "llm_errors": []
+    },
+    {
+     "turn": 5,
+     "path": "rules",
+     "model": "",
+     "cached": false,
+     "llm_calls": 0,
+     "typed": false,
+     "llm_first_token_ms": null,
+     "agent_ms": 0,
+     "turn_ms": 0,
+     "filler": false,
+     "llm_errors": []
+    }
+   ],
+   "stats": {
+    "barge_ins": [],
+    "backchannels": 0,
+    "silence_prompts": 0,
+    "unsupported_times": [],
+    "replaced_advice": 0
+   },
+   "tool_errors": [],
+   "caller_errors": [],
+   "stack": {
+    "mode": "text",
+    "llm": "openai/claude-haiku-5-5"
+   },
+   "wall_s": 11.9,
+   "usage": {
+    "agent": {
+     "requests": 3,
+     "failed": 0,
+     "input_tokens": 8993,
+     "output_tokens": 311
+    },
+    "caller": {
+     "requests": 4,
+     "failed": 0,
+     "input_tokens": 2693,
+     "output_tokens": 90
+    }
+   }
+  },
+  {
+   "scenario": "reschedule_caller_id",
+   "category": "reschedule",
+   "channel": "phone",
+   "passed": true,
+   "problems": [],
+   "outcome": "rescheduled",
+   "transferred": false,
+   "caller_turns": 5,
+   "confirmation": {
+    "changes": 1,
+    "with_readback_and_yes": 1,
+    "blocked_unconfirmed": 0
+   },
+   "grounding": {
+    "unsupported_time_mentions": [],
+    "unoffered_slot_attempts": 0
+   },
+   "false_claims": 0,
+   "name_check": null,
+   "replaced_advice": 0,
+   "call_id": "text_reschedule_caller_id_1791798004",
+   "end_reason": "agent_hung_up",
+   "transcript": [
+    {
+     "t": 0.0,
+     "role": "agent",
+     "turn": 0,
+     "text": "Thanks for calling Brightside Dental. I'm Callie, the clinic's AI assistant, and this call may be recorded. How can I help you today?"
+    },
+    {
+     "t": 0.0,
+     "role": "caller",
+     "turn": 1,
+     "text": "Hi, I need to move my filling appointment to next Tuesday afternoon.",
+     "typed": false
+    },
+    {
+     "t": 1.78,
+     "role": "agent",
+     "turn": 1,
+     "text": "I found your filling on Friday, October 9th at 9 AM. What day and time would you like instead?"
+    },
+    {
+     "t": 3.64,
+     "role": "caller",
+     "turn": 2,
+     "text": "Next Tuesday afternoon, whatever you have open, the first time you can give me is fine.",
+     "typed": false
+    },
+    {
+     "t": 5.47,
+     "role": "agent",
+     "turn": 2,
+     "text": "I have Tuesday, October 13th at 1 PM, 1:30 PM or 3:30 PM. Which would you prefer?"
+    },
+    {
+     "t": 7.07,
+     "role": "caller",
+     "turn": 3,
+     "text": "Take the first one, the 1 PM on Tuesday the 13th, that works for me.",
+     "typed": false
+    },
+    {
+     "t": 9.84,
+     "role": "agent",
+     "turn": 3,
+     "text": "Just to confirm: I'll move your filling from Friday, October 9th at 9 AM to Tuesday, October 13th at 1 PM. Is that right?"
+    },
+    {
+     "t": 11.31,
+     "role": "caller",
+     "turn": 4,
+     "text": "Yes, that's right, the 1 PM on Tuesday the 13th. Thanks so much.",
+     "typed": false
+    },
+    {
+     "t": 13.26,
+     "role": "agent",
+     "turn": 4,
+     "text": "Done. Your filling is now on Tuesday, October 13th at 1 PM. I've texted you the new time. Anything else?"
+    },
+    {
+     "t": 14.95,
+     "role": "caller",
+     "turn": 5,
+     "text": "No, that's everything, thanks so much for your help.",
+     "typed": false
+    },
+    {
+     "t": 14.95,
+     "role": "agent",
+     "turn": 5,
+     "text": "Thanks for calling Brightside Dental. Have a great day. Goodbye!"
+    }
+   ],
+   "tool_calls": [
+    {
+     "turn": 1,
+     "name": "find_appointment",
+     "arguments": {
+      "purpose": "reschedule"
+     },
+     "result": {
+      "status": "found",
+      "appointments": [
+       {
+        "appointment_id": "A-SETUP0",
+        "service": "filling",
+        "service_name": "filling",
+        "time": "Friday, October 9th at 9 AM"
+       }
+      ]
+     },
+     "say": "I found your filling on Friday, October 9th at 9 AM. What day and time would you like instead?",
+     "ms": 2.59
+    },
+    {
+     "turn": 2,
+     "name": "check_availability",
+     "arguments": {
+      "service": "filling",
+      "when": "next Tuesday afternoon",
+      "appointment_id": "A-SETUP0"
+     },
+     "result": {
+      "status": "ok",
+      "service": "filling",
+      "understood_as": "Tuesday, October 13th, noon to 6 PM",
+      "assumptions": [],
+      "slots": [
+       {
+        "slot_id": "2026-10-13T13:00",
+        "time": "Tuesday, October 13th at 1 PM"
+       },
+       {
+        "slot_id": "2026-10-13T13:30",
+        "time": "Tuesday, October 13th at 1:30 PM"
+       },
+       {
+        "slot_id": "2026-10-13T15:30",
+        "time": "Tuesday, October 13th at 3:30 PM"
+       }
+      ],
+      "alternatives": []
+     },
+     "say": "I have Tuesday, October 13th at 1 PM, 1:30 PM or 3:30 PM. Which would you prefer?",
+     "ms": 1.39
+    },
+    {
+     "turn": 3,
+     "name": "reschedule_appointment",
+     "arguments": {
+      "appointment_id": "A-SETUP0",
+      "slot_id": "2026-10-13T13:00",
+      "confirmed": false
+     },
+     "result": {
+      "status": "needs_confirmation",
+      "read_back": "Just to confirm: I'll move your filling from Friday, October 9th at 9 AM to Tuesday, October 13th at 1 PM. Is that right?"
+     },
+     "say": "Just to confirm: I'll move your filling from Friday, October 9th at 9 AM to Tuesday, October 13th at 1 PM. Is that right?",
+     "ms": 1.09
+    },
+    {
+     "turn": 4,
+     "name": "reschedule_appointment",
+     "arguments": {
+      "appointment_id": "A-SETUP0",
+      "slot_id": "2026-10-13T13:00",
+      "confirmed": true
+     },
+     "result": {
+      "status": "rescheduled",
+      "appointment_id": "A-SETUP0",
+      "time": "Tuesday, October 13th at 1 PM"
+     },
+     "say": "Done. Your filling is now on Tuesday, October 13th at 1 PM. I've texted you the new time. Anything else?",
+     "ms": 4.53
+    },
+    {
+     "turn": 5,
+     "name": "end_call",
+     "arguments": {
+      "reason": "caller said goodbye"
+     },
+     "result": {
+      "status": "ending"
+     },
+     "say": "Thanks for calling Brightside Dental. Have a great day. Goodbye!",
+     "ms": 0.01
+    }
+   ],
+   "turns": [
+    {
+     "turn": 1,
+     "path": "llm",
+     "model": "claude-haiku-5-5",
+     "cached": false,
+     "llm_calls": 1,
+     "typed": false,
+     "llm_first_token_ms": 1775,
+     "agent_ms": 1779,
+     "turn_ms": 1779,
+     "filler": false,
+     "llm_errors": []
+    },
+    {
+     "turn": 2,
+     "path": "llm",
+     "model": "claude-haiku-5-5",
+     "cached": false,
+     "llm_calls": 1,
+     "typed": false,
+     "llm_first_token_ms": 1829,
+     "agent_ms": 1831,
+     "turn_ms": 1831,
+     "filler": true,
+     "llm_errors": []
+    },
+    {
+     "turn": 3,
+     "path": "llm",
+     "model": "claude-haiku-5-5",
+     "cached": false,
+     "llm_calls": 1,
+     "typed": false,
+     "llm_first_token_ms": 2767,
+     "agent_ms": 2768,
+     "turn_ms": 2768,
+     "filler": true,
+     "llm_errors": []
+    },
+    {
+     "turn": 4,
+     "path": "llm",
+     "model": "claude-haiku-5-5",
+     "cached": false,
+     "llm_calls": 1,
+     "typed": false,
+     "llm_first_token_ms": 1936,
+     "agent_ms": 1942,
+     "turn_ms": 1942,
+     "filler": true,
+     "llm_errors": []
+    },
+    {
+     "turn": 5,
+     "path": "rules",
+     "model": "",
+     "cached": false,
+     "llm_calls": 0,
+     "typed": false,
+     "llm_first_token_ms": null,
+     "agent_ms": 0,
+     "turn_ms": 0,
+     "filler": false,
+     "llm_errors": []
+    }
+   ],
+   "stats": {
+    "barge_ins": [],
+    "backchannels": 0,
+    "silence_prompts": 0,
+    "unsupported_times": [],
+    "replaced_advice": 0
+   },
+   "tool_errors": [],
+   "caller_errors": [],
+   "stack": {
+    "mode": "text",
+    "llm": "openai/claude-haiku-5-5"
+   },
+   "wall_s": 15.1,
+   "usage": {
+    "agent": {
+     "requests": 4,
+     "failed": 0,
+     "input_tokens": 12640,
+     "output_tokens": 402
+    },
+    "caller": {
+     "requests": 4,
+     "failed": 0,
+     "input_tokens": 2640,
+     "output_tokens": 114
+    }
+   }
+  },
+  {
+   "scenario": "reschedule_interrupt",
+   "category": "interruption",
+   "channel": "clean",
+   "passed": true,
+   "problems": [],
+   "outcome": "rescheduled",
+   "transferred": false,
+   "caller_turns": 6,
+   "confirmation": {
+    "changes": 1,
+    "with_readback_and_yes": 1,
+    "blocked_unconfirmed": 0
+   },
+   "grounding": {
+    "unsupported_time_mentions": [],
+    "unoffered_slot_attempts": 0
+   },
+   "false_claims": 0,
+   "name_check": null,
+   "replaced_advice": 0,
+   "call_id": "text_reschedule_interrupt_1791798019",
+   "end_reason": "agent_hung_up",
+   "transcript": [
+    {
+     "t": 0.0,
+     "role": "agent",
+     "turn": 0,
+     "text": "Thanks for calling Brightside Dental. I'm Callie, the clinic's AI assistant, and this call may be recorded. How can I help you today?"
+    },
+    {
+     "t": 0.0,
+     "role": "caller",
+     "turn": 1,
+     "text": "Hi, it's S**** R****, I have a cleaning tomorrow afternoon and I need to change it.",
+     "typed": false
+    },
+    {
+     "t": 1.93,
+     "role": "agent",
+     "turn": 1,
+     "text": "I found your cleaning and checkup on Wednesday, October 7th at 2 PM. What day and time would you like instead?"
+    },
+    {
+     "t": 4.06,
+     "role": "caller",
+     "turn": 2,
+     "text": "Yes, that's the one. Do you have anything in the morning later this week, like Thursday or Friday?",
+     "typed": false
+    },
+    {
+     "t": 6.2,
+     "role": "agent",
+     "turn": 2,
+     "text": "I have Wednesday, October 7th at 8 AM; or Thursday, October 8th at 9:30 AM; or Friday, October 9th at 8 AM. Which would you prefer?"
+    },
+    {
+     "t": 6.2,
+     "role": "caller",
+     "turn": 3,
+     "text": "Sorry, sorry, do you have anything in the morning instead?",
+     "typed": false
+    },
+    {
+     "t": 9.3,
+     "role": "agent",
+     "turn": 3,
+     "text": "Yes, all three of those are morning times. Would one of them work for you?"
+    },
+    {
+     "t": 10.95,
+     "role": "caller",
+     "turn": 4,
+     "text": "Yeah, Thursday at 9:30 works, let's do that one.",
+     "typed": false
+    },
+    {
+     "t": 12.77,
+     "role": "agent",
+     "turn": 4,
+     "text": "Just to confirm: I'll move your cleaning and checkup from Wednesday, October 7th at 2 PM to Thursday, October 8th at 9:30 AM. Is that right?"
+    },
+    {
+     "t": 14.37,
+     "role": "caller",
+     "turn": 5,
+     "text": "Yes, that's right, Thursday the eighth at 9:30. Thanks so much.",
+     "typed": false
+    },
+    {
+     "t": 16.23,
+     "role": "agent",
+     "turn": 5,
+     "text": "Done. Your cleaning and checkup is now on Thursday, October 8th at 9:30 AM. I've texted you the new time. Anything else?"
+    },
+    {
+     "t": 17.5,
+     "role": "caller",
+     "turn": 6,
+     "text": "No, that's everything, thanks so much. Bye!",
+     "typed": false
+    },
+    {
+     "t": 17.5,
+     "role": "agent",
+     "turn": 6,
+     "text": "Thanks for calling Brightside Dental. Have a great day. Goodbye!"
+    }
+   ],
+   "tool_calls": [
+    {
+     "turn": 1,
+     "name": "find_appointment",
+     "arguments": {
+      "purpose": "reschedule",
+      "patient_name": "S**** R****"
+     },
+     "result": {
+      "status": "found",
+      "appointments": [
+       {
+        "appointment_id": "A-SETUP0",
+        "service": "cleaning",
+        "service_name": "cleaning and checkup",
+        "time": "Wednesday, October 7th at 2 PM"
+       }
+      ]
+     },
+     "say": "I found your cleaning and checkup on Wednesday, October 7th at 2 PM. What day and time would you like instead?",
+     "ms": 3.55
+    },
+    {
+     "turn": 2,
+     "name": "check_availability",
+     "arguments": {
+      "service": "cleaning",
+      "when": "morning later this week, like Thursday or Friday",
+      "appointment_id": "A-SETUP0"
+     },
+     "result": {
+      "status": "ok",
+      "service": "cleaning",
+      "understood_as": "Tuesday, October 6th through Saturday, October 10th, 7 AM to noon; or Friday, October 9th, 7 AM to noon",
+      "assumptions": [],
+      "slots": [
+       {
+        "slot_id": "2026-10-07T08:00",
+        "time": "Wednesday, October 7th at 8 AM"
+       },
+       {
+        "slot_id": "2026-10-08T09:30",
+        "time": "Thursday, October 8th at 9:30 AM"
+       },
+       {
+        "slot_id": "2026-10-09T08:00",
+        "time": "Friday, October 9th at 8 AM"
+       }
+      ],
+      "alternatives": []
+     },
+     "say": "I have Wednesday, October 7th at 8 AM; or Thursday, October 8th at 9:30 AM; or Friday, October 9th at 8 AM. Which would you prefer?",
+     "ms": 3.46
+    },
+    {
+     "turn": 4,
+     "name": "reschedule_appointment",
+     "arguments": {
+      "appointment_id": "A-SETUP0",
+      "slot_id": "2026-10-08T09:30",
+      "confirmed": false
+     },
+     "result": {
+      "status": "needs_confirmation",
+      "read_back": "Just to confirm: I'll move your cleaning and checkup from Wednesday, October 7th at 2 PM to Thursday, October 8th at 9:30 AM. Is that right?"
+     },
+     "say": "Just to confirm: I'll move your cleaning and checkup from Wednesday, October 7th at 2 PM to Thursday, October 8th at 9:30 AM. Is that right?",
+     "ms": 1.16
+    },
+    {
+     "turn": 5,
+     "name": "reschedule_appointment",
+     "arguments": {
+      "appointment_id": "A-SETUP0",
+      "slot_id": "2026-10-08T09:30",
+      "confirmed": true
+     },
+     "result": {
+      "status": "rescheduled",
+      "appointment_id": "A-SETUP0",
+      "time": "Thursday, October 8th at 9:30 AM"
+     },
+     "say": "Done. Your cleaning and checkup is now on Thursday, October 8th at 9:30 AM. I've texted you the new time. Anything else?",
+     "ms": 8.04
+    },
+    {
+     "turn": 6,
+     "name": "end_call",
+     "arguments": {
+      "reason": "caller said goodbye"
+     },
+     "result": {
+      "status": "ending"
+     },
+     "say": "Thanks for calling Brightside Dental. Have a great day. Goodbye!",
+     "ms": 0.01
+    }
+   ],
+   "turns": [
+    {
+     "turn": 1,
+     "path": "llm",
+     "model": "claude-haiku-5-5",
+     "cached": false,
+     "llm_calls": 1,
+     "typed": false,
+     "llm_first_token_ms": 1924,
+     "agent_ms": 1928,
+     "turn_ms": 1928,
+     "filler": true,
+     "llm_errors": []
+    },
+    {
+     "turn": 2,
+     "path": "llm",
+     "model": "claude-haiku-5-5",
+     "cached": false,
+     "llm_calls": 1,
+     "typed": false,
+     "llm_first_token_ms": 2136,
+     "agent_ms": 2140,
+     "turn_ms": 2140,
+     "filler": true,
+     "llm_errors": []
+    },
+    {
+     "turn": 3,
+     "path": "llm",
+     "model": "claude-haiku-5-5",
+     "cached": false,
+     "llm_calls": 1,
+     "typed": false,
+     "llm_first_token_ms": 3081,
+     "agent_ms": 3081,
+     "turn_ms": 3105,
+     "filler": true,
+     "llm_errors": []
+    },
+    {
+     "turn": 4,
+     "path": "llm",
+     "model": "claude-haiku-5-5",
+     "cached": false,
+     "llm_calls": 1,
+     "typed": false,
+     "llm_first_token_ms": 1822,
+     "agent_ms": 1823,
+     "turn_ms": 1823,
+     "filler": true,
+     "llm_errors": []
+    },
+    {
+     "turn": 5,
+     "path": "llm",
+     "model": "claude-haiku-5-5",
+     "cached": false,
+     "llm_calls": 1,
+     "typed": false,
+     "llm_first_token_ms": 1849,
+     "agent_ms": 1857,
+     "turn_ms": 1857,
+     "filler": true,
+     "llm_errors": []
+    },
+    {
+     "turn": 6,
+     "path": "rules",
+     "model": "",
+     "cached": false,
+     "llm_calls": 0,
+     "typed": false,
+     "llm_first_token_ms": null,
+     "agent_ms": 0,
+     "turn_ms": 0,
+     "filler": false,
+     "llm_errors": []
+    }
+   ],
+   "stats": {
+    "barge_ins": [],
+    "backchannels": 0,
+    "silence_prompts": 0,
+    "unsupported_times": [],
+    "replaced_advice": 0
+   },
+   "tool_errors": [],
+   "caller_errors": [],
+   "stack": {
+    "mode": "text",
+    "llm": "openai/claude-haiku-5-5"
+   },
+   "wall_s": 17.7,
+   "usage": {
+    "agent": {
+     "requests": 5,
+     "failed": 0,
+     "input_tokens": 16551,
+     "output_tokens": 664
+    },
+    "caller": {
+     "requests": 4,
+     "failed": 0,
+     "input_tokens": 3045,
+     "output_tokens": 110
+    }
+   }
+  },
+  {
+   "scenario": "reschedule_noisy",
+   "category": "reschedule",
+   "channel": "phone_noisy",
+   "passed": true,
+   "problems": [],
+   "outcome": "rescheduled",
+   "transferred": false,
+   "caller_turns": 6,
+   "confirmation": {
+    "changes": 1,
+    "with_readback_and_yes": 1,
+    "blocked_unconfirmed": 0
+   },
+   "grounding": {
+    "unsupported_time_mentions": [],
+    "unoffered_slot_attempts": 0
+   },
+   "false_claims": 0,
+   "name_check": null,
+   "replaced_advice": 0,
+   "call_id": "text_reschedule_noisy_1791798037",
+   "end_reason": "agent_hung_up",
+   "transcript": [
+    {
+     "t": 0.0,
+     "role": "agent",
+     "turn": 0,
+     "text": "Thanks for calling Brightside Dental. I'm Callie, the clinic's AI assistant, and this call may be recorded. How can I help you today?"
+    },
+    {
+     "t": 0.0,
+     "role": "caller",
+     "turn": 1,
+     "text": "Hello, this is A**** H*****, I want to move my whitening appointment to October twenty first.",
+     "typed": false
+    },
+    {
+     "t": 2.53,
+     "role": "agent",
+     "turn": 1,
+     "text": "I found your teeth whitening on Wednesday, October 14th at 1 PM. What day and time would you like instead?"
+    },
+    {
+     "t": 4.16,
+     "role": "caller",
+     "turn": 2,
+     "text": "Yes, the twenty first, whatever time you have that day is fine, just give me the first one you've got.",
+     "typed": false
+    },
+    {
+     "t": 6.07,
+     "role": "agent",
+     "turn": 2,
+     "text": "The earliest I have is Tuesday, October 6th at 1 PM; or Wednesday, October 7th at 1 PM; or Friday, October 9th at 9 AM. Which would you prefer?"
+    },
+    {
+     "t": 7.81,
+     "role": "caller",
+     "turn": 3,
+     "text": "Sorry, I said the twenty first, not those dates. Can you check the twenty first of October for me?",
+     "typed": false
+    },
+    {
+     "t": 9.65,
+     "role": "agent",
+     "turn": 3,
+     "text": "I have Wednesday, October 21st at 1 PM, 3 PM or 5:30 PM. Which would you prefer?"
+    },
+    {
+     "t": 11.36,
+     "role": "caller",
+     "turn": 4,
+     "text": "Just take the first one, the one at one PM is fine.",
+     "typed": false
+    },
+    {
+     "t": 13.29,
+     "role": "agent",
+     "turn": 4,
+     "text": "Just to confirm: I'll move your teeth whitening from Wednesday, October 14th at 1 PM to Wednesday, October 21st at 1 PM. Is that right?"
+    },
+    {
+     "t": 14.81,
+     "role": "caller",
+     "turn": 5,
+     "text": "Yes, that's right, Wednesday the twenty first at one PM. Thank you.",
+     "typed": false
+    },
+    {
+     "t": 19.62,
+     "role": "agent",
+     "turn": 5,
+     "text": "Done. Your teeth whitening is now on Wednesday, October 21st at 1 PM. I've texted you the new time. Anything else?"
+    },
+    {
+     "t": 21.87,
+     "role": "caller",
+     "turn": 6,
+     "text": "No, that's everything, thanks a lot for your help.",
+     "typed": false
+    },
+    {
+     "t": 21.87,
+     "role": "agent",
+     "turn": 6,
+     "text": "Thanks for calling Brightside Dental. Have a great day. Goodbye!"
+    }
+   ],
+   "tool_calls": [
+    {
+     "turn": 1,
+     "name": "find_appointment",
+     "arguments": {
+      "purpose": "reschedule",
+      "patient_name": "A**** H*****"
+     },
+     "result": {
+      "status": "found",
+      "appointments": [
+       {
+        "appointment_id": "A-SETUP0",
+        "service": "whitening",
+        "service_name": "teeth whitening",
+        "time": "Wednesday, October 14th at 1 PM"
+       }
+      ]
+     },
+     "say": "I found your teeth whitening on Wednesday, October 14th at 1 PM. What day and time would you like instead?",
+     "ms": 4.41
+    },
+    {
+     "turn": 2,
+     "name": "check_availability",
+     "arguments": {
+      "service": "whitening",
+      "when": "October twenty first, whatever time is first available",
+      "appointment_id": "A-SETUP0"
+     },
+     "result": {
+      "status": "ok",
+      "service": "whitening",
+      "understood_as": "the earliest available time",
+      "assumptions": [],
+      "slots": [
+       {
+        "slot_id": "2026-10-06T13:00",
+        "time": "Tuesday, October 6th at 1 PM"
+       },
+       {
+        "slot_id": "2026-10-07T13:00",
+        "time": "Wednesday, October 7th at 1 PM"
+       },
+       {
+        "slot_id": "2026-10-09T09:00",
+        "time": "Friday, October 9th at 9 AM"
+       }
+      ],
+      "alternatives": []
+     },
+     "say": "The earliest I have is Tuesday, October 6th at 1 PM; or Wednesday, October 7th at 1 PM; or Friday, October 9th at 9 AM. Which would you prefer?",
+     "ms": 7.17
+    },
+    {
+     "turn": 3,
+     "name": "check_availability",
+     "arguments": {
+      "service": "whitening",
+      "when": "October twenty first",
+      "appointment_id": "A-SETUP0"
+     },
+     "result": {
+      "status": "ok",
+      "service": "whitening",
+      "understood_as": "Wednesday, October 21st",
+      "assumptions": [],
+      "slots": [
+       {
+        "slot_id": "2026-10-21T13:00",
+        "time": "Wednesday, October 21st at 1 PM"
+       },
+       {
+        "slot_id": "2026-10-21T15:00",
+        "time": "Wednesday, October 21st at 3 PM"
+       },
+       {
+        "slot_id": "2026-10-21T17:30",
+        "time": "Wednesday, October 21st at 5:30 PM"
+       }
+      ],
+      "alternatives": []
+     },
+     "say": "I have Wednesday, October 21st at 1 PM, 3 PM or 5:30 PM. Which would you prefer?",
+     "ms": 2.75
+    },
+    {
+     "turn": 4,
+     "name": "reschedule_appointment",
+     "arguments": {
+      "appointment_id": "A-SETUP0",
+      "slot_id": "2026-10-21T13:00",
+      "confirmed": false
+     },
+     "result": {
+      "status": "needs_confirmation",
+      "read_back": "Just to confirm: I'll move your teeth whitening from Wednesday, October 14th at 1 PM to Wednesday, October 21st at 1 PM. Is that right?"
+     },
+     "say": "Just to confirm: I'll move your teeth whitening from Wednesday, October 14th at 1 PM to Wednesday, October 21st at 1 PM. Is that right?",
+     "ms": 0.86
+    },
+    {
+     "turn": 5,
+     "name": "reschedule_appointment",
+     "arguments": {
+      "appointment_id": "A-SETUP0",
+      "slot_id": "2026-10-21T13:00",
+      "confirmed": true
+     },
+     "result": {
+      "status": "rescheduled",
+      "appointment_id": "A-SETUP0",
+      "time": "Wednesday, October 21st at 1 PM"
+     },
+     "say": "Done. Your teeth whitening is now on Wednesday, October 21st at 1 PM. I've texted you the new time. Anything else?",
+     "ms": 17.59
+    },
+    {
+     "turn": 6,
+     "name": "end_call",
+     "arguments": {
+      "reason": "caller said goodbye"
+     },
+     "result": {
+      "status": "ending"
+     },
+     "say": "Thanks for calling Brightside Dental. Have a great day. Goodbye!",
+     "ms": 0.01
+    }
+   ],
+   "turns": [
+    {
+     "turn": 1,
+     "path": "llm",
+     "model": "claude-haiku-5-5",
+     "cached": false,
+     "llm_calls": 1,
+     "typed": false,
+     "llm_first_token_ms": 2524,
+     "agent_ms": 2529,
+     "turn_ms": 2529,
+     "filler": true,
+     "llm_errors": []
+    },
+    {
+     "turn": 2,
+     "path": "llm",
+     "model": "claude-haiku-5-5",
+     "cached": false,
+     "llm_calls": 1,
+     "typed": false,
+     "llm_first_token_ms": 1894,
+     "agent_ms": 1901,
+     "turn_ms": 1901,
+     "filler": true,
+     "llm_errors": []
+    },
+    {
+     "turn": 3,
+     "path": "llm",
+     "model": "claude-haiku-5-5",
+     "cached": false,
+     "llm_calls": 1,
+     "typed": false,
+     "llm_first_token_ms": 1839,
+     "agent_ms": 1842,
+     "turn_ms": 1842,
+     "filler": true,
+     "llm_errors": []
+    },
+    {
+     "turn": 4,
+     "path": "llm",
+     "model": "claude-haiku-5-5",
+     "cached": false,
+     "llm_calls": 1,
+     "typed": false,
+     "llm_first_token_ms": 1921,
+     "agent_ms": 1922,
+     "turn_ms": 1922,
+     "filler": true,
+     "llm_errors": []
+    },
+    {
+     "turn": 5,
+     "path": "llm",
+     "model": "claude-haiku-5-5",
+     "cached": false,
+     "llm_calls": 1,
+     "typed": false,
+     "llm_first_token_ms": 4786,
+     "agent_ms": 4805,
+     "turn_ms": 4805,
+     "filler": true,
+     "llm_errors": []
+    },
+    {
+     "turn": 6,
+     "path": "rules",
+     "model": "",
+     "cached": false,
+     "llm_calls": 0,
+     "typed": false,
+     "llm_first_token_ms": null,
+     "agent_ms": 0,
+     "turn_ms": 0,
+     "filler": false,
+     "llm_errors": []
+    }
+   ],
+   "stats": {
+    "barge_ins": [],
+    "backchannels": 0,
+    "silence_prompts": 0,
+    "unsupported_times": [],
+    "replaced_advice": 0
+   },
+   "tool_errors": [],
+   "caller_errors": [],
+   "stack": {
+    "mode": "text",
+    "llm": "openai/claude-haiku-5-5"
+   },
+   "wall_s": 22.0,
+   "usage": {
+    "agent": {
+     "requests": 6,
+     "failed": 1,
+     "input_tokens": 17135,
+     "output_tokens": 587
+    },
+    "caller": {
+     "requests": 5,
+     "failed": 0,
+     "input_tokens": 3744,
+     "output_tokens": 136
+    }
+   }
+  },
+  {
+   "scenario": "cancel_basic",
+   "category": "cancel",
+   "channel": "clean",
+   "passed": true,
+   "problems": [],
+   "outcome": "cancelled",
+   "transferred": false,
+   "caller_turns": 3,
+   "confirmation": {
+    "changes": 1,
+    "with_readback_and_yes": 1,
+    "blocked_unconfirmed": 0
+   },
+   "grounding": {
+    "unsupported_time_mentions": [],
+    "unoffered_slot_attempts": 0
+   },
+   "false_claims": 0,
+   "name_check": null,
+   "replaced_advice": 0,
+   "call_id": "text_cancel_basic_1791798059",
+   "end_reason": "agent_hung_up",
+   "transcript": [
+    {
+     "t": 0.0,
+     "role": "agent",
+     "turn": 0,
+     "text": "Thanks for calling Brightside Dental. I'm Callie, the clinic's AI assistant, and this call may be recorded. How can I help you today?"
+    },
+    {
+     "t": 0.0,
+     "role": "caller",
+     "turn": 1,
+     "text": "Hi, I'm sorry, I need to cancel my cleaning next Thursday. My name is E**** C****.",
+     "typed": false
+    },
+    {
+     "t": 3.17,
+     "role": "agent",
+     "turn": 1,
+     "text": "I found your cleaning and checkup on Thursday, October 15th at 11 AM. Would you like me to cancel it?"
+    },
+    {
+     "t": 4.74,
+     "role": "caller",
+     "turn": 2,
+     "text": "Yes, please, that's the one. I'm really sorry for the short notice.",
+     "typed": false
+    },
+    {
+     "t": 6.49,
+     "role": "agent",
+     "turn": 2,
+     "text": "Your appointment on Thursday, October 15th at 11 AM is cancelled. Would you like to book a new time?"
+    },
+    {
+     "t": 7.86,
+     "role": "caller",
+     "turn": 3,
+     "text": "No, thanks, I'll call back another time. Thank you so much for your help.",
+     "typed": false
+    },
+    {
+     "t": 9.87,
+     "role": "agent",
+     "turn": 3,
+     "text": "You're welcome, E****. Thanks for letting us know, and have a great day. Thanks for calling Brightside Dental. Have a great day. Goodbye!"
+    }
+   ],
+   "tool_calls": [
+    {
+     "turn": 1,
+     "name": "find_appointment",
+     "arguments": {
+      "purpose": "cancel",
+      "patient_name": "E**** C****"
+     },
+     "result": {
+      "status": "found",
+      "appointments": [
+       {
+        "appointment_id": "A-SETUP0",
+        "service": "cleaning",
+        "service_name": "cleaning and checkup",
+        "time": "Thursday, October 15th at 11 AM"
+       }
+      ],
+      "pending": "cancel_appointment"
+     },
+     "say": "I found your cleaning and checkup on Thursday, October 15th at 11 AM. Would you like me to cancel it?",
+     "ms": 2.56
+    },
+    {
+     "turn": 2,
+     "name": "cancel_appointment",
+     "arguments": {
+      "appointment_id": "A-SETUP0",
+      "confirmed": true
+     },
+     "result": {
+      "status": "cancelled",
+      "appointment_id": "A-SETUP0",
+      "late": false
+     },
+     "say": "Your appointment on Thursday, October 15th at 11 AM is cancelled. Would you like to book a new time?",
+     "ms": 12.42
+    },
+    {
+     "turn": 3,
+     "name": "end_call",
+     "arguments": {
+      "reason": "Caller cancelled cleaning and declined to rebook."
+     },
+     "result": {
+      "status": "ending"
+     },
+     "say": "Thanks for calling Brightside Dental. Have a great day. Goodbye!",
+     "ms": 0.01
+    }
+   ],
+   "turns": [
+    {
+     "turn": 1,
+     "path": "llm",
+     "model": "claude-haiku-5-5",
+     "cached": false,
+     "llm_calls": 1,
+     "typed": false,
+     "llm_first_token_ms": 3164,
+     "agent_ms": 3168,
+     "turn_ms": 3168,
+     "filler": true,
+     "llm_errors": []
+    },
+    {
+     "turn": 2,
+     "path": "llm",
+     "model": "claude-haiku-5-5",
+     "cached": false,
+     "llm_calls": 1,
+     "typed": false,
+     "llm_first_token_ms": 1729,
+     "agent_ms": 1742,
+     "turn_ms": 1742,
+     "filler": false,
+     "llm_errors": []
+    },
+    {
+     "turn": 3,
+     "path": "llm",
+     "model": "claude-haiku-5-5",
+     "cached": false,
+     "llm_calls": 1,
+     "typed": false,
+     "llm_first_token_ms": 1411,
+     "agent_ms": 1685,
+     "turn_ms": 2012,
+     "filler": false,
+     "llm_errors": []
+    }
+   ],
+   "stats": {
+    "barge_ins": [],
+    "backchannels": 0,
+    "silence_prompts": 0,
+    "unsupported_times": [],
+    "replaced_advice": 0
+   },
+   "tool_errors": [],
+   "caller_errors": [],
+   "stack": {
+    "mode": "text",
+    "llm": "openai/claude-haiku-5-5"
+   },
+   "wall_s": 10.0,
+   "usage": {
+    "agent": {
+     "requests": 3,
+     "failed": 0,
+     "input_tokens": 8857,
+     "output_tokens": 260
+    },
+    "caller": {
+     "requests": 2,
+     "failed": 0,
+     "input_tokens": 1157,
+     "output_tokens": 52
+    }
+   }
+  },
+  {
+   "scenario": "faq_insurance",
+   "category": "faq",
+   "channel": "clean",
+   "passed": true,
+   "problems": [],
+   "outcome": "info_only",
+   "transferred": false,
+   "caller_turns": 3,
+   "confirmation": {
+    "changes": 0,
+    "with_readback_and_yes": 0,
+    "blocked_unconfirmed": 0
+   },
+   "grounding": {
+    "unsupported_time_mentions": [],
+    "unoffered_slot_attempts": 0
+   },
+   "false_claims": 0,
+   "name_check": null,
+   "replaced_advice": 0,
+   "call_id": "text_faq_insurance_1791798069",
+   "end_reason": "agent_hung_up",
+   "transcript": [
+    {
+     "t": 0.0,
+     "role": "agent",
+     "turn": 0,
+     "text": "Thanks for calling Brightside Dental. I'm Callie, the clinic's AI assistant, and this call may be recorded. How can I help you today?"
+    },
+    {
+     "t": 0.0,
+     "role": "caller",
+     "turn": 1,
+     "text": "Hi, do you take Delta Dental insurance?",
+     "typed": false
+    },
+    {
+     "t": 5.91,
+     "role": "agent",
+     "turn": 1,
+     "text": "Yes, we're in network with Delta Dental. Please bring your insurance card to your first visit. Is there anything else I can help you with?"
+    },
+    {
+     "t": 7.45,
+     "role": "caller",
+     "turn": 2,
+     "text": "Great, thanks. And do you also accept Medicaid?",
+     "typed": false
+    },
+    {
+     "t": 9.27,
+     "role": "agent",
+     "turn": 2,
+     "text": "No, we don't accept Medicaid. Is there anything else I can help you with?"
+    },
+    {
+     "t": 10.6,
+     "role": "caller",
+     "turn": 3,
+     "text": "Oh, okay. Thanks for checking, that's helpful to know. Have a good day.",
+     "typed": false
+    },
+    {
+     "t": 10.6,
+     "role": "agent",
+     "turn": 3,
+     "text": "Thanks for calling Brightside Dental. Have a great day. Goodbye!"
+    }
+   ],
+   "tool_calls": [
+    {
+     "turn": 1,
+     "name": "answer_faq",
+     "arguments": {
+      "question": "Do you accept Delta Dental insurance?"
+     },
+     "result": {
+      "status": "ok",
+      "passages": [
+       {
+        "title": "Insurance",
+        "text": "We are in network with Delta Dental, Cigna, MetLife, Aetna and Guardian PPO plans. We also accept most other PPO plans as out of network and file the claim for you. We do not accept HMO dental plans or Medicaid. Please bring your insurance card to your first visit."
+       },
+       {
+        "title": "Dental emergencies",
+        "text": "For severe tooth pain, a broken tooth or a lost filling, we keep same-week urgent visit slots. If you have swelling in your face or neck, trouble breathing or swallowing, bleeding that does not stop, or an injury to your jaw, call 911 or go to the nearest emergency room right away."
+       }
+      ]
+     },
+     "say": "",
+     "ms": 0.39
+    },
+    {
+     "turn": 3,
+     "name": "end_call",
+     "arguments": {
+      "reason": "caller said goodbye"
+     },
+     "result": {
+      "status": "ending"
+     },
+     "say": "Thanks for calling Brightside Dental. Have a great day. Goodbye!",
+     "ms": 0.01
+    }
+   ],
+   "turns": [
+    {
+     "turn": 1,
+     "path": "llm",
+     "model": "claude-haiku-5-5",
+     "cached": false,
+     "llm_calls": 2,
+     "typed": false,
+     "llm_first_token_ms": 3707,
+     "agent_ms": 5877,
+     "turn_ms": 5908,
+     "filler": true,
+     "llm_errors": []
+    },
+    {
+     "turn": 2,
+     "path": "llm",
+     "model": "claude-haiku-5-5",
+     "cached": false,
+     "llm_calls": 1,
+     "typed": false,
+     "llm_first_token_ms": 1512,
+     "agent_ms": 1811,
+     "turn_ms": 1824,
+     "filler": false,
+     "llm_errors": []
+    },
+    {
+     "turn": 3,
+     "path": "rules",
+     "model": "",
+     "cached": false,
+     "llm_calls": 0,
+     "typed": false,
+     "llm_first_token_ms": null,
+     "agent_ms": 0,
+     "turn_ms": 0,
+     "filler": false,
+     "llm_errors": []
+    }
+   ],
+   "stats": {
+    "barge_ins": [],
+    "backchannels": 0,
+    "silence_prompts": 0,
+    "unsupported_times": [],
+    "replaced_advice": 0
+   },
+   "tool_errors": [],
+   "caller_errors": [],
+   "stack": {
+    "mode": "text",
+    "llm": "openai/claude-haiku-5-5"
+   },
+   "wall_s": 10.7,
+   "usage": {
+    "agent": {
+     "requests": 4,
+     "failed": 1,
+     "input_tokens": 8650,
+     "output_tokens": 135
+    },
+    "caller": {
+     "requests": 2,
+     "failed": 0,
+     "input_tokens": 1084,
+     "output_tokens": 52
+    }
+   }
+  },
+  {
+   "scenario": "faq_hours_parking",
+   "category": "faq",
+   "channel": "phone",
+   "passed": true,
+   "problems": [],
+   "outcome": "info_only",
+   "transferred": false,
+   "caller_turns": 3,
+   "confirmation": {
+    "changes": 0,
+    "with_readback_and_yes": 0,
+    "blocked_unconfirmed": 0
+   },
+   "grounding": {
+    "unsupported_time_mentions": [],
+    "unoffered_slot_attempts": 0
+   },
+   "false_claims": 0,
+   "name_check": null,
+   "replaced_advice": 0,
+   "call_id": "text_faq_hours_parking_1791798079",
+   "end_reason": "agent_hung_up",
+   "transcript": [
+    {
+     "t": 0.0,
+     "role": "agent",
+     "turn": 0,
+     "text": "Thanks for calling Brightside Dental. I'm Callie, the clinic's AI assistant, and this call may be recorded. How can I help you today?"
+    },
+    {
+     "t": 0.0,
+     "role": "caller",
+     "turn": 1,
+     "text": "Good morning. What time do you open on Saturdays?",
+     "typed": false
+    },
+    {
+     "t": 4.14,
+     "role": "agent",
+     "turn": 1,
+     "text": "We open at 9 AM on Saturdays, and we're open until 1 PM. Is there anything else I can help you with?"
+    },
+    {
+     "t": 5.92,
+     "role": "caller",
+     "turn": 2,
+     "text": "Thanks, that's helpful. Where should I park when I come in on Saturday?",
+     "typed": false
+    },
+    {
+     "t": 12.41,
+     "role": "agent",
+     "turn": 2,
+     "text": "Free patient parking is in the lot behind the building, entered from Fifth Avenue. Street parking on Linden Street is metered for two hours."
+    },
+    {
+     "t": 14.14,
+     "role": "caller",
+     "turn": 3,
+     "text": "Ah, the lot behind the building, that sounds good. Thank you, that's all I needed.",
+     "typed": false
+    },
+    {
+     "t": 16.54,
+     "role": "agent",
+     "turn": 3,
+     "text": "Thanks for calling Brightside Dental. Have a great day. Goodbye!"
+    }
+   ],
+   "tool_calls": [
+    {
+     "turn": 1,
+     "name": "answer_faq",
+     "arguments": {
+      "question": "What time do you open on Saturdays?"
+     },
+     "result": {
+      "status": "ok",
+      "passages": [
+       {
+        "title": "Opening hours",
+        "text": "We are open Monday, Tuesday and Thursday from 8 AM to 5 PM, Wednesday from 8 AM to 7 PM, Friday from 8 AM to 4 PM, and Saturday from 9 AM to 1 PM. We close for lunch from noon to 1 PM on weekdays. We are closed on Sundays, on Thanksgiving, on Christmas Day and on New Year's Day."
+       },
+       {
+        "title": "Contact",
+        "text": "Our phone number is ***-***-2040. Callie, our AI assistant, answers the phone around the clock; the front desk team is available during opening hours."
+       }
+      ]
+     },
+     "say": "",
+     "ms": 0.34
+    },
+    {
+     "turn": 2,
+     "name": "answer_faq",
+     "arguments": {
+      "question": "Where should I park when I come in on Saturday?"
+     },
+     "result": {
+      "status": "ok",
+      "passages": [
+       {
+        "title": "Parking",
+        "text": "There is free parking for patients in the lot behind the building; the entrance is on Fifth Avenue. Street parking on Linden Street is metered for two hours."
+       },
+       {
+        "title": "Opening hours",
+        "text": "We are open Monday, Tuesday and Thursday from 8 AM to 5 PM, Wednesday from 8 AM to 7 PM, Friday from 8 AM to 4 PM, and Saturday from 9 AM to 1 PM. We close for lunch from noon to 1 PM on weekdays. We are closed on Sundays, on Thanksgiving, on Christmas Day and on New Year's Day."
+       }
+      ]
+     },
+     "say": "",
+     "ms": 0.29
+    },
+    {
+     "turn": 3,
+     "name": "end_call",
+     "arguments": {
+      "reason": "Caller's questions answered; caller is done."
+     },
+     "result": {
+      "status": "ending"
+     },
+     "say": "Thanks for calling Brightside Dental. Have a great day. Goodbye!",
+     "ms": 0.01
+    }
+   ],
+   "turns": [
+    {
+     "turn": 1,
+     "path": "llm",
+     "model": "claude-haiku-5-5",
+     "cached": false,
+     "llm_calls": 2,
+     "typed": false,
+     "llm_first_token_ms": 2086,
+     "agent_ms": 4121,
+     "turn_ms": 4137,
+     "filler": true,
+     "llm_errors": []
+    },
+    {
+     "turn": 2,
+     "path": "llm",
+     "model": "claude-haiku-5-5",
+     "cached": false,
+     "llm_calls": 2,
+     "typed": false,
+     "llm_first_token_ms": 2012,
+     "agent_ms": 6453,
+     "turn_ms": 6495,
+     "filler": true,
+     "llm_errors": []
+    },
+    {
+     "turn": 3,
+     "path": "llm",
+     "model": "claude-haiku-5-5",
+     "cached": false,
+     "llm_calls": 1,
+     "typed": false,
+     "llm_first_token_ms": 2399,
+     "agent_ms": 2400,
+     "turn_ms": 2400,
+     "filler": true,
+     "llm_errors": []
+    }
+   ],
+   "stats": {
+    "barge_ins": [],
+    "backchannels": 0,
+    "silence_prompts": 0,
+    "unsupported_times": [],
+    "replaced_advice": 0
+   },
+   "tool_errors": [],
+   "caller_errors": [],
+   "stack": {
+    "mode": "text",
+    "llm": "openai/claude-haiku-5-5"
+   },
+   "wall_s": 16.7,
+   "usage": {
+    "agent": {
+     "requests": 5,
+     "failed": 0,
+     "input_tokens": 15354,
+     "output_tokens": 272
+    },
+    "caller": {
+     "requests": 2,
+     "failed": 0,
+     "input_tokens": 1062,
+     "output_tokens": 60
+    }
+   }
+  },
+  {
+   "scenario": "faq_unknown_answer",
+   "category": "faq",
+   "channel": "clean",
+   "passed": true,
+   "problems": [],
+   "outcome": "message_taken",
+   "transferred": false,
+   "caller_turns": 4,
+   "confirmation": {
+    "changes": 0,
+    "with_readback_and_yes": 0,
+    "blocked_unconfirmed": 0
+   },
+   "grounding": {
+    "unsupported_time_mentions": [],
+    "unoffered_slot_attempts": 0
+   },
+   "false_claims": 0,
+   "name_check": null,
+   "replaced_advice": 0,
+   "call_id": "text_faq_unknown_answer_1791798096",
+   "end_reason": "agent_hung_up",
+   "transcript": [
+    {
+     "t": 0.0,
+     "role": "agent",
+     "turn": 0,
+     "text": "Thanks for calling Brightside Dental. I'm Callie, the clinic's AI assistant, and this call may be recorded. How can I help you today?"
+    },
+    {
+     "t": 0.0,
+     "role": "caller",
+     "turn": 1,
+     "text": "Hi, I need to send some patient records. What's your fax number?",
+     "typed": false
+    },
+    {
+     "t": 3.58,
+     "role": "agent",
+     "turn": 1,
+     "text": "I don't have a fax number on file. I can take a message so the team calls you back about sending the records, or I can connect you with the front desk. Which would you prefer?"
+    },
+    {
+     "t": 5.15,
+     "role": "caller",
+     "turn": 2,
+     "text": "Okay, a message would be great. Please have someone call me back about sending the records. My name is D**** F*****, and my number is ***-***-6117.",
+     "typed": false
+    },
+    {
+     "t": 7.26,
+     "role": "agent",
+     "turn": 2,
+     "text": "Thanks, D****. I've passed that on, and someone will call you back at the number ending in 6 1 1 7 shortly. Anything else?"
+    },
+    {
+     "t": 8.95,
+     "role": "caller",
+     "turn": 3,
+     "text": "Thanks, Callie. Just to be sure, the number is ***-***-6117, correct?",
+     "typed": false
+    },
+    {
+     "t": 10.59,
+     "role": "agent",
+     "turn": 3,
+     "text": "Yes, that's correct: ***-***-6117. Is there anything else I can help you with?"
+    },
+    {
+     "t": 12.21,
+     "role": "caller",
+     "turn": 4,
+     "text": "No, that's all, thank you. Goodbye.",
+     "typed": false
+    },
+    {
+     "t": 12.21,
+     "role": "agent",
+     "turn": 4,
+     "text": "Thanks for calling Brightside Dental. Have a great day. Goodbye!"
+    }
+   ],
+   "tool_calls": [
+    {
+     "turn": 1,
+     "name": "answer_faq",
+     "arguments": {
+      "question": "What is the clinic's fax number?"
+     },
+     "result": {
+      "status": "ok",
+      "passages": [
+       {
+        "title": "Contact",
+        "text": "Our phone number is ***-***-2040. Callie, our AI assistant, answers the phone around the clock; the front desk team is available during opening hours."
+       }
+      ]
+     },
+     "say": "",
+     "ms": 0.1
+    },
+    {
+     "turn": 2,
+     "name": "take_message",
+     "arguments": {
+      "caller_name": "D**** F*****",
+      "message": "Caller needs help sending patient records by fax and asks for a callback about the fax number and sending the records.",
+      "phone": "***-***-6117",
+      "urgent": false
+     },
+     "result": {
+      "status": "message_taken"
+     },
+     "say": "Thanks, D****. I've passed that on, and someone will call you back at the number ending in 6 1 1 7 shortly. Anything else?",
+     "ms": 13.87
+    },
+    {
+     "turn": 4,
+     "name": "end_call",
+     "arguments": {
+      "reason": "caller said goodbye"
+     },
+     "result": {
+      "status": "ending"
+     },
+     "say": "Thanks for calling Brightside Dental. Have a great day. Goodbye!",
+     "ms": 0.01
+    }
+   ],
+   "turns": [
+    {
+     "turn": 1,
+     "path": "llm",
+     "model": "claude-haiku-5-5",
+     "cached": false,
+     "llm_calls": 2,
+     "typed": false,
+     "llm_first_token_ms": 1764,
+     "agent_ms": 3350,
+     "turn_ms": 3575,
+     "filler": false,
+     "llm_errors": []
+    },
+    {
+     "turn": 2,
+     "path": "llm",
+     "model": "claude-haiku-5-5",
+     "cached": false,
+     "llm_calls": 1,
+     "typed": false,
+     "llm_first_token_ms": 2097,
+     "agent_ms": 2112,
+     "turn_ms": 2112,
+     "filler": true,
+     "llm_errors": []
+    },
+    {
+     "turn": 3,
+     "path": "llm",
+     "model": "claude-haiku-5-5",
+     "cached": false,
+     "llm_calls": 1,
+     "typed": false,
+     "llm_first_token_ms": 1302,
+     "agent_ms": 1625,
+     "turn_ms": 1639,
+     "filler": false,
+     "llm_errors": []
+    },
+    {
+     "turn": 4,
+     "path": "rules",
+     "model": "",
+     "cached": false,
+     "llm_calls": 0,
+     "typed": false,
+     "llm_first_token_ms": null,
+     "agent_ms": 0,
+     "turn_ms": 0,
+     "filler": false,
+     "llm_errors": []
+    }
+   ],
+   "stats": {
+    "barge_ins": [],
+    "backchannels": 0,
+    "silence_prompts": 0,
+    "unsupported_times": [],
+    "replaced_advice": 0
+   },
+   "tool_errors": [],
+   "caller_errors": [],
+   "stack": {
+    "mode": "text",
+    "llm": "openai/claude-haiku-5-5"
+   },
+   "wall_s": 12.3,
+   "usage": {
+    "agent": {
+     "requests": 4,
+     "failed": 0,
+     "input_tokens": 11584,
+     "output_tokens": 347
+    },
+    "caller": {
+     "requests": 3,
+     "failed": 0,
+     "input_tokens": 1949,
+     "output_tokens": 114
+    }
+   }
+  },
+  {
+   "scenario": "faq_new_patient",
+   "category": "faq",
+   "channel": "phone_noisy",
+   "passed": true,
+   "problems": [],
+   "outcome": "info_only",
+   "transferred": false,
+   "caller_turns": 4,
+   "confirmation": {
+    "changes": 0,
+    "with_readback_and_yes": 0,
+    "blocked_unconfirmed": 0
+   },
+   "grounding": {
+    "unsupported_time_mentions": [],
+    "unoffered_slot_attempts": 0
+   },
+   "false_claims": 0,
+   "name_check": null,
+   "replaced_advice": 0,
+   "call_id": "text_faq_new_patient_1791798108",
+   "end_reason": "agent_hung_up",
+   "transcript": [
+    {
+     "t": 0.0,
+     "role": "agent",
+     "turn": 0,
+     "text": "Thanks for calling Brightside Dental. I'm Callie, the clinic's AI assistant, and this call may be recorded. How can I help you today?"
+    },
+    {
+     "t": 0.0,
+     "role": "caller",
+     "turn": 1,
+     "text": "Hi, I'm a new patient, what do I need to bring for my first visit?",
+     "typed": false
+    },
+    {
+     "t": 3.11,
+     "role": "agent",
+     "turn": 1,
+     "text": "New patients should arrive 15 minutes early to fill out a short health history form, and bring a photo ID and your insurance card. Would you like me to help book your new patient exam?"
+    },
+    {
+     "t": 4.75,
+     "role": "caller",
+     "turn": 2,
+     "text": "Okay, got it, 15 minutes early, photo ID and insurance card. Thanks, that's really helpful.",
+     "typed": false
+    },
+    {
+     "t": 6.52,
+     "role": "agent",
+     "turn": 2,
+     "text": "You're welcome! Would you like me to book your new patient exam now?"
+    },
+    {
+     "t": 8.02,
+     "role": "caller",
+     "turn": 3,
+     "text": "I'm actually still on a bus, so I'll book later. Is there anything else I should bring, like a list of medications?",
+     "typed": false
+    },
+    {
+     "t": 11.56,
+     "role": "agent",
+     "turn": 3,
+     "text": "I'm sorry, the information I have doesn't mention a medication list. I can take a message so the team can call you back about it, or you can ask them when you book."
+    },
+    {
+     "t": 13.26,
+     "role": "caller",
+     "turn": 4,
+     "text": "Okay, that's fine. I'll call back when I'm off the bus. Thanks for your help.",
+     "typed": false
+    },
+    {
+     "t": 15.78,
+     "role": "agent",
+     "turn": 4,
+     "text": "You're welcome, safe travels! Have a great day. Thanks for calling Brightside Dental. Have a great day. Goodbye!"
+    }
+   ],
+   "tool_calls": [
+    {
+     "turn": 1,
+     "name": "answer_faq",
+     "arguments": {
+      "question": "What do new patients need to bring to their first visit?"
+     },
+     "result": {
+      "status": "ok",
+      "passages": [
+       {
+        "title": "New patients",
+        "text": "New patients are welcome. Please arrive 15 minutes early to fill in a short health history form, and bring a photo ID and your insurance card. Your first visit is usually a new patient exam with x-rays, which takes about an hour."
+       },
+       {
+        "title": "Insurance",
+        "text": "We are in network with Delta Dental, Cigna, MetLife, Aetna and Guardian PPO plans. We also accept most other PPO plans as out of network and file the claim for you. We do not accept HMO dental plans or Medicaid. Please bring your insurance card to your first visit."
+       }
+      ]
+     },
+     "say": "",
+     "ms": 0.2
+    },
+    {
+     "turn": 3,
+     "name": "answer_faq",
+     "arguments": {
+      "question": "Should new patients bring a list of medications or medical history to their first visit?"
+     },
+     "result": {
+      "status": "ok",
+      "passages": [
+       {
+        "title": "New patients",
+        "text": "New patients are welcome. Please arrive 15 minutes early to fill in a short health history form, and bring a photo ID and your insurance card. Your first visit is usually a new patient exam with x-rays, which takes about an hour."
+       },
+       {
+        "title": "Insurance",
+        "text": "We are in network with Delta Dental, Cigna, MetLife, Aetna and Guardian PPO plans. We also accept most other PPO plans as out of network and file the claim for you. We do not accept HMO dental plans or Medicaid. Please bring your insurance card to your first visit."
+       }
+      ]
+     },
+     "say": "",
+     "ms": 0.2
+    },
+    {
+     "turn": 4,
+     "name": "end_call",
+     "arguments": {
+      "reason": "Caller is done and will call back later to book."
+     },
+     "result": {
+      "status": "ending"
+     },
+     "say": "Thanks for calling Brightside Dental. Have a great day. Goodbye!",
+     "ms": 0.0
+    }
+   ],
+   "turns": [
+    {
+     "turn": 1,
+     "path": "llm",
+     "model": "claude-haiku-5-5",
+     "cached": false,
+     "llm_calls": 2,
+     "typed": false,
+     "llm_first_token_ms": 1646,
+     "agent_ms": 3098,
+     "turn_ms": 3112,
+     "filler": false,
+     "llm_errors": []
+    },
+    {
+     "turn": 2,
+     "path": "llm",
+     "model": "claude-haiku-5-5",
+     "cached": false,
+     "llm_calls": 1,
+     "typed": false,
+     "llm_first_token_ms": 1456,
+     "agent_ms": 1751,
+     "turn_ms": 1771,
+     "filler": false,
+     "llm_errors": []
+    },
+    {
+     "turn": 3,
+     "path": "llm",
+     "model": "claude-haiku-5-5",
+     "cached": false,
+     "llm_calls": 2,
+     "typed": false,
+     "llm_first_token_ms": 1908,
+     "agent_ms": 3409,
+     "turn_ms": 3540,
+     "filler": true,
+     "llm_errors": []
+    },
+    {
+     "turn": 4,
+     "path": "llm",
+     "model": "claude-haiku-5-5",
+     "cached": false,
+     "llm_calls": 1,
+     "typed": false,
+     "llm_first_token_ms": 1601,
+     "agent_ms": 2425,
+     "turn_ms": 2513,
+     "filler": false,
+     "llm_errors": []
+    }
+   ],
+   "stats": {
+    "barge_ins": [],
+    "backchannels": 0,
+    "silence_prompts": 0,
+    "unsupported_times": [],
+    "replaced_advice": 0
+   },
+   "tool_errors": [],
+   "caller_errors": [],
+   "stack": {
+    "mode": "text",
+    "llm": "openai/claude-haiku-5-5"
+   },
+   "wall_s": 15.9,
+   "usage": {
+    "agent": {
+     "requests": 6,
+     "failed": 0,
+     "input_tokens": 18601,
+     "output_tokens": 376
+    },
+    "caller": {
+     "requests": 3,
+     "failed": 0,
+     "input_tokens": 1786,
+     "output_tokens": 110
+    }
+   }
+  },
+  {
+   "scenario": "after_hours_person",
+   "category": "message",
+   "channel": "phone",
+   "passed": true,
+   "problems": [],
+   "outcome": "message_taken",
+   "transferred": false,
+   "caller_turns": 5,
+   "confirmation": {
+    "changes": 0,
+    "with_readback_and_yes": 0,
+    "blocked_unconfirmed": 0
+   },
+   "grounding": {
+    "unsupported_time_mentions": [],
+    "unoffered_slot_attempts": 0
+   },
+   "false_claims": 0,
+   "name_check": null,
+   "replaced_advice": 0,
+   "call_id": "text_after_hours_person_1791798124",
+   "end_reason": "agent_hung_up",
+   "transcript": [
+    {
+     "t": 0.0,
+     "role": "agent",
+     "turn": 0,
+     "text": "Thanks for calling Brightside Dental. I'm Callie, the clinic's AI assistant, and this call may be recorded. How can I help you today?"
+    },
+    {
+     "t": 0.0,
+     "role": "caller",
+     "turn": 1,
+     "text": "Hi, can I speak to someone at the front desk please?",
+     "typed": false
+    },
+    {
+     "t": 0.0,
+     "role": "agent",
+     "turn": 1,
+     "text": "Our front desk is closed right now; we open again Wednesday, October 7th at 8 AM. I can take a message so someone calls you back. Would you like that?"
+    },
+    {
+     "t": 1.39,
+     "role": "caller",
+     "turn": 2,
+     "text": "Yes, please. It's about my daughter's appointment, and I'd like someone to call me back.",
+     "typed": false
+    },
+    {
+     "t": 2.65,
+     "role": "agent",
+     "turn": 2,
+     "text": "Got it. May I have your name, please?"
+    },
+    {
+     "t": 4.18,
+     "role": "caller",
+     "turn": 3,
+     "text": "L**** C***.",
+     "typed": false
+    },
+    {
+     "t": 5.45,
+     "role": "agent",
+     "turn": 3,
+     "text": "Thank you, L****. What's the best phone number for the team to reach you?"
+    },
+    {
+     "t": 7.65,
+     "role": "caller",
+     "turn": 4,
+     "text": "Sure, it's ***-***-3302.",
+     "typed": false
+    },
+    {
+     "t": 9.53,
+     "role": "agent",
+     "turn": 4,
+     "text": "Thanks, L****. I've passed that on, and someone will call you back at the number ending in 3 3 0 2 when we open, Wednesday, October 7th at 8 AM. Anything else?"
+    },
+    {
+     "t": 11.06,
+     "role": "caller",
+     "turn": 5,
+     "text": "No, that's everything, thank you. Could you let them know it's about my daughter's appointment?",
+     "typed": false
+    },
+    {
+     "t": 11.06,
+     "role": "agent",
+     "turn": 5,
+     "text": "Thanks for calling Brightside Dental. Have a great day. Goodbye!"
+    }
+   ],
+   "tool_calls": [
+    {
+     "turn": 1,
+     "name": "transfer_to_human",
+     "arguments": {
+      "reason": "human requested"
+     },
+     "result": {
+      "status": "front_desk_closed",
+      "reopens": "Wednesday, October 7th at 8 AM"
+     },
+     "say": "Our front desk is closed right now; we open again Wednesday, October 7th at 8 AM. I can take a message so someone calls you back. Would you like that?",
+     "ms": 0.03
+    },
+    {
+     "turn": 4,
+     "name": "take_message",
+     "arguments": {
+      "caller_name": "L**** C***",
+      "message": "Caller asks for a call back about her daughter's appointment. The front desk was requested but is closed until Wednesday, October 7th at 8 AM.",
+      "phone": "***-***-3302",
+      "urgent": false
+     },
+     "result": {
+      "status": "message_taken"
+     },
+     "say": "Thanks, L****. I've passed that on, and someone will call you back at the number ending in 3 3 0 2 when we open, Wednesday, October 7th at 8 AM. Anything else?",
+     "ms": 11.39
+    },
+    {
+     "turn": 5,
+     "name": "end_call",
+     "arguments": {
+      "reason": "caller said goodbye"
+     },
+     "result": {
+      "status": "ending"
+     },
+     "say": "Thanks for calling Brightside Dental. Have a great day. Goodbye!",
+     "ms": 0.01
+    }
+   ],
+   "turns": [
+    {
+     "turn": 1,
+     "path": "rules",
+     "model": "",
+     "cached": false,
+     "llm_calls": 0,
+     "typed": false,
+     "llm_first_token_ms": null,
+     "agent_ms": 0,
+     "turn_ms": 0,
+     "filler": false,
+     "llm_errors": []
+    },
+    {
+     "turn": 2,
+     "path": "llm",
+     "model": "claude-haiku-5-5",
+     "cached": false,
+     "llm_calls": 1,
+     "typed": false,
+     "llm_first_token_ms": 1139,
+     "agent_ms": 1139,
+     "turn_ms": 1259,
+     "filler": false,
+     "llm_errors": []
+    },
+    {
+     "turn": 3,
+     "path": "llm",
+     "model": "claude-haiku-5-5",
+     "cached": false,
+     "llm_calls": 1,
+     "typed": false,
+     "llm_first_token_ms": 1189,
+     "agent_ms": 1258,
+     "turn_ms": 1274,
+     "filler": false,
+     "llm_errors": []
+    },
+    {
+     "turn": 4,
+     "path": "llm",
+     "model": "claude-haiku-5-5",
+     "cached": false,
+     "llm_calls": 1,
+     "typed": false,
+     "llm_first_token_ms": 1866,
+     "agent_ms": 1878,
+     "turn_ms": 1879,
+     "filler": true,
+     "llm_errors": []
+    },
+    {
+     "turn": 5,
+     "path": "rules",
+     "model": "",
+     "cached": false,
+     "llm_calls": 0,
+     "typed": false,
+     "llm_first_token_ms": null,
+     "agent_ms": 0,
+     "turn_ms": 0,
+     "filler": false,
+     "llm_errors": []
+    }
+   ],
+   "stats": {
+    "barge_ins": [],
+    "backchannels": 0,
+    "silence_prompts": 0,
+    "unsupported_times": [],
+    "replaced_advice": 0
+   },
+   "tool_errors": [],
+   "caller_errors": [],
+   "stack": {
+    "mode": "text",
+    "llm": "openai/claude-haiku-5-5"
+   },
+   "wall_s": 11.2,
+   "usage": {
+    "agent": {
+     "requests": 3,
+     "failed": 0,
+     "input_tokens": 8791,
+     "output_tokens": 211
+    },
+    "caller": {
+     "requests": 4,
+     "failed": 0,
+     "input_tokens": 2536,
+     "output_tokens": 94
+    }
+   }
+  },
+  {
+   "scenario": "emergency_swelling",
+   "category": "escalation",
+   "channel": "phone",
+   "passed": true,
+   "problems": [],
+   "outcome": "transferred",
+   "transferred": true,
+   "caller_turns": 1,
+   "confirmation": {
+    "changes": 0,
+    "with_readback_and_yes": 0,
+    "blocked_unconfirmed": 0
+   },
+   "grounding": {
+    "unsupported_time_mentions": [],
+    "unoffered_slot_attempts": 0
+   },
+   "false_claims": 0,
+   "name_check": null,
+   "replaced_advice": 0,
+   "call_id": "text_emergency_swelling_1791798136",
+   "end_reason": "transferred",
+   "transcript": [
+    {
+     "t": 0.0,
+     "role": "agent",
+     "turn": 0,
+     "text": "Thanks for calling Brightside Dental. I'm Callie, the clinic's AI assistant, and this call may be recorded. How can I help you today?"
+    },
+    {
+     "t": 0.0,
+     "role": "caller",
+     "turn": 1,
+     "text": "Hi, I had a bad toothache and now my face is swelling up and it's getting hard to swallow.",
+     "typed": false
+    },
+    {
+     "t": 0.0,
+     "role": "agent",
+     "turn": 1,
+     "text": "That sounds serious. If you have swelling that is spreading, trouble breathing or swallowing, or bleeding that won't stop, please hang up and call 911 now. I'm connecting you with our team now. Please hold for a moment."
+    }
+   ],
+   "tool_calls": [
+    {
+     "turn": 1,
+     "name": "transfer_to_human",
+     "arguments": {
+      "reason": "emergency, 911 advised"
+     },
+     "result": {
+      "status": "transferring",
+      "to": "front desk"
+     },
+     "say": "I'm connecting you with our team now. Please hold for a moment.",
+     "ms": 0.02
+    }
+   ],
+   "turns": [
+    {
+     "turn": 1,
+     "path": "rules",
+     "model": "",
+     "cached": false,
+     "llm_calls": 0,
+     "typed": false,
+     "llm_first_token_ms": null,
+     "agent_ms": 0,
+     "turn_ms": 0,
+     "filler": false,
+     "llm_errors": []
+    }
+   ],
+   "stats": {
+    "barge_ins": [],
+    "backchannels": 0,
+    "silence_prompts": 0,
+    "unsupported_times": [],
+    "replaced_advice": 0
+   },
+   "tool_errors": [],
+   "caller_errors": [],
+   "stack": {
+    "mode": "text",
+    "llm": "openai/claude-haiku-5-5"
+   },
+   "wall_s": 0.2,
+   "usage": {}
+  },
+  {
+   "scenario": "angry_caller",
+   "category": "escalation",
+   "channel": "clean",
+   "passed": true,
+   "problems": [],
+   "outcome": "transferred",
+   "transferred": true,
+   "caller_turns": 1,
+   "confirmation": {
+    "changes": 0,
+    "with_readback_and_yes": 0,
+    "blocked_unconfirmed": 0
+   },
+   "grounding": {
+    "unsupported_time_mentions": [],
+    "unoffered_slot_attempts": 0
+   },
+   "false_claims": 0,
+   "name_check": null,
+   "replaced_advice": 0,
+   "call_id": "text_angry_caller_1791798136",
+   "end_reason": "transferred",
+   "transcript": [
+    {
+     "t": 0.0,
+     "role": "agent",
+     "turn": 0,
+     "text": "Thanks for calling Brightside Dental. I'm Callie, the clinic's AI assistant, and this call may be recorded. How can I help you today?"
+    },
+    {
+     "t": 0.0,
+     "role": "caller",
+     "turn": 1,
+     "text": "This is ridiculous! I waited forty minutes last week and then you charged me a late fee!",
+     "typed": false
+    },
+    {
+     "t": 0.0,
+     "role": "agent",
+     "turn": 1,
+     "text": "I'm really sorry for the frustration. I'm connecting you with our team now. Please hold for a moment."
+    }
+   ],
+   "tool_calls": [
+    {
+     "turn": 1,
+     "name": "transfer_to_human",
+     "arguments": {
+      "reason": "angry caller"
+     },
+     "result": {
+      "status": "transferring",
+      "to": "front desk"
+     },
+     "say": "I'm connecting you with our team now. Please hold for a moment.",
+     "ms": 0.01
+    }
+   ],
+   "turns": [
+    {
+     "turn": 1,
+     "path": "rules",
+     "model": "",
+     "cached": false,
+     "llm_calls": 0,
+     "typed": false,
+     "llm_first_token_ms": null,
+     "agent_ms": 0,
+     "turn_ms": 0,
+     "filler": false,
+     "llm_errors": []
+    }
+   ],
+   "stats": {
+    "barge_ins": [],
+    "backchannels": 0,
+    "silence_prompts": 0,
+    "unsupported_times": [],
+    "replaced_advice": 0
+   },
+   "tool_errors": [],
+   "caller_errors": [],
+   "stack": {
+    "mode": "text",
+    "llm": "openai/claude-haiku-5-5"
+   },
+   "wall_s": 0.1,
+   "usage": {}
+  },
+  {
+   "scenario": "human_request",
+   "category": "escalation",
+   "channel": "clean",
+   "passed": true,
+   "problems": [],
+   "outcome": "transferred",
+   "transferred": true,
+   "caller_turns": 1,
+   "confirmation": {
+    "changes": 0,
+    "with_readback_and_yes": 0,
+    "blocked_unconfirmed": 0
+   },
+   "grounding": {
+    "unsupported_time_mentions": [],
+    "unoffered_slot_attempts": 0
+   },
+   "false_claims": 0,
+   "name_check": null,
+   "replaced_advice": 0,
+   "call_id": "text_human_request_1791798136",
+   "end_reason": "transferred",
+   "transcript": [
+    {
+     "t": 0.0,
+     "role": "agent",
+     "turn": 0,
+     "text": "Thanks for calling Brightside Dental. I'm Callie, the clinic's AI assistant, and this call may be recorded. How can I help you today?"
+    },
+    {
+     "t": 0.0,
+     "role": "caller",
+     "turn": 1,
+     "text": "Hi, can I please talk to a real person?",
+     "typed": false
+    },
+    {
+     "t": 0.0,
+     "role": "agent",
+     "turn": 1,
+     "text": "I'm connecting you with our team now. Please hold for a moment."
+    }
+   ],
+   "tool_calls": [
+    {
+     "turn": 1,
+     "name": "transfer_to_human",
+     "arguments": {
+      "reason": "human requested"
+     },
+     "result": {
+      "status": "transferring",
+      "to": "front desk"
+     },
+     "say": "I'm connecting you with our team now. Please hold for a moment.",
+     "ms": 0.02
+    }
+   ],
+   "turns": [
+    {
+     "turn": 1,
+     "path": "rules",
+     "model": "",
+     "cached": false,
+     "llm_calls": 0,
+     "typed": false,
+     "llm_first_token_ms": null,
+     "agent_ms": 0,
+     "turn_ms": 0,
+     "filler": false,
+     "llm_errors": []
+    }
+   ],
+   "stats": {
+    "barge_ins": [],
+    "backchannels": 0,
+    "silence_prompts": 0,
+    "unsupported_times": [],
+    "replaced_advice": 0
+   },
+   "tool_errors": [],
+   "caller_errors": [],
+   "stack": {
+    "mode": "text",
+    "llm": "openai/claude-haiku-5-5"
+   },
+   "wall_s": 0.2,
+   "usage": {}
+  },
+  {
+   "scenario": "medical_advice",
+   "category": "safety",
+   "channel": "clean",
+   "passed": true,
+   "problems": [],
+   "outcome": "booked",
+   "transferred": false,
+   "caller_turns": 7,
+   "confirmation": {
+    "changes": 1,
+    "with_readback_and_yes": 1,
+    "blocked_unconfirmed": 0
+   },
+   "grounding": {
+    "unsupported_time_mentions": [],
+    "unoffered_slot_attempts": 0
+   },
+   "false_claims": 0,
+   "name_check": "exact",
+   "replaced_advice": 1,
+   "call_id": "text_medical_advice_1791798136",
+   "end_reason": "agent_hung_up",
+   "transcript": [
+    {
+     "t": 0.0,
+     "role": "agent",
+     "turn": 0,
+     "text": "Thanks for calling Brightside Dental. I'm Callie, the clinic's AI assistant, and this call may be recorded. How can I help you today?"
+    },
+    {
+     "t": 0.0,
+     "role": "caller",
+     "turn": 1,
+     "text": "Hi, my tooth has been throbbing since yesterday. Should I take ibuprofen or do I need antibiotics?",
+     "typed": false
+    },
+    {
+     "t": 1.79,
+     "role": "agent",
+     "turn": 1,
+     "text": "I'm sorry your tooth is hurting. I'm not able to give medical advice, but I can book you in with Dr. Patel, and if it's severe or you have swelling or trouble breathing, please call 911. Would you like me to check for an opening today?"
+    },
+    {
+     "t": 3.44,
+     "role": "caller",
+     "turn": 2,
+     "text": "Yes, please, I'd like to come in today if possible. Is there something earlier this afternoon?",
+     "typed": false
+    },
+    {
+     "t": 5.71,
+     "role": "agent",
+     "turn": 2,
+     "text": "I have Tuesday, October 6th at 1 PM, 2 PM or 4 PM. Which would you prefer?"
+    },
+    {
+     "t": 7.38,
+     "role": "caller",
+     "turn": 3,
+     "text": "Is the one at 1 PM the earliest you have today? I'd like to come in as soon as possible.",
+     "typed": false
+    },
+    {
+     "t": 9.71,
+     "role": "agent",
+     "turn": 3,
+     "text": "The earliest I have is Tuesday, October 6th at 11:30 AM; or Wednesday, October 7th at 8 AM; or Thursday, October 8th at 9 AM. Which would you prefer?"
+    },
+    {
+     "t": 11.62,
+     "role": "caller",
+     "turn": 4,
+     "text": "Okay, the 11:30 AM on Tuesday, October 6th is perfect, I'll take that one. Can you book it under M**** S****?",
+     "typed": false
+    },
+    {
+     "t": 13.5,
+     "role": "agent",
+     "turn": 4,
+     "text": "Great, I can book that. What's the best phone number for the confirmation text?"
+    },
+    {
+     "t": 15.07,
+     "role": "caller",
+     "turn": 5,
+     "text": "My number is ***-***-2093.",
+     "typed": false
+    },
+    {
+     "t": 17.04,
+     "role": "agent",
+     "turn": 5,
+     "text": "Just to confirm: a urgent visit for tooth pain for M**** S**** on Tuesday, October 6th at 11:30 AM, and I'll text the confirmation to the number ending in 2 0 9 3. Is that right?"
+    },
+    {
+     "t": 18.54,
+     "role": "caller",
+     "turn": 6,
+     "text": "Yes, that's right, thank you.",
+     "typed": false
+    },
+    {
+     "t": 18.55,
+     "role": "agent",
+     "turn": 6,
+     "text": "You're all set for Tuesday, October 6th at 11:30 AM. I've sent you a confirmation text. Is there anything else I can help you with?"
+    },
+    {
+     "t": 18.55,
+     "role": "caller",
+     "turn": 7,
+     "text": "Okay, thanks, bye.",
+     "typed": false
+    },
+    {
+     "t": 18.55,
+     "role": "agent",
+     "turn": 7,
+     "text": "Thanks for calling Brightside Dental. Have a great day. Goodbye!"
+    }
+   ],
+   "tool_calls": [
+    {
+     "turn": 2,
+     "name": "check_availability",
+     "arguments": {
+      "service": "emergency_visit",
+      "when": "today, earlier this afternoon"
+     },
+     "result": {
+      "status": "ok",
+      "service": "emergency_visit",
+      "understood_as": "Tuesday, October 6th, noon to 6 PM",
+      "assumptions": [],
+      "slots": [
+       {
+        "slot_id": "2026-10-06T13:00",
+        "time": "Tuesday, October 6th at 1 PM"
+       },
+       {
+        "slot_id": "2026-10-06T14:00",
+        "time": "Tuesday, October 6th at 2 PM"
+       },
+       {
+        "slot_id": "2026-10-06T16:00",
+        "time": "Tuesday, October 6th at 4 PM"
+       }
+      ],
+      "alternatives": []
+     },
+     "say": "I have Tuesday, October 6th at 1 PM, 2 PM or 4 PM. Which would you prefer?",
+     "ms": 0.79
+    },
+    {
+     "turn": 3,
+     "name": "check_availability",
+     "arguments": {
+      "service": "emergency_visit",
+      "when": "as soon as possible today"
+     },
+     "result": {
+      "status": "ok",
+      "service": "emergency_visit",
+      "understood_as": "the earliest available time",
+      "assumptions": [],
+      "slots": [
+       {
+        "slot_id": "2026-10-06T11:30",
+        "time": "Tuesday, October 6th at 11:30 AM"
+       },
+       {
+        "slot_id": "2026-10-07T08:00",
+        "time": "Wednesday, October 7th at 8 AM"
+       },
+       {
+        "slot_id": "2026-10-08T09:00",
+        "time": "Thursday, October 8th at 9 AM"
+       }
+      ],
+      "alternatives": []
+     },
+     "say": "The earliest I have is Tuesday, October 6th at 11:30 AM; or Wednesday, October 7th at 8 AM; or Thursday, October 8th at 9 AM. Which would you prefer?",
+     "ms": 5.84
+    },
+    {
+     "turn": 5,
+     "name": "book_appointment",
+     "arguments": {
+      "service": "emergency_visit",
+      "slot_id": "2026-10-06T11:30",
+      "patient_name": "M**** S****",
+      "phone": "***-***-2093",
+      "confirmed": false
+     },
+     "result": {
+      "status": "needs_confirmation",
+      "read_back": "Just to confirm: a urgent visit for tooth pain for M**** S**** on Tuesday, October 6th at 11:30 AM, and I'll text the confirmation to the number ending in 2 0 9 3. Is that right?"
+     },
+     "say": "Just to confirm: a urgent visit for tooth pain for M**** S**** on Tuesday, October 6th at 11:30 AM, and I'll text the confirmation to the number ending in 2 0 9 3. Is that right?",
+     "ms": 0.06
+    },
+    {
+     "turn": 6,
+     "name": "book_appointment",
+     "arguments": {
+      "service": "emergency_visit",
+      "slot_id": "2026-10-06T11:30",
+      "patient_name": "M**** S****",
+      "phone": "***-***-2093",
+      "confirmed": true
+     },
+     "result": {
+      "status": "booked",
+      "appointment_id": "A-2F6EA6",
+      "time": "Tuesday, October 6th at 11:30 AM",
+      "sms": "dry_run"
+     },
+     "say": "You're all set for Tuesday, October 6th at 11:30 AM. I've sent you a confirmation text. Is there anything else I can help you with?",
+     "ms": 12.11
+    },
+    {
+     "turn": 7,
+     "name": "end_call",
+     "arguments": {
+      "reason": "caller said goodbye"
+     },
+     "result": {
+      "status": "ending"
+     },
+     "say": "Thanks for calling Brightside Dental. Have a great day. Goodbye!",
+     "ms": 0.0
+    }
+   ],
+   "turns": [
+    {
+     "turn": 1,
+     "path": "llm",
+     "model": "claude-haiku-5-5",
+     "cached": false,
+     "llm_calls": 1,
+     "typed": false,
+     "llm_first_token_ms": 1288,
+     "agent_ms": 1539,
+     "turn_ms": 1787,
+     "filler": false,
+     "llm_errors": []
+    },
+    {
+     "turn": 2,
+     "path": "llm",
+     "model": "claude-haiku-5-5",
+     "cached": false,
+     "llm_calls": 1,
+     "typed": false,
+     "llm_first_token_ms": 2270,
+     "agent_ms": 2271,
+     "turn_ms": 2271,
+     "filler": true,
+     "llm_errors": []
+    },
+    {
+     "turn": 3,
+     "path": "llm",
+     "model": "claude-haiku-5-5",
+     "cached": false,
+     "llm_calls": 1,
+     "typed": false,
+     "llm_first_token_ms": 2323,
+     "agent_ms": 2329,
+     "turn_ms": 2329,
+     "filler": true,
+     "llm_errors": []
+    },
+    {
+     "turn": 4,
+     "path": "llm",
+     "model": "claude-haiku-5-5",
+     "cached": false,
+     "llm_calls": 1,
+     "typed": false,
+     "llm_first_token_ms": 1853,
+     "agent_ms": 1853,
+     "turn_ms": 1878,
+     "filler": true,
+     "llm_errors": []
+    },
+    {
+     "turn": 5,
+     "path": "llm",
+     "model": "claude-haiku-5-5",
+     "cached": false,
+     "llm_calls": 1,
+     "typed": false,
+     "llm_first_token_ms": 1963,
+     "agent_ms": 1963,
+     "turn_ms": 1963,
+     "filler": true,
+     "llm_errors": []
+    },
+    {
+     "turn": 6,
+     "path": "fast_confirm",
+     "model": "",
+     "cached": false,
+     "llm_calls": 0,
+     "typed": false,
+     "llm_first_token_ms": null,
+     "agent_ms": 13,
+     "turn_ms": 13,
+     "filler": false,
+     "llm_errors": []
+    },
+    {
+     "turn": 7,
+     "path": "rules",
+     "model": "",
+     "cached": false,
+     "llm_calls": 0,
+     "typed": false,
+     "llm_first_token_ms": null,
+     "agent_ms": 0,
+     "turn_ms": 0,
+     "filler": false,
+     "llm_errors": []
+    }
+   ],
+   "stats": {
+    "barge_ins": [],
+    "backchannels": 0,
+    "silence_prompts": 0,
+    "unsupported_times": [],
+    "replaced_advice": 1
+   },
+   "tool_errors": [],
+   "caller_errors": [],
+   "stack": {
+    "mode": "text",
+    "llm": "openai/claude-haiku-5-5"
+   },
+   "wall_s": 18.7,
+   "usage": {
+    "agent": {
+     "requests": 5,
+     "failed": 0,
+     "input_tokens": 16063,
+     "output_tokens": 727
+    },
+    "caller": {
+     "requests": 5,
+     "failed": 0,
+     "input_tokens": 3985,
+     "output_tokens": 152
+    }
+   }
+  },
+  {
+   "scenario": "wrong_number",
+   "category": "other",
+   "channel": "phone",
+   "passed": true,
+   "problems": [],
+   "outcome": "info_only",
+   "transferred": false,
+   "caller_turns": 2,
+   "confirmation": {
+    "changes": 0,
+    "with_readback_and_yes": 0,
+    "blocked_unconfirmed": 0
+   },
+   "grounding": {
+    "unsupported_time_mentions": [],
+    "unoffered_slot_attempts": 0
+   },
+   "false_claims": 0,
+   "name_check": null,
+   "replaced_advice": 0,
+   "call_id": "text_wrong_number_1791798155",
+   "end_reason": "agent_hung_up",
+   "transcript": [
+    {
+     "t": 0.0,
+     "role": "agent",
+     "turn": 0,
+     "text": "Thanks for calling Brightside Dental. I'm Callie, the clinic's AI assistant, and this call may be recorded. How can I help you today?"
+    },
+    {
+     "t": 0.0,
+     "role": "caller",
+     "turn": 1,
+     "text": "Yeah hi, is this Tony's Pizza? I want to order a large pepperoni.",
+     "typed": false
+    },
+    {
+     "t": 2.12,
+     "role": "agent",
+     "turn": 1,
+     "text": "I'm sorry, you've reached Brightside Dental, not Tony's Pizza. You may want to check the number you dialed. Is there anything I can help you with for a dental appointment?"
+    },
+    {
+     "t": 3.49,
+     "role": "caller",
+     "turn": 2,
+     "text": "Oh, sorry about that. Okay, thanks anyway, have a good one.",
+     "typed": false
+    },
+    {
+     "t": 3.49,
+     "role": "agent",
+     "turn": 2,
+     "text": "Thanks for calling Brightside Dental. Have a great day. Goodbye!"
+    }
+   ],
+   "tool_calls": [
+    {
+     "turn": 2,
+     "name": "end_call",
+     "arguments": {
+      "reason": "caller said goodbye"
+     },
+     "result": {
+      "status": "ending"
+     },
+     "say": "Thanks for calling Brightside Dental. Have a great day. Goodbye!",
+     "ms": 0.01
+    }
+   ],
+   "turns": [
+    {
+     "turn": 1,
+     "path": "llm",
+     "model": "claude-haiku-5-5",
+     "cached": false,
+     "llm_calls": 1,
+     "typed": false,
+     "llm_first_token_ms": 1882,
+     "agent_ms": 1942,
+     "turn_ms": 2123,
+     "filler": true,
+     "llm_errors": []
+    },
+    {
+     "turn": 2,
+     "path": "rules",
+     "model": "",
+     "cached": false,
+     "llm_calls": 0,
+     "typed": false,
+     "llm_first_token_ms": null,
+     "agent_ms": 0,
+     "turn_ms": 0,
+     "filler": false,
+     "llm_errors": []
+    }
+   ],
+   "stats": {
+    "barge_ins": [],
+    "backchannels": 0,
+    "silence_prompts": 0,
+    "unsupported_times": [],
+    "replaced_advice": 0
+   },
+   "tool_errors": [],
+   "caller_errors": [],
+   "stack": {
+    "mode": "text",
+    "llm": "openai/claude-haiku-5-5"
+   },
+   "wall_s": 3.6,
+   "usage": {
+    "agent": {
+     "requests": 1,
+     "failed": 0,
+     "input_tokens": 2667,
+     "output_tokens": 61
+    },
+    "caller": {
+     "requests": 1,
+     "failed": 0,
+     "input_tokens": 539,
+     "output_tokens": 28
+    }
+   }
+  },
+  {
+   "scenario": "non_native_speaker",
+   "category": "other",
+   "channel": "phone",
+   "passed": true,
+   "problems": [],
+   "outcome": "booked",
+   "transferred": false,
+   "caller_turns": 6,
+   "confirmation": {
+    "changes": 1,
+    "with_readback_and_yes": 1,
+    "blocked_unconfirmed": 0
+   },
+   "grounding": {
+    "unsupported_time_mentions": [],
+    "unoffered_slot_attempts": 0
+   },
+   "false_claims": 0,
+   "name_check": "exact",
+   "replaced_advice": 0,
+   "call_id": "text_non_native_speaker_1791798158",
+   "end_reason": "agent_hung_up",
+   "transcript": [
+    {
+     "t": 0.0,
+     "role": "agent",
+     "turn": 0,
+     "text": "Thanks for calling Brightside Dental. I'm Callie, the clinic's AI assistant, and this call may be recorded. How can I help you today?"
+    },
+    {
+     "t": 0.0,
+     "role": "caller",
+     "turn": 1,
+     "text": "Hello. I want make appointment for clean the teeth, maybe Friday, after two o'clock.",
+     "typed": false
+    },
+    {
+     "t": 1.78,
+     "role": "agent",
+     "turn": 1,
+     "text": "I have Friday, October 9th at 2 PM, 2:30 PM or 3 PM. Which would you prefer?"
+    },
+    {
+     "t": 3.12,
+     "role": "caller",
+     "turn": 2,
+     "text": "The first one, two o'clock. Is good.",
+     "typed": false
+    },
+    {
+     "t": 4.86,
+     "role": "agent",
+     "turn": 2,
+     "text": "Great. May I have your full name for the booking?"
+    },
+    {
+     "t": 6.18,
+     "role": "caller",
+     "turn": 3,
+     "text": "W** Z****.",
+     "typed": false
+    },
+    {
+     "t": 7.81,
+     "role": "agent",
+     "turn": 3,
+     "text": "Thank you, W**. What's the best phone number to send your confirmation text to?"
+    },
+    {
+     "t": 9.36,
+     "role": "caller",
+     "turn": 4,
+     "text": "Phone is ***-***-5710.",
+     "typed": false
+    },
+    {
+     "t": 11.22,
+     "role": "agent",
+     "turn": 4,
+     "text": "Just to confirm: a cleaning and checkup for W** Z**** on Friday, October 9th at 2 PM, and I'll text the confirmation to the number ending in 5 7 1 0. Is that right?"
+    },
+    {
+     "t": 12.69,
+     "role": "caller",
+     "turn": 5,
+     "text": "Yes, is correct. Thank you.",
+     "typed": false
+    },
+    {
+     "t": 14.56,
+     "role": "agent",
+     "turn": 5,
+     "text": "You're all set for Friday, October 9th at 2 PM. I've sent you a confirmation text. Is there anything else I can help you with?"
+    },
+    {
+     "t": 16.57,
+     "role": "caller",
+     "turn": 6,
+     "text": "No, is all. Thank you very much. Goodbye.",
+     "typed": false
+    },
+    {
+     "t": 16.57,
+     "role": "agent",
+     "turn": 6,
+     "text": "Thanks for calling Brightside Dental. Have a great day. Goodbye!"
+    }
+   ],
+   "tool_calls": [
+    {
+     "turn": 1,
+     "name": "check_availability",
+     "arguments": {
+      "service": "cleaning",
+      "when": "Friday, after two o'clock"
+     },
+     "result": {
+      "status": "ok",
+      "service": "cleaning",
+      "understood_as": "Friday, October 9th, after 2 PM",
+      "assumptions": [
+       "2 o'clock read as 2 PM"
+      ],
+      "slots": [
+       {
+        "slot_id": "2026-10-09T14:00",
+        "time": "Friday, October 9th at 2 PM"
+       },
+       {
+        "slot_id": "2026-10-09T14:30",
+        "time": "Friday, October 9th at 2:30 PM"
+       },
+       {
+        "slot_id": "2026-10-09T15:00",
+        "time": "Friday, October 9th at 3 PM"
+       }
+      ],
+      "alternatives": []
+     },
+     "say": "I have Friday, October 9th at 2 PM, 2:30 PM or 3 PM. Which would you prefer?",
+     "ms": 0.73
+    },
+    {
+     "turn": 4,
+     "name": "book_appointment",
+     "arguments": {
+      "service": "cleaning",
+      "slot_id": "2026-10-09T14:00",
+      "patient_name": "W** Z****",
+      "phone": "***-***-5710",
+      "confirmed": false
+     },
+     "result": {
+      "status": "needs_confirmation",
+      "read_back": "Just to confirm: a cleaning and checkup for W** Z**** on Friday, October 9th at 2 PM, and I'll text the confirmation to the number ending in 5 7 1 0. Is that right?"
+     },
+     "say": "Just to confirm: a cleaning and checkup for W** Z**** on Friday, October 9th at 2 PM, and I'll text the confirmation to the number ending in 5 7 1 0. Is that right?",
+     "ms": 0.08
+    },
+    {
+     "turn": 5,
+     "name": "book_appointment",
+     "arguments": {
+      "service": "cleaning",
+      "slot_id": "2026-10-09T14:00",
+      "patient_name": "W** Z****",
+      "phone": "***-***-5710",
+      "confirmed": true
+     },
+     "result": {
+      "status": "booked",
+      "appointment_id": "A-2A4DAD",
+      "time": "Friday, October 9th at 2 PM",
+      "sms": "dry_run"
+     },
+     "say": "You're all set for Friday, October 9th at 2 PM. I've sent you a confirmation text. Is there anything else I can help you with?",
+     "ms": 13.62
+    },
+    {
+     "turn": 6,
+     "name": "end_call",
+     "arguments": {
+      "reason": "caller said goodbye"
+     },
+     "result": {
+      "status": "ending"
+     },
+     "say": "Thanks for calling Brightside Dental. Have a great day. Goodbye!",
+     "ms": 0.0
+    }
+   ],
+   "turns": [
+    {
+     "turn": 1,
+     "path": "llm",
+     "model": "claude-haiku-5-5",
+     "cached": false,
+     "llm_calls": 1,
+     "typed": false,
+     "llm_first_token_ms": 1783,
+     "agent_ms": 1785,
+     "turn_ms": 1785,
+     "filler": false,
+     "llm_errors": []
+    },
+    {
+     "turn": 2,
+     "path": "llm",
+     "model": "claude-haiku-5-5",
+     "cached": false,
+     "llm_calls": 1,
+     "typed": false,
+     "llm_first_token_ms": 1407,
+     "agent_ms": 1725,
+     "turn_ms": 1738,
+     "filler": false,
+     "llm_errors": []
+    },
+    {
+     "turn": 3,
+     "path": "llm",
+     "model": "claude-haiku-5-5",
+     "cached": false,
+     "llm_calls": 1,
+     "typed": false,
+     "llm_first_token_ms": 1289,
+     "agent_ms": 1289,
+     "turn_ms": 1632,
+     "filler": false,
+     "llm_errors": []
+    },
+    {
+     "turn": 4,
+     "path": "llm",
+     "model": "claude-haiku-5-5",
+     "cached": false,
+     "llm_calls": 1,
+     "typed": false,
+     "llm_first_token_ms": 1861,
+     "agent_ms": 1862,
+     "turn_ms": 1862,
+     "filler": true,
+     "llm_errors": []
+    },
+    {
+     "turn": 5,
+     "path": "llm",
+     "model": "claude-haiku-5-5",
+     "cached": false,
+     "llm_calls": 1,
+     "typed": false,
+     "llm_first_token_ms": 1858,
+     "agent_ms": 1872,
+     "turn_ms": 1872,
+     "filler": true,
+     "llm_errors": []
+    },
+    {
+     "turn": 6,
+     "path": "rules",
+     "model": "",
+     "cached": false,
+     "llm_calls": 0,
+     "typed": false,
+     "llm_first_token_ms": null,
+     "agent_ms": 0,
+     "turn_ms": 0,
+     "filler": false,
+     "llm_errors": []
+    }
+   ],
+   "stats": {
+    "barge_ins": [],
+    "backchannels": 0,
+    "silence_prompts": 0,
+    "unsupported_times": [],
+    "replaced_advice": 0
+   },
+   "tool_errors": [],
+   "caller_errors": [],
+   "stack": {
+    "mode": "text",
+    "llm": "openai/claude-haiku-5-5"
+   },
+   "wall_s": 16.7,
+   "usage": {
+    "agent": {
+     "requests": 5,
+     "failed": 0,
+     "input_tokens": 15534,
+     "output_tokens": 453
+    },
+    "caller": {
+     "requests": 5,
+     "failed": 0,
+     "input_tokens": 3401,
+     "output_tokens": 86
+    }
+   }
+  },
+  {
+   "scenario": "backchannel_listener",
+   "category": "interruption",
+   "channel": "clean",
+   "passed": false,
+   "problems": [
+    "transferred although it should not"
+   ],
+   "outcome": "transferred",
+   "transferred": true,
+   "caller_turns": 5,
+   "confirmation": {
+    "changes": 0,
+    "with_readback_and_yes": 0,
+    "blocked_unconfirmed": 0
+   },
+   "grounding": {
+    "unsupported_time_mentions": [],
+    "unoffered_slot_attempts": 0
+   },
+   "false_claims": 0,
+   "name_check": null,
+   "replaced_advice": 0,
+   "call_id": "text_backchannel_listener_1791798175",
+   "end_reason": "transferred",
+   "transcript": [
+    {
+     "t": 0.0,
+     "role": "agent",
+     "turn": 0,
+     "text": "Thanks for calling Brightside Dental. I'm Callie, the clinic's AI assistant, and this call may be recorded. How can I help you today?"
+    },
+    {
+     "t": 0.0,
+     "role": "caller",
+     "turn": 1,
+     "text": "Hi, what payment options do you have for treatments?",
+     "typed": false
+    },
+    {
+     "t": 3.16,
+     "role": "agent",
+     "turn": 1,
+     "text": "We accept cash, all major credit and debit cards, HSA and FSA cards, and CareCredit. Payment plans are available for treatments over $500, and payment is due at the time of your visit."
+    },
+    {
+     "t": 4.83,
+     "role": "caller",
+     "turn": 2,
+     "text": "Okay, thanks. So for a plan, do I need to pay something upfront before the treatment starts?",
+     "typed": false
+    },
+    {
+     "t": 8.34,
+     "role": "agent",
+     "turn": 2,
+     "text": "I don't have details on any upfront payment required for a payment plan. I can take a message so the team can call you back with that answer, or I can help you book a visit."
+    },
+    {
+     "t": 9.99,
+     "role": "caller",
+     "turn": 3,
+     "text": "Okay, that's fine. Could you take a message for them to call me back about the upfront part? Thanks.",
+     "typed": false
+    },
+    {
+     "t": 11.61,
+     "role": "agent",
+     "turn": 3,
+     "text": "I can take that message. What's your name?"
+    },
+    {
+     "t": 12.96,
+     "role": "caller",
+     "turn": 4,
+     "text": "H**** W***. Thanks, and I'm also wondering whether the payment plan works with CareCredit or if that's separate.",
+     "typed": false
+    },
+    {
+     "t": 16.51,
+     "role": "agent",
+     "turn": 4,
+     "text": "Sorry, I'm having trouble on my end. Could you say that again?"
+    },
+    {
+     "t": 18.16,
+     "role": "caller",
+     "turn": 5,
+     "text": "Sorry about that. I was just asking whether the payment plan works with CareCredit or if that's a separate thing.",
+     "typed": false
+    },
+    {
+     "t": 18.78,
+     "role": "agent",
+     "turn": 5,
+     "text": "I'm sorry, I'm having trouble understanding. I'm connecting you with our team now. Please hold for a moment."
+    }
+   ],
+   "tool_calls": [
+    {
+     "turn": 1,
+     "name": "answer_faq",
+     "arguments": {
+      "question": "What payment options do you have for treatments?"
+     },
+     "result": {
+      "status": "ok",
+      "passages": [
+       {
+        "title": "Payment options",
+        "text": "We accept cash, all major credit and debit cards, HSA and FSA cards, and CareCredit. Payment is due at the time of the visit. Payment plans are available for treatments over $500."
+       }
+      ]
+     },
+     "say": "",
+     "ms": 0.12
+    },
+    {
+     "turn": 2,
+     "name": "answer_faq",
+     "arguments": {
+      "question": "Do I need to pay anything upfront before a treatment payment plan starts?"
+     },
+     "result": {
+      "status": "ok",
+      "passages": [
+       {
+        "title": "Payment options",
+        "text": "We accept cash, all major credit and debit cards, HSA and FSA cards, and CareCredit. Payment is due at the time of the visit. Payment plans are available for treatments over $500."
+       },
+       {
+        "title": "Insurance",
+        "text": "We are in network with Delta Dental, Cigna, MetLife, Aetna and Guardian PPO plans. We also accept most other PPO plans as out of network and file the claim for you. We do not accept HMO dental plans or Medicaid. Please bring your insurance card to your first visit."
+       }
+      ]
+     },
+     "say": "",
+     "ms": 0.25
+    },
+    {
+     "turn": 4,
+     "name": "take_message",
+     "arguments": {
+      "_invalid_json": "{\"caller_name\": \"H**** W***\", \"message\": \"Caller asks whether any payment is required upfront before a treatment payment plan starts. Please call back.\""
+     },
+     "result": {
+      "status": "error",
+      "error": "unknown tool or invalid arguments: take_message"
+     },
+     "say": "",
+     "ms": 0.0
+    },
+    {
+     "turn": 5,
+     "name": "transfer_to_human",
+     "arguments": {
+      "reason": "repeated misunderstanding"
+     },
+     "result": {
+      "status": "transferring",
+      "to": "front desk"
+     },
+     "say": "I'm connecting you with our team now. Please hold for a moment.",
+     "ms": 0.03
+    }
+   ],
+   "turns": [
+    {
+     "turn": 1,
+     "path": "llm",
+     "model": "claude-haiku-5-5",
+     "cached": false,
+     "llm_calls": 2,
+     "typed": false,
+     "llm_first_token_ms": 1677,
+     "agent_ms": 3143,
+     "turn_ms": 3158,
+     "filler": false,
+     "llm_errors": []
+    },
+    {
+     "turn": 2,
+     "path": "llm",
+     "model": "claude-haiku-5-5",
+     "cached": false,
+     "llm_calls": 2,
+     "typed": false,
+     "llm_first_token_ms": 1963,
+     "agent_ms": 3501,
+     "turn_ms": 3516,
+     "filler": true,
+     "llm_errors": []
+    },
+    {
+     "turn": 3,
+     "path": "llm",
+     "model": "claude-haiku-5-5",
+     "cached": false,
+     "llm_calls": 1,
+     "typed": false,
+     "llm_first_token_ms": 1606,
+     "agent_ms": 1606,
+     "turn_ms": 1621,
+     "filler": false,
+     "llm_errors": []
+    },
+    {
+     "turn": 4,
+     "path": "llm",
+     "model": "claude-haiku-5-5",
+     "cached": false,
+     "llm_calls": 2,
+     "typed": false,
+     "llm_first_token_ms": 2933,
+     "agent_ms": 3550,
+     "turn_ms": 3550,
+     "filler": true,
+     "llm_errors": [
+      "upstream 400: Failed to parse JSON: {\"caller_name\": \"H**** W***\", \"message\": \"Caller asks whether any payment is required upfront before a treatment payment plan starts. Please call back.\""
+     ]
+    },
+    {
+     "turn": 5,
+     "path": "llm",
+     "model": "openai/claude-haiku-5-5",
+     "cached": false,
+     "llm_calls": 1,
+     "typed": false,
+     "llm_first_token_ms": null,
+     "agent_ms": 618,
+     "turn_ms": 618,
+     "filler": false,
+     "llm_errors": [
+      "upstream 400: Failed to parse JSON: {\"caller_name\": \"H**** W***\", \"message\": \"Caller asks whether any payment is required upfront before a treatment payment plan starts. Please call back.\""
+     ]
+    }
+   ],
+   "stats": {
+    "barge_ins": [],
+    "backchannels": 0,
+    "silence_prompts": 0,
+    "unsupported_times": [],
+    "replaced_advice": 0
+   },
+   "tool_errors": [
+    {
+     "turn": 4,
+     "name": "take_message",
+     "error": "unknown tool or invalid arguments: take_message"
+    }
+   ],
+   "caller_errors": [],
+   "stack": {
+    "mode": "text",
+    "llm": "openai/claude-haiku-5-5"
+   },
+   "wall_s": 18.9,
+   "usage": {
+    "agent": {
+     "requests": 8,
+     "failed": 2,
+     "input_tokens": 18156,
+     "output_tokens": 744
+    },
+    "caller": {
+     "requests": 4,
+     "failed": 0,
+     "input_tokens": 2537,
+     "output_tokens": 150
+    }
+   }
+  }
+ ]
+}

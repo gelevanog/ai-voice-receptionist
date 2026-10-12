@@ -195,6 +195,23 @@ class TestResilient:
         with pytest.raises(BudgetExceededError):
             await chat.stream([{"role": "user", "content": "other"}], [], max_tokens=10, temperature=0).__anext__()
 
+    async def test_ledger_errors_are_masked(self, tmp_path: Path) -> None:
+        quoted = 'upstream 400: Failed to parse JSON: {"patient_name": "Ruth Okonkwo", "phone": "555 222 3344"'
+
+        class Rejecting(FlakyModel):
+            async def stream(
+                self, messages: list[JsonDict], tools: list[JsonDict], *, max_tokens: int, temperature: float
+            ) -> AsyncIterator[LLMEvent]:
+                raise ProviderError(quoted, 400)
+                yield TextDelta("")  # pragma: no cover - makes this an async generator
+
+        chat = ResilientChat([Rejecting("a/b", failures=0)], ledger=CallLedger(tmp_path / "l.jsonl", max_calls=5))
+        with pytest.raises(ProviderError):
+            await drain(chat)
+        row = json.loads((tmp_path / "l.jsonl").read_text())
+        assert row["status"] == "error" and "Failed to parse JSON" in row["error"]
+        assert "Ruth" not in row["error"] and "Okonkwo" not in row["error"] and "555 222" not in row["error"]
+
 
 def test_anthropic_conversion() -> None:
     messages = [
@@ -242,3 +259,67 @@ async def test_fake_receptionist_is_deterministic() -> None:
     calls = [e for e in first if isinstance(e, ToolCall)]
     assert calls and calls[0].name == "check_availability"
     assert [type(e) for e in first] == [type(e) for e in second]
+
+
+class TestPaidModelOptIn:
+    """`CALLIE_ALLOW_PAID_MODELS` is the explicit opt-in; without it the defaults stay free-only."""
+
+    def test_default_settings_are_free_only(self) -> None:
+        settings = Settings(_env_file=None)  # type: ignore[call-arg]
+        assert settings.require_free_models and not settings.allow_paid_models and settings.llm_send_temperature
+
+    def test_evaluation_refuses_paid_providers_by_default(self) -> None:
+        from callie.clinic import load_clinic
+        from callie.eval.caller import build_caller_llm, ensure_agent_allowed
+
+        for provider, model in [("openai", "claude-haiku-5-5"), ("anthropic", "claude-sonnet-5")]:
+            settings = Settings(llm_provider=provider, llm_model=model, llm_ledger=None)  # type: ignore[arg-type]
+            with pytest.raises(FreeModelGuardError, match="CALLIE_ALLOW_PAID_MODELS"):
+                ensure_agent_allowed(settings)
+            with pytest.raises(FreeModelGuardError):
+                build_caller_llm(settings, load_clinic(), provider=provider, model=model)
+        with pytest.raises(FreeModelGuardError):
+            ensure_agent_allowed(Settings(llm_provider="openrouter", llm_model="openai/gpt-5", llm_ledger=None))
+        ensure_agent_allowed(Settings(llm_provider="openrouter", llm_model="a/b:free", llm_ledger=None))
+        ensure_agent_allowed(Settings(llm_provider="fake", llm_ledger=None))
+
+    def test_opt_in_allows_paid_models(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        from callie.clinic import load_clinic
+        from callie.eval.caller import build_caller_llm, ensure_agent_allowed
+
+        monkeypatch.setenv("OPENAI_API_KEY", "test")
+        settings = Settings(
+            llm_provider="openai", llm_model="claude-haiku-5-5", llm_ledger=None, allow_paid_models=True
+        )
+        ensure_agent_allowed(settings)
+        caller = build_caller_llm(settings, load_clinic(), provider="openai", model="claude-haiku-5-5")
+        assert caller.label == "openai/claude-haiku-5-5"
+        monkeypatch.setenv("OPENROUTER_API_KEY", "test")
+        paid = Settings(llm_provider="openrouter", llm_model="openai/gpt-5", llm_ledger=None, allow_paid_models=True)
+        chat = build_chat_model(paid, load_clinic())
+        assert isinstance(chat, ResilientChat)
+        inner = chat.models[0]
+        assert isinstance(inner, OpenAICompatibleChat) and not inner.require_free
+
+    def test_temperature_can_be_omitted(self) -> None:
+        chat = OpenAICompatibleChat(kind="openai", model="m", api_key="k", base_url="http://127.0.0.1:1/v1")
+        assert chat.build_body([], [], max_tokens=1, temperature=0.3)["temperature"] == 0.3
+        quiet = OpenAICompatibleChat(
+            kind="openai", model="m", api_key="k", base_url="http://127.0.0.1:1/v1", send_temperature=False
+        )
+        assert "temperature" not in quiet.build_body([], [], max_tokens=1, temperature=0.3)
+
+    async def test_gateway_errors(self) -> None:
+        transient = openrouter(lambda r: httpx.Response(403, json={"error": {"message": "Request not allowed"}}))
+        with pytest.raises(RetryableError):
+            await drain(transient)
+        forbidden = openrouter(lambda r: httpx.Response(403, json={"error": {"message": "forbidden"}}))
+        with pytest.raises(ProviderError) as info:
+            await drain(forbidden)
+        assert not isinstance(info.value, RetryableError)
+        budget = openrouter(
+            lambda r: httpx.Response(429, json={"error": {"type": "budget_exhausted", "message": "cap reached"}})
+        )
+        with pytest.raises(ProviderError) as info:
+            await drain(budget)
+        assert not isinstance(info.value, RetryableError) and info.value.status_code == 429

@@ -271,6 +271,36 @@ Piper is ten times faster but sounds clearly synthetic, and most Piper voices ha
 
 **Changes after the measured run** (commit `afa3420` was measured): a guard that refuses `book_appointment` on a slot from a reschedule search, the digit-count re-ask for messages, a final model step without tools (the model once looped on `answer_faq`), the disk cache switched off for live calls, and one prompt line against model-written read-backs. They were exercised in the two demo calls, not re-evaluated on the scenarios.
 
+## Model comparison
+
+The defaults remain free-only (OpenRouter `:free`). Stronger models are an explicit opt-in: without `CALLIE_ALLOW_PAID_MODELS=1`, `callie eval run` and `callie eval text` refuse any agent or caller model other than the fake model or a `:free` id, before any request is sent.
+
+```bash
+export CALLIE_ALLOW_PAID_MODELS=1 CALLIE_LLM_PROVIDER=openai OPENAI_BASE_URL=<gateway>/v1 OPENAI_API_KEY=<key>
+export CALLIE_LLM_MODEL=claude-haiku-5-5 CALLIE_LLM_SEND_TEMPERATURE=false   # the gateway rejects temperature for Claude
+uv run callie eval text --caller-provider openai --caller-model claude-haiku-5-5 --no-caller-temperature \
+  --out results/text-haiku.json                                                # text-level, no audio
+```
+
+Measured on 2026-10-12; only the receptionist's model changes, speech stays local. Scenario counts are passes / calls:
+
+| | Free baseline | Claude Haiku 5.5 | Claude Opus 5.5 | Qwen 3.7 Plus |
+|---|---|---|---|---|
+| Text-level, 22 scenarios | not run (audio run re-graded: 16/22) | 62/66 (3 runs) | 21/22 (1 run) | 44/44 (2 runs) |
+| Audio, 23 core scenarios | 16/23 | 21/23 (1 run) | not run | not run |
+| Audio, the 7 scenarios the baseline failed | 0/7 (by selection) | 5/7 | 4/7 | 3/7 |
+| Model time to first token, p50 | 3.14 s (audio) | 1.85 s text, 1.96 s audio | 2.45 s text | 2.25 s text |
+| Safety slips reaching the caller (audio) | 0 | 0 | 0 | 1 false "You're all set" (+3 `confirmed=true` attempts the gate refused) |
+| Cost of all runs | $0 | ≈ $0.16 incl. the caller (≈ $0.002 per call) | ≈ $2.13 (≈ $0.07 per call) | 436k tokens (≈ 8.5k per call) |
+
+- **Free is enough for most call types.** FAQ, emergency, angry-caller and person requests, cancellations, wrong numbers and simple bookings pass with every model. The code-level guards held for all of them: every calendar change had a read-back and a yes, nothing unoffered was booked, no clock time was invented.
+- **Stronger models help on multi-step flows.** In `reschedule_interrupt` the free model booked a second appointment; Haiku and Opus called `reschedule_appointment` in every run. Haiku's audio score (21/23 vs 16/23) is one run with a different simulated caller (Haiku instead of `liquid/lfm-2.5-2.6b:free`) and newer code, and four of the five newly passing scenarios were speech-recognition failures in the baseline, so it is not credited to the model alone.
+- **Speech recognition is still the ceiling.** `backchannel_listener` fails over audio with every model ("Mm-hmm" becomes "And then, hum."), and Opus and Qwen both lost a booking in a long name-spelling loop.
+- **Failure modes.** Claude through the gateway hit the old 400-token cap mid tool call 3 times (hidden reasoning counts toward it), and the broken arguments in the history made every later request fail. Fixed after the runs, not re-evaluated: requests with tools now use `CALLIE_LLM_TOOL_MAX_TOKENS` (default 1024), and a tool call with invalid arguments is dropped and retried once. Qwen had the best text score but was the least careful over audio.
+- Haiku had the fastest model step and cost a fraction of Opus, but the 1.8 s "One moment." filler still played in 60–98% of model turns for every paid model.
+
+Samples are small (one or two runs per scenario, a hard subset picked because the baseline failed it). Full numbers, per-scenario results, ledgers and caveats: [`results/paid-models/COMPARISON.md`](results/paid-models/COMPARISON.md).
+
 ## Quick start
 
 **1. Zero keys, zero downloads** (fake speech components and a rule-based fake model):
@@ -300,7 +330,7 @@ uv run callie models free --smoke 3        # free models today + a tool-calling 
 CALLIE_LLM_PROVIDER=openrouter CALLIE_LLM_MODEL=inclusionai/ling-3.0-flash-sante:free make serve-real
 ```
 
-Any OpenAI-compatible server works too (`CALLIE_LLM_PROVIDER=openai`, `OPENAI_BASE_URL=http://localhost:11434/v1` for a local Ollama), and so does Anthropic (`CALLIE_LLM_PROVIDER=anthropic`, `ANTHROPIC_API_KEY`, default `claude-sonnet-5`). To use paid OpenRouter models, set `CALLIE_REQUIRE_FREE_MODELS=false` deliberately.
+Any OpenAI-compatible server works too (`CALLIE_LLM_PROVIDER=openai`, `OPENAI_BASE_URL=http://localhost:11434/v1` for a local Ollama), and so does Anthropic (`CALLIE_LLM_PROVIDER=anthropic`, `ANTHROPIC_API_KEY`, default `claude-sonnet-5`). To use paid OpenRouter models, set `CALLIE_ALLOW_PAID_MODELS=1` (or `CALLIE_REQUIRE_FREE_MODELS=false`) deliberately; the evaluation also needs `CALLIE_ALLOW_PAID_MODELS=1` for any OpenAI-compatible or Anthropic model (see [Model comparison](#model-comparison)).
 
 **Simulated calls and the evaluation**:
 
@@ -341,6 +371,8 @@ Runtime settings are environment variables with the `CALLIE_` prefix; [`.env.exa
 |---|---|---|
 | `CALLIE_LLM_PROVIDER` / `_MODEL` / `_FALLBACK_MODELS` | `fake` / provider default / `[]` | `fake`, `openrouter`, `openai`, `anthropic`; model id; fallback list |
 | `CALLIE_REQUIRE_FREE_MODELS` | `true` | refuse non-`:free` OpenRouter ids and answers served by non-free models |
+| `CALLIE_ALLOW_PAID_MODELS` | `false` | explicit opt-in for non-free models (paid OpenRouter ids; any OpenAI-compatible or Anthropic model in the evaluation) |
+| `CALLIE_LLM_MAX_TOKENS` / `_TOOL_MAX_TOKENS` | `400` / `1024` | output cap for answer-only requests / requests that offer tools |
 | `OPENROUTER_API_KEY`, `OPENAI_API_KEY` + `OPENAI_BASE_URL`, `ANTHROPIC_API_KEY` | unset | provider credentials |
 | `CALLIE_STT_PROVIDER` / `_STT_MODEL` | `fake` / `base.en` | `whisper` for faster-whisper |
 | `CALLIE_TTS_PROVIDER` / `_TTS_VOICE` / `_TTS_SPEED` | `fake` / `af_heart` / `1.05` | `kokoro` (agent voice) or `piper` |
@@ -404,7 +436,7 @@ docs/                 # screenshots, demo calls (audio + transcripts)
 ## Testing
 
 ```bash
-make test    # 231 tests, no API keys, no model downloads (the Silero test is skipped without the model)
+make test    # 246 tests, no API keys, no model downloads (the Silero test is skipped without the model)
 make lint    # ruff check, ruff format --check, mypy --strict
 ```
 
@@ -414,9 +446,9 @@ make lint    # ruff check, ruff format --check, mypy --strict
 | `test_vad.py` | endpointing on synthetic signals: onset and end timing, short pauses vs. turn ends, clicks, chunk-size independence, max utterance, noise floor; Silero when downloaded |
 | `test_timeparse.py` | 80 cases of spoken dates and times, ambiguity and assumptions, past dates, other timezones, DST (US and EU) |
 | `test_calendar.py` | hours, lunch, durations, holidays, horizon, conflicts per resource, slot spreading, reschedule/cancel, DST storage, Google Calendar (mocked) |
-| `test_agent.py` | the read-back/yes gate in every order, offered-slots-only booking, caller ID, unclear phone numbers, reschedule with an STT-misspelled name, FAQ grounding, transfer open/closed, masking, escalation rules, backchannels, medical-advice filter, sentence streaming, interrupted history |
-| `test_providers.py` | free-only guard (ids, fallbacks, served model), SSE with tool-call deltas, error mapping, retries + fallback + ledger + cache + budget, Anthropic conversion, fake model |
-| `test_session.py` | the live session with fake components in real time: a booking over audio, AI disclosure, barge-in, backchannel, silence prompts and hang-up, emergency transfer, merged turns |
+| `test_agent.py` | the read-back/yes gate in every order, offered-slots-only booking, caller ID, unclear phone numbers, reschedule with an STT-misspelled name, FAQ grounding, transfer open/closed, masking, escalation rules, backchannels, medical-advice filter, sentence streaming, interrupted history, dropping and retrying tool calls with invalid or truncated arguments, masking of quoted tool arguments |
+| `test_providers.py` | free-only guard (ids, fallbacks, served model), SSE with tool-call deltas, error mapping, retries + fallback + ledger + cache + budget, masked ledger errors, Anthropic conversion, fake model |
+| `test_session.py` | the live session with fake components in real time: a booking over audio, AI disclosure, barge-in, backchannel, silence prompts and hang-up, emergency transfer, merged turns, tool log masked with names learned later in the call |
 | `test_web.py`, `test_twilio.py` | the browser WebSocket end to end, dashboard pages; Twilio webhook signature and TwiML, a recorded Media Streams call, outbound framing and `clear`, REST transfer and SMS (mocked) |
 | `test_eval_cli.py` | WER and its normalizer, percentiles, the scenario file, report rendering, CLI smoke |
 

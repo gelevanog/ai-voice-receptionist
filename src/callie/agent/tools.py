@@ -204,6 +204,14 @@ class CallContext:
     reschedule_slots: dict[str, str] = field(default_factory=dict)  # slot key -> appointment being moved
 
 
+def remask_tool_log(ctx: CallContext) -> None:
+    """Mask names learned later in the call in tool arguments and results logged before the masker knew them."""
+    for call in ctx.tool_log:
+        call["arguments"] = ctx.masker.mask_value(call["arguments"])
+        call["result"] = ctx.masker.mask_value(call["result"])
+        call["say"] = ctx.masker.mask(call.get("say") or "")
+
+
 def _digits_spoken(phone: str | None) -> str:
     digits = "".join(ch for ch in (phone or "") if ch.isdigit())
     return " ".join(digits[-4:])

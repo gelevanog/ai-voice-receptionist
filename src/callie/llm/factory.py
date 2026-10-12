@@ -41,7 +41,10 @@ def build_chat_model(
         return FakeReceptionist(clinic, delay_s=fake_delay_s)
     models: list[ChatModel]
     if provider == "openrouter":
-        if settings.require_free_models:
+        # Free-only unless the guard was switched off (`require_free_models=false`) or paid models were
+        # explicitly allowed (`allow_paid_models=true`); the default refuses any id without `:free`.
+        free_only = settings.require_free_models and not settings.allow_paid_models
+        if free_only:
             ensure_free_models([model, *fallbacks])
         # Each model is tried in turn on our side; OpenRouter's own `models` fallback is not used, so the ledger
         # always names the model that was asked and the free-only guard sees every id.
@@ -51,8 +54,9 @@ def build_chat_model(
                 model=name,
                 api_key=os.environ.get("OPENROUTER_API_KEY"),
                 base_url=os.environ.get("OPENROUTER_BASE_URL", OPENROUTER_BASE_URL),
-                require_free=settings.require_free_models,
+                require_free=free_only,
                 timeout_seconds=settings.llm_timeout_seconds,
+                send_temperature=settings.llm_send_temperature,
                 # Voice needs the first words fast: keep hidden reasoning minimal and out of the stream.
                 extra_body={"reasoning": reasoning or {"effort": "low", "exclude": True}},
             )
@@ -67,6 +71,7 @@ def build_chat_model(
                 base_url=os.environ.get("OPENAI_BASE_URL", "https://api.openai.com/v1"),
                 require_free=False,
                 timeout_seconds=settings.llm_timeout_seconds,
+                send_temperature=settings.llm_send_temperature,
             )
             for name in [model or "gpt-5-mini", *fallbacks]
         ]

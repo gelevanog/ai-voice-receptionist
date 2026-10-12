@@ -137,15 +137,22 @@ def eval_run(
     caller_model: Annotated[
         str, typer.Option(help="Caller LLM model id (OpenRouter, :free)")
     ] = "liquid/lfm-2.5-2.6b:free",
+    caller_provider: Annotated[
+        str, typer.Option(help="Caller LLM provider; anything but free OpenRouter needs CALLIE_ALLOW_PAID_MODELS=1")
+    ] = "openrouter",
+    caller_temperature: Annotated[
+        bool, typer.Option(help="Send a temperature with caller requests (some models reject it)")
+    ] = True,
     only: Annotated[list[str] | None, typer.Option(help="Run only these scenario ids")] = None,
     out_dir: Annotated[Path, typer.Option(help="Results directory")] = Path("results"),
     tag: Annotated[str, typer.Option(help="Name of this run (file prefix)")] = "e2e",
     include_all: Annotated[bool, typer.Option("--all", help="Also the extended scenarios (more API calls)")] = False,
+    cache: Annotated[bool, typer.Option(help="Replay identical requests from the disk cache")] = True,
 ) -> None:
     """Simulated callers end to end through audio; writes results/<tag>.json and the call recordings."""
     from callie.eval.run import run_e2e
 
-    settings = _settings(provider=provider, model=model, fallbacks=fallback).model_copy(update={"llm_cache": True})
+    settings = _settings(provider=provider, model=model, fallbacks=fallback).model_copy(update={"llm_cache": cache})
     asyncio.run(
         run_e2e(
             settings,
@@ -155,8 +162,61 @@ def eval_run(
             out_dir=out_dir,
             tag=tag,
             include_extended=include_all,
+            caller_provider=caller_provider,
+            caller_send_temperature=caller_temperature,
         )
     )
+
+
+@eval_app.command("text")
+def eval_text(
+    provider: Annotated[str | None, typer.Option(help="Agent LLM provider")] = None,
+    model: Annotated[str | None, typer.Option(help="Agent LLM model id")] = None,
+    fallback: Annotated[list[str] | None, typer.Option(help="Agent fallback model ids")] = None,
+    caller: Annotated[str, typer.Option(help="scripted | llm")] = "llm",
+    caller_model: Annotated[str, typer.Option(help="Caller LLM model id")] = "liquid/lfm-2.5-2.6b:free",
+    caller_provider: Annotated[
+        str, typer.Option(help="Caller LLM provider; anything but free OpenRouter needs CALLIE_ALLOW_PAID_MODELS=1")
+    ] = "openrouter",
+    caller_temperature: Annotated[
+        bool, typer.Option(help="Send a temperature with caller requests (some models reject it)")
+    ] = True,
+    only: Annotated[list[str] | None, typer.Option(help="Run only these scenario ids")] = None,
+    out: Annotated[Path, typer.Option(help="Result file (records in the `eval run` format)")] = Path(
+        "results/text.json"
+    ),
+    include_all: Annotated[bool, typer.Option("--all", help="Also the extended scenarios (more API calls)")] = False,
+) -> None:
+    """Text-level conversation eval: the same scenarios, caller and checks without audio (only the LLM is measured)."""
+    from callie.clinic import load_clinic
+    from callie.eval.caller import build_caller_llm, ensure_agent_allowed
+    from callie.eval.text_run import run_text_eval, text_mode_scenarios
+    from callie.llm.factory import build_chat_model, shared_ledger
+
+    settings = _settings(provider=provider, model=model, fallbacks=fallback)
+    clinic = load_clinic(settings.clinic_file)
+    ensure_agent_allowed(settings)
+    caller_llm = (
+        build_caller_llm(
+            settings, clinic, provider=caller_provider, model=caller_model, send_temperature=caller_temperature
+        )
+        if caller == "llm"
+        else None
+    )
+    agent_llm = build_chat_model(settings, clinic, tag="agent")
+    data = asyncio.run(
+        run_text_eval(
+            settings,
+            text_mode_scenarios(include_extended=include_all, only=only),
+            agent_llm=agent_llm,
+            caller_llm=caller_llm,
+            caller_label=f"{caller_provider}/{caller_model}" if caller == "llm" else "scripted",
+            ledger=shared_ledger(settings),
+            out_path=out,
+        )
+    )
+    passed = sum(r["passed"] for r in data.get("scenarios", []))
+    console.print(f"passed {passed}/{len(data.get('scenarios', []))} -> {out}")
 
 
 @eval_app.command("wer")

@@ -15,6 +15,7 @@ from rich.console import Console
 from callie.audio.pcm import write_wav
 from callie.clinic import load_clinic
 from callie.config import Settings
+from callie.eval.caller import build_caller_llm, ensure_agent_allowed
 from callie.eval.scenarios import load_scenarios
 from callie.eval.simulator import SimResult, caller_tts_for, preload, simulate_call
 from callie.llm.factory import build_chat_model
@@ -60,23 +61,21 @@ async def run_e2e(
     out_dir: Path,
     tag: str,
     include_extended: bool = False,
+    caller_provider: str = "openrouter",
+    caller_send_temperature: bool = True,
 ) -> dict[str, Any]:
     scenarios = [s for s in load_scenarios(include_extended=include_extended or bool(only)) if not only or s.id in only]
     clinic = load_clinic(settings.clinic_file)
-    speech = build_speech(settings)
-    agent_llm = build_chat_model(settings, clinic, tag="agent")
+    ensure_agent_allowed(settings)
     caller_llm = (
-        build_chat_model(
-            settings.model_copy(update={"llm_max_retries": 3}),
-            clinic,
-            provider="openrouter",
-            model=caller_model,
-            fallback_models=[],
-            tag="caller",
+        build_caller_llm(
+            settings, clinic, provider=caller_provider, model=caller_model, send_temperature=caller_send_temperature
         )
         if caller_mode == "llm"
         else None
     )
+    speech = build_speech(settings)
+    agent_llm = build_chat_model(settings, clinic, tag="agent")
     caller_tts = caller_tts_for(settings, fake=settings.tts_provider == "fake")
     await preload(speech, caller_tts)
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -87,6 +86,7 @@ async def run_e2e(
     stop = asyncio.Event()
     sampler = asyncio.create_task(_sample_load(load, stop))
     started = datetime.now(UTC)
+    caller_label = f"{caller_provider}/{caller_model}" if caller_mode == "llm" else "scripted"
     records: list[dict[str, Any]] = []
     path = out_dir / f"{tag}.json"
     previous = json.loads(path.read_text(encoding="utf-8")) if path.exists() and only else None
@@ -127,12 +127,12 @@ async def run_e2e(
             console.print(
                 f"   {verdict} outcome={record['outcome']} turns={record['caller_turns']} {record['wall_s']}s"
             )
-            _write(path, settings, caller_mode, caller_model, started, load, _merge(previous, records))
+            _write(path, settings, caller_label, started, load, _merge(previous, records))
     finally:
         stop.set()
         await sampler
         manifest.close()
-    return _write(path, settings, caller_mode, caller_model, started, load, _merge(previous, records))
+    return _write(path, settings, caller_label, started, load, _merge(previous, records))
 
 
 def _merge(previous: dict[str, Any] | None, records: list[dict[str, Any]]) -> list[dict[str, Any]]:
@@ -145,8 +145,7 @@ def _merge(previous: dict[str, Any] | None, records: list[dict[str, Any]]) -> li
 def _write(
     path: Path,
     settings: Settings,
-    caller_mode: str,
-    caller_model: str,
+    caller_label: str,
     started: datetime,
     load: list[float],
     records: list[dict[str, Any]],
@@ -158,7 +157,7 @@ def _write(
             "finished": datetime.now(UTC).isoformat(timespec="seconds"),
             "agent_llm": stack.get("llm"),
             "agent_fallbacks": settings.llm_fallback_models,
-            "caller": f"openrouter/{caller_model}" if caller_mode == "llm" else "scripted",
+            "caller": caller_label,
             "stt": stack.get("stt"),
             "tts_agent": stack.get("tts"),
             "tts_caller": "piper/en_US-libritts_r-medium (one speaker per scenario)",

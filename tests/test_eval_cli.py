@@ -130,3 +130,38 @@ def test_import_calls_copies_records_and_bookings(tmp_path: Path) -> None:
     target = tmp_path / "dash.db"
     assert import_calls(source, target) == {"calls": 1, "bookings": 1, "skipped_overlapping_bookings": 0}
     assert import_calls(source, target)["calls"] == 0  # idempotent
+
+
+async def test_text_eval_runs_a_scenario_without_audio(tmp_path: Path) -> None:
+    from callie.clinic import load_clinic
+    from callie.config import Settings
+    from callie.eval.text_run import run_text_scenario, text_mode_scenarios
+    from callie.llm.fake import FakeReceptionist
+
+    scenarios = {s.id: s for s in text_mode_scenarios()}
+    assert "silent_caller" not in scenarios and not scenarios["backchannel_listener"].expect.backchannel
+    settings = Settings(llm_ledger=None, now="2026-10-06T09:30")
+    record = await run_text_scenario(
+        settings,
+        scenarios["book_basic"],
+        agent_llm=FakeReceptionist(load_clinic()),
+        caller_llm=None,
+        work_dir=tmp_path,
+    )
+    assert record["passed"], record["problems"]
+    assert record["outcome"] == "booked" and record["confirmation"]["with_readback_and_yes"] == 1
+    assert {t["path"] for t in record["turns"]} >= {"llm", "fast_confirm"} and record["tool_errors"] == []
+
+
+def test_cli_text_eval_refuses_paid_models_without_opt_in(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    monkeypatch.delenv("CALLIE_ALLOW_PAID_MODELS", raising=False)
+    from callie.config import get_settings
+
+    get_settings.cache_clear()
+    result = runner.invoke(
+        app,
+        ["eval", "text", "--provider", "openai", "--model", "claude-haiku-5-5", "--out", str(tmp_path / "t.json")],
+    )
+    get_settings.cache_clear()
+    assert result.exit_code != 0 and "CALLIE_ALLOW_PAID_MODELS" in str(result.exception)
+    assert not (tmp_path / "t.json").exists()

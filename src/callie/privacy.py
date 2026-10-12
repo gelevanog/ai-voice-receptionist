@@ -34,6 +34,9 @@ _EMAIL_RE = re.compile(r"\b[\w.+-]+@[\w-]+\.[\w.-]+\b")
 _INTRO_NAME_RE = re.compile(
     r"\b((?i:my name is|my name's|this is|i'm|i am|name is|it's|it is|under))\s+([A-Z][a-z'’-]+(?:\s+[A-Z][a-z'’-]+)?)"
 )
+# A name or phone field inside JSON-like text (tool arguments quoted in an upstream error, possibly cut off or
+# escaped): `"patient_name": "Jane Do`, `\"phone\": \"555 12`.
+_FIELD_RE = re.compile(r'(?P<head>\\?"(?P<key>\w*(?:name|phone)\w*)\\?"\s*:\s*\\?")(?P<value>[^"\\]*)')
 _NOT_NAMES = {"Callie", "Brightside", "Dental", "Calling", "Just", "Sure", "Yes", "Fine", "Good", "Sorry", "Not"}
 
 
@@ -123,6 +126,7 @@ class Masker:
     def mask(self, text: str) -> str:
         if not text:
             return text
+        text = _FIELD_RE.sub(self._mask_field, text)
         text = _EMAIL_RE.sub("[email]", text)
         text = _PHONE_RE.sub(lambda m: mask_phone(m.group(0)), text)
         text = _LONG_DIGITS_RE.sub(lambda m: mask_phone(m.group(0)), text)
@@ -134,6 +138,17 @@ class Masker:
         for name in sorted(self.names, key=len, reverse=True):
             text = re.sub(rf"\b{re.escape(name)}\b", mask_name(name), text, flags=re.IGNORECASE)
         return text
+
+    def _mask_field(self, match: re.Match[str]) -> str:
+        head, key, value = match.group("head"), match.group("key").lower(), match.group("value")
+        if not value.strip() or "*" in value:  # empty or already masked
+            return match.group(0)
+        if "phone" in key:
+            return head + mask_phone(value) if any(ch.isdigit() for ch in value) else match.group(0)
+        if "_" in value or not any(ch.isalpha() for ch in value):  # a tool name ("name": "book_appointment")
+            return match.group(0)
+        self.register_name(" ".join(part for part in value.split() if len(part.strip(".'’-")) >= 2))
+        return head + mask_name(value)
 
     def mask_value(self, value: object) -> object:
         """Mask strings inside tool arguments/results (dicts, lists) recursively."""
@@ -147,3 +162,9 @@ class Masker:
         if isinstance(value, list):
             return [self.mask_value(item) for item in value]
         return value
+
+
+def mask_text(text: str) -> str:
+    """Mask a free-standing string (e.g. a provider error that quotes the request) without a call's name list:
+    phones, emails, digit runs, introduced names and name or phone fields of JSON-like text."""
+    return Masker().mask(text)
