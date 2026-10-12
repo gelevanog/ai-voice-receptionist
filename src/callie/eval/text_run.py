@@ -150,6 +150,9 @@ async def run_text_scenario(
 
     for entry in transcript:  # names learned later in the call are masked in earlier lines too
         entry["text"] = ctx.masker.mask(entry["text"])
+    for call in ctx.tool_log:  # and in tool arguments logged before the masker learned the name
+        call["arguments"] = ctx.masker.mask_value(call["arguments"])
+        call["result"] = ctx.masker.mask_value(call["result"])
     summary: JsonDict = {
         "call_id": call_id,
         "outcome": ctx.outcome.label(),
