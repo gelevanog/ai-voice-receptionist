@@ -116,7 +116,11 @@ is on the proxy side, where I can't see it per model.
   later request (`400 Failed to parse JSON`), and after two errors the agent transferred the caller. Rerunning
   Opus's two failures with `CALLIE_LLM_MAX_TOKENS=1024` passed both (n=2). Before using these models in
   production, the cap should be raised and invalid tool arguments should be replaced before they go back into
-  the history. Neither change was made here, because it would change the agent compared with the baseline.
+  the history. Neither change was made for these runs, because it would change the agent compared with the
+  baseline. **Both were made after them** (not re-evaluated): requests that offer tools now use
+  `CALLIE_LLM_TOOL_MAX_TOKENS` (default 1024), and a tool call whose arguments are not complete JSON is dropped
+  instead of being written to the history, then retried once with a doubled cap, then answered with a short
+  apology.
 - **Qwen 3.7 Plus has the best text score (44/44) and the fewest tokens, but in audio it was the least
   careful.** In 7 hard audio calls it tried to confirm changed details three times (the gate refused all three),
   told a caller "You're all set" when nothing had been booked, wrote its own availability sentence ("Thursday at
@@ -132,7 +136,7 @@ is on the proxy side, where I can't see it per model.
 ## How to reproduce
 
 ```bash
-export OPENAI_BASE_URL=http://127.0.0.1:8787/v1 OPENAI_API_KEY=proj-callie   # the budget proxy
+export OPENAI_BASE_URL=http://127.0.0.1:8787/v1 OPENAI_API_KEY=<proxy-key>   # the budget proxy
 export CALLIE_ALLOW_PAID_MODELS=1 CALLIE_NOW=2026-10-06T09:30 CALLIE_LLM_PROVIDER=openai
 export CALLIE_LLM_MODEL=claude-haiku-5-5 CALLIE_LLM_SEND_TEMPERATURE=false   # true for qwen3.7-plus
 export CALLIE_LLM_LEDGER=results/paid-models/text-haiku.calls.jsonl CALLIE_LLM_MAX_CALLS=3000

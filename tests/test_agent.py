@@ -3,18 +3,19 @@ sentence-chunked streaming, the medical-advice filter, privacy masking."""
 
 from __future__ import annotations
 
+import json
 from collections.abc import AsyncIterator
 from typing import Any
 
 import pytest
 
-from callie.agent.agent import Agent, CallAction, Sentence, ToolEvent, split_sentences
+from callie.agent.agent import Agent, CallAction, LLMTiming, Sentence, ToolEvent, split_sentences, valid_tool_call
 from callie.agent.grounding import extract_times, unsupported_times
 from callie.agent.policy import Escalation, EscalationState, Reply, analyze_turn, classify_reply, is_backchannel
 from callie.agent.tools import ToolBox
 from callie.kb.retriever import KnowledgeBase
 from callie.llm.base import Completed, JsonDict, LLMEvent, TextDelta, ToolCall
-from callie.privacy import Masker, digits_from_speech, mask_name, mask_phone, normalize_phone
+from callie.privacy import Masker, digits_from_speech, mask_name, mask_phone, mask_text, normalize_phone
 from callie.runtime import Runtime, build_runtime
 from callie.tts.chunker import SentenceChunker, clean_for_speech
 from tests.helpers import fake_settings
@@ -311,6 +312,7 @@ class ScriptedLLM:
 
     def __init__(self, turns: list[list[LLMEvent]]) -> None:
         self.turns = turns
+        self.requests: list[tuple[list[JsonDict], int]] = []  # (messages sent, max_tokens)
 
     @property
     def label(self) -> str:
@@ -323,6 +325,7 @@ class ScriptedLLM:
     async def stream(
         self, messages: list[JsonDict], tools: list[JsonDict], *, max_tokens: int, temperature: float
     ) -> AsyncIterator[LLMEvent]:
+        self.requests.append(([dict(m) for m in messages], max_tokens))
         for event in self.turns.pop(0):
             yield event
 
@@ -375,6 +378,66 @@ class TestAgentStreaming:
         roles = [m["role"] for m in agent.messages]
         assert roles[-3:] == ["assistant", "tool", "assistant"] and agent.messages[-3]["tool_calls"][0]["id"] == "c1"
 
+    async def test_tool_requests_get_the_larger_output_cap(self, runtime: Runtime) -> None:
+        llm = ScriptedLLM([[TextDelta("We open at 8 AM."), Completed("stop")]])
+        agent = Agent(llm, runtime.new_context(), max_tokens=400, tool_max_tokens=1024, filler_after_s=None)
+        await collect(agent, "When do you open?")
+        assert llm.requests[0][1] == 1024
+
+    async def test_truncated_tool_call_is_dropped_and_retried(self, runtime: Runtime) -> None:
+        truncated = ToolCall(
+            "c1",
+            "take_message",
+            {"_invalid_json": '{"caller_name": "Ruth Oko'},
+            raw_arguments='{"caller_name": "Ruth Oko',
+        )
+        good = ToolCall("c2", "answer_faq", {"question": "parking"}, raw_arguments='{"question": "parking"}')
+        llm = ScriptedLLM(
+            [
+                [TextDelta("Let me note that. "), truncated, Completed("length")],
+                [good, Completed("tool_calls")],
+                [TextDelta("There is free parking behind the building."), Completed("stop")],
+            ]
+        )
+        agent = runtime.new_agent(runtime.new_context(), llm)
+        events = await collect(agent, "Where can I park?")
+        # The broken arguments never reach the history, so later requests stay valid.
+        assert all("Ruth" not in json.dumps(m) for m in agent.messages)
+        assert all(json.loads(c["function"]["arguments"]) for m in agent.messages for c in m.get("tool_calls", []))
+        assert [r[1] for r in llm.requests] == [1024, 2048, 2048]  # the retry gets a doubled cap
+        assert agent.last_stats.dropped_tool_calls == 1
+        timings = [e for e in events if isinstance(e, LLMTiming)]
+        assert timings[0].error and "take_message" in timings[0].error and "Ruth" not in timings[0].error
+        assert [e.result.name for e in events if isinstance(e, ToolEvent)] == ["answer_faq"]
+        assert agent.messages[2] == {"role": "assistant", "content": "Let me note that."}
+
+    async def test_second_truncated_tool_call_ends_with_an_apology(self, runtime: Runtime) -> None:
+        bad = ToolCall("c1", "book_appointment", {}, raw_arguments='{"slot_id": "2026-10-08T14')
+        llm = ScriptedLLM([[bad, Completed("length")], [bad, Completed("length")]])
+        agent = runtime.new_agent(runtime.new_context(), llm)
+        events = await collect(agent, "Book the 2:30 please")
+        sentences = [e for e in events if isinstance(e, Sentence)]
+        assert sentences[-1].source == "rules" and "say that again" in sentences[-1].text
+        assert len(llm.requests) == 2 and not any(m.get("tool_calls") for m in agent.messages)
+        assert agent.last_stats.dropped_tool_calls == 2 and agent.escalation.failures == 0
+
+    async def test_valid_calls_in_the_same_answer_still_run(self, runtime: Runtime) -> None:
+        bad = ToolCall("c1", "take_message", {"_invalid_json": "{"}, raw_arguments="{")
+        good = ToolCall("c2", "answer_faq", {"question": "parking"}, raw_arguments='{"question": "parking"}')
+        llm = ScriptedLLM([[good, bad, Completed("tool_calls")], [TextDelta("Parking is free."), Completed("stop")]])
+        agent = runtime.new_agent(runtime.new_context(), llm)
+        await collect(agent, "Where can I park?")
+        calls = [c["id"] for m in agent.messages for c in m.get("tool_calls", [])]
+        assert calls == ["c2"] and len(llm.requests) == 2
+
+    def test_valid_tool_call(self) -> None:
+        assert valid_tool_call(ToolCall("a", "end_call", {}, raw_arguments=""))
+        assert valid_tool_call(ToolCall("a", "end_call", {"reason": "x"}, raw_arguments='{"reason": "x"}'))
+        assert not valid_tool_call(ToolCall("a", "end_call", {}, raw_arguments='{"reason": "x'))
+        assert not valid_tool_call(ToolCall("a", "end_call", {}, raw_arguments="[1]"))
+        assert not valid_tool_call(ToolCall("a", "", {}, raw_arguments="{}"))
+        assert not valid_tool_call(ToolCall("a", "end_call", {"_invalid_json": "truncated at max_tokens"}))
+
     async def test_end_call_and_transfer_actions(self, runtime: Runtime) -> None:
         agent = runtime.new_agent(runtime.new_context(), ScriptedLLM([]))
         events = await collect(agent, "No, that's all, thanks. Bye!")
@@ -417,6 +480,22 @@ class TestPrivacyAndGrounding:
         assert "Maria" not in masked and "214" not in masked and "@" not in masked and "8839" in masked
         assert masker.mask("My name is Tom Becker") == "My name is T** B*****"
         assert mask_phone("+15552148839") == "***-***-8839" and mask_name("Jo Li") == "J** L**"
+
+    def test_free_text_masking_of_quoted_tool_arguments(self) -> None:
+        # An upstream error that quotes a cut-off tool call: no names registered, the JSON fields still give it away.
+        error = (
+            'upstream 400: Failed to parse JSON: {"caller_name": "Ruth Okonkwo", "message": "Ruth Okonkwo asks '
+            'for a call back at 555 222 3344", "phone": "555 22'
+        )
+        masked = mask_text(error)
+        assert "Ruth" not in masked and "Okonkwo" not in masked and "555 222" not in masked
+        assert masked.startswith('upstream 400: Failed to parse JSON: {"caller_name": "R*** O******"')
+        escaped = mask_text('{"arguments": "{\\"patient_name\\": \\"Ruth Oko')
+        assert "Ruth" not in escaped and "Oko" not in escaped
+        # Tool names, already-masked values and ordinary errors are left alone.
+        assert mask_text('{"name": "book_appointment"}') == '{"name": "book_appointment"}'
+        assert mask_text('{"patient_name": "R*** O******"}') == '{"patient_name": "R*** O******"}'
+        assert mask_text("upstream 403: Request not allowed") == "upstream 403: Request not allowed"
 
     def test_phone_normalization(self) -> None:
         assert digits_from_speech("five five five, double two, one oh nine") == "55522109"

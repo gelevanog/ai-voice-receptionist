@@ -14,6 +14,7 @@ from callie.config import Settings
 from callie.eval.scenarios import Scenario
 from callie.llm.base import ChatModel, JsonDict, ProviderError, TextDelta, ensure_models_allowed
 from callie.llm.factory import build_chat_model
+from callie.privacy import mask_text
 
 END = "[END]"
 _FAREWELL = re.compile(
@@ -117,7 +118,7 @@ class Caller:
                 if isinstance(event, TextDelta):
                     text += event.text
         except ProviderError as exc:
-            self.errors.append(str(exc)[:200])
+            self.errors.append(mask_text(str(exc))[:200])
             return "Sorry, I have to go. Bye.", True
         # Small models sometimes write [END] as soon as they *think* the goal is reached ("please hold while I
         # confirm"); the call only ends on an actual farewell, as a real caller would hang up.

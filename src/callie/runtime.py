@@ -56,6 +56,7 @@ class Runtime:
             llm or self.llm,
             ctx,
             max_tokens=self.settings.llm_max_tokens,
+            tool_max_tokens=self.settings.llm_tool_max_tokens,
             temperature=self.settings.llm_temperature,
             filler_after_s=self.settings.filler_after_ms / 1000 if self.settings.filler_after_ms > 0 else None,
             fast_confirm=self.settings.fast_confirm,

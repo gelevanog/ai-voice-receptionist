@@ -195,6 +195,23 @@ class TestResilient:
         with pytest.raises(BudgetExceededError):
             await chat.stream([{"role": "user", "content": "other"}], [], max_tokens=10, temperature=0).__anext__()
 
+    async def test_ledger_errors_are_masked(self, tmp_path: Path) -> None:
+        quoted = 'upstream 400: Failed to parse JSON: {"patient_name": "Ruth Okonkwo", "phone": "555 222 3344"'
+
+        class Rejecting(FlakyModel):
+            async def stream(
+                self, messages: list[JsonDict], tools: list[JsonDict], *, max_tokens: int, temperature: float
+            ) -> AsyncIterator[LLMEvent]:
+                raise ProviderError(quoted, 400)
+                yield TextDelta("")  # pragma: no cover - makes this an async generator
+
+        chat = ResilientChat([Rejecting("a/b", failures=0)], ledger=CallLedger(tmp_path / "l.jsonl", max_calls=5))
+        with pytest.raises(ProviderError):
+            await drain(chat)
+        row = json.loads((tmp_path / "l.jsonl").read_text())
+        assert row["status"] == "error" and "Failed to parse JSON" in row["error"]
+        assert "Ruth" not in row["error"] and "Okonkwo" not in row["error"] and "555 222" not in row["error"]
+
 
 def test_anthropic_conversion() -> None:
     messages = [

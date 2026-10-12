@@ -21,6 +21,7 @@ from typing import Any
 from rich.console import Console
 
 from callie.agent.agent import CallAction, LLMTiming, Sentence, ToolEvent
+from callie.agent.tools import remask_tool_log
 from callie.config import Settings
 from callie.eval.caller import Caller
 from callie.eval.checks import check_call
@@ -99,7 +100,7 @@ async def run_text_scenario(
                 if first_token is None and event.first_token_s is not None:
                     first_token = event.first_token_s
                 if event.error:
-                    errors.append(event.error)
+                    errors.append(ctx.masker.mask(event.error))
             elif isinstance(event, CallAction):
                 action = event
             elif isinstance(event, ToolEvent):
@@ -150,9 +151,7 @@ async def run_text_scenario(
 
     for entry in transcript:  # names learned later in the call are masked in earlier lines too
         entry["text"] = ctx.masker.mask(entry["text"])
-    for call in ctx.tool_log:  # and in tool arguments logged before the masker learned the name
-        call["arguments"] = ctx.masker.mask_value(call["arguments"])
-        call["result"] = ctx.masker.mask_value(call["result"])
+    remask_tool_log(ctx)  # and in tool arguments logged before the masker learned the name
     summary: JsonDict = {
         "call_id": call_id,
         "outcome": ctx.outcome.label(),
@@ -279,6 +278,7 @@ def _write(
             "agent_fallbacks": settings.llm_fallback_models,
             "agent_temperature": settings.llm_temperature if settings.llm_send_temperature else None,
             "agent_max_tokens": settings.llm_max_tokens,
+            "agent_tool_max_tokens": settings.llm_tool_max_tokens,
             "caller": caller_label,
             "clinic_clock": settings.now,
         },

@@ -31,7 +31,10 @@ class Settings(BaseSettings):
     llm_model: str = ""
     llm_fallback_models: list[str] = Field(default_factory=list)
     llm_temperature: float = 0.3
-    llm_max_tokens: int = 400
+    llm_max_tokens: int = 400  # answer-only requests (the agent's last step, where no tools are offered)
+    # Requests that offer tools. Reasoning models count hidden reasoning toward the cap, so a 400-token cap can cut
+    # a tool call off mid-JSON; 1024 leaves room for it.
+    llm_tool_max_tokens: int = 1024
     llm_timeout_seconds: float = 60.0
     require_free_models: bool = True
     # Explicit opt-in for non-free models in the evaluation (paid OpenRouter ids, or an OpenAI-compatible or

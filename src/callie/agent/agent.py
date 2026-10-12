@@ -4,7 +4,9 @@ Order of decisions in a turn:
 1. deterministic rules: emergencies, requests for a person, anger, repeated misunderstanding, goodbyes;
 2. a plain "yes" to a pending read-back executes the confirmed action directly (no model round trip);
 3. otherwise the model streams; sentences are released as soon as they are complete, tool calls run as they
-   arrive, and a tool's `say` text ends the turn (exact facts spoken by code).
+   arrive, and a tool's `say` text ends the turn (exact facts spoken by code). A tool call whose arguments are not
+   valid JSON (e.g. cut off at the output cap) is dropped, never written to the history: one retry with a doubled
+   cap, then a short apology.
 
 The generator can be cancelled at any `yield` (barge-in). History is updated before each yield, so a cancelled
 turn leaves a consistent conversation; `note_interrupted` then trims the last answer to what was heard.
@@ -15,6 +17,7 @@ from __future__ import annotations
 import asyncio
 import contextlib
 import itertools
+import json
 import time
 import uuid
 from collections.abc import AsyncIterator
@@ -87,6 +90,7 @@ class TurnStats:
     escalation: str | None = None
     unsupported_times: list[str] = field(default_factory=list)
     replaced_advice: int = 0
+    dropped_tool_calls: int = 0  # tool calls with invalid or truncated arguments, never executed
 
 
 class Agent:
@@ -96,6 +100,7 @@ class Agent:
         ctx: CallContext,
         *,
         max_tokens: int = 400,
+        tool_max_tokens: int = 1024,
         temperature: float = 0.3,
         filler_after_s: float | None = 1.8,
         fast_confirm: bool = True,
@@ -106,6 +111,7 @@ class Agent:
         self.tools = ToolBox(ctx)
         self.specs = tool_specs(ctx.clinic)
         self.max_tokens = max_tokens
+        self.tool_max_tokens = tool_max_tokens
         self.temperature = temperature
         self.filler_after_s = filler_after_s if llm.is_remote else None
         self.fast_confirm = fast_confirm
@@ -219,6 +225,7 @@ class Agent:
 
     async def _llm_turn(self, stats: TurnStats) -> AsyncIterator[AgentEvent]:
         filler_used = False
+        retried_invalid = False
         for _step in range(self.max_steps):
             chunker = SentenceChunker()
             spoken: list[str] = []
@@ -229,7 +236,10 @@ class Agent:
             stats.llm_calls += 1
             # On the last step the model must answer in words: no tools, so it cannot loop on lookups.
             tools = self.specs if _step < self.max_steps - 1 else []
-            stream = self.llm.stream(self.messages, tools, max_tokens=self.max_tokens, temperature=self.temperature)
+            cap = self.tool_max_tokens if tools else self.max_tokens
+            if retried_invalid:
+                cap *= 2  # the retry gets more room (and a different cache key, so it is not a replay)
+            stream = self.llm.stream(self.messages, tools, max_tokens=cap, temperature=self.temperature)
             iterator = stream.__aiter__()
             pending_first: asyncio.Future[Any] | None = None
             try:
@@ -257,9 +267,10 @@ class Agent:
                     async for out in self._release(sentence, spoken, stats):
                         yield out
             except ProviderError as exc:
-                log.warning("agent.llm_error", error=str(exc)[:200])
+                error = self.ctx.masker.mask(str(exc))[:200]  # upstream errors can quote the request
+                log.warning("agent.llm_error", error=error)
                 self.escalation.failures += 1
-                yield LLMTiming(self.llm.label, first_token, time.monotonic() - started, False, None, str(exc)[:200])
+                yield LLMTiming(self.llm.label, first_token, time.monotonic() - started, False, None, error)
                 apology = "Sorry, I'm having trouble on my end. Could you say that again?"
                 if self.escalation.failures >= 2:
                     async for event in self._escalate(Escalation.MISUNDERSTANDING):
@@ -278,14 +289,38 @@ class Agent:
                     with contextlib.suppress(RuntimeError, StopAsyncIteration):
                         await aclose()
             self.escalation.failures = 0
+            dropped = [call for call in calls if not valid_tool_call(call)]
+            calls = [call for call in calls if valid_tool_call(call)]
+            problem = None
+            if dropped:
+                stats.dropped_tool_calls += len(dropped)
+                names = ", ".join(call.name or "?" for call in dropped)
+                problem = f"dropped {len(dropped)} tool call(s) with invalid or truncated arguments: {names}"
+                log.warning(
+                    "agent.invalid_tool_arguments",
+                    tools=names,
+                    finish_reason=completed.finish_reason if completed else None,
+                )
             yield LLMTiming(
                 self.llm.label,
                 first_token,
                 time.monotonic() - started,
                 bool(completed and completed.cached),
                 completed.served_model if completed else None,
+                problem,
             )
             text = " ".join(spoken).strip()
+            if not calls and dropped:
+                # Nothing usable: keep what the caller heard, never the broken arguments, and try once more.
+                if text:
+                    self.messages.append({"role": "assistant", "content": text})
+                if not retried_invalid and _step < self.max_steps - 1:
+                    retried_invalid = True
+                    continue
+                apology = "Sorry, I lost my place for a second. Could you say that again?"
+                self.messages.append({"role": "assistant", "content": apology})
+                yield Sentence(apology, "rules")
+                return
             if not calls:
                 if text:
                     self.messages.append({"role": "assistant", "content": text})
@@ -339,6 +374,20 @@ class Agent:
         yield Sentence(sentence, "llm")
 
 
+def valid_tool_call(call: ToolCall) -> bool:
+    """A named call whose arguments are a complete JSON object; anything else must not reach the history, where
+    it would make every later request fail (providers reject a conversation with unparseable arguments)."""
+    if not call.name or "_invalid_json" in call.arguments:
+        return False
+    if not call.raw_arguments.strip():
+        return True
+    try:
+        value = json.loads(call.raw_arguments)
+    except json.JSONDecodeError:
+        return False
+    return isinstance(value, dict)
+
+
 def split_sentences(text: str) -> list[str]:
     """Speak code-written text sentence by sentence too, so TTS starts on the first clause."""
     chunker = SentenceChunker()
@@ -355,6 +404,4 @@ async def _prepend(first: asyncio.Future[Any], rest: AsyncIterator[Any]) -> Asyn
 
 
 def _json(value: JsonDict) -> str:
-    import json
-
     return json.dumps(value, ensure_ascii=False)

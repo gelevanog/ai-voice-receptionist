@@ -34,6 +34,7 @@ import numpy as np
 
 from callie.agent.agent import Agent, CallAction, LLMTiming, Sentence, ToolEvent
 from callie.agent.policy import is_backchannel
+from callie.agent.tools import remask_tool_log
 from callie.audio.pcm import PIPELINE_RATE, Audio
 from callie.llm.base import ChatModel, JsonDict
 from callie.logging_config import get_logger
@@ -564,9 +565,11 @@ class CallSession:
             await self.transport.send_event({"t": self._since_start(), **event})
 
     def _remask(self) -> None:
-        """Names learned later in the call (e.g. at booking) are masked in earlier transcript lines too."""
+        """Names learned later in the call (e.g. at booking) are masked in earlier transcript lines and in tool
+        arguments and results logged before the masker learned the name."""
         for entry in self.transcript:
             entry["text"] = self.ctx.masker.mask(entry["text"])
+        remask_tool_log(self.ctx)
 
     def summary(self) -> JsonDict:
         self._remask()

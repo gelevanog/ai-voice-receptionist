@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import json
+
 import pytest
 from sqlalchemy import select
 
@@ -170,3 +172,24 @@ def test_settings_drive_session_config() -> None:
     assert session.config.barge_in_min_speech_s == pytest.approx(0.3)
     assert session.config.hard_interrupt_s == pytest.approx(0.9)
     assert session.config.silence_prompt_s == 5
+
+
+async def test_tool_log_is_masked_with_names_learned_later_in_the_call() -> None:
+    session, _transport, _ = make_session([])
+    await session.start()
+    tools = session.agent.tools
+    # The lookup is logged before any tool has registered the caller's name ...
+    tools.execute("find_appointment", {"patient_name": "Ruth Okonkwo", "purpose": "check"})
+    # ... which the message then registers.
+    tools.execute(
+        "take_message",
+        {"caller_name": "Ruth Okonkwo", "message": "Ruth Okonkwo asks for a call back", "phone": "555 222 3344"},
+    )
+    await session.close()
+    logged = json.dumps(session.summary()["tool_calls"])
+    assert "Okonkwo" not in logged and "Ruth" not in logged and "3344" in logged and "555 222" not in logged
+    with session.runtime.sessions() as db:
+        record = db.get(CallRecord, session.call_id)
+    assert record is not None
+    stored = json.dumps(record.tool_calls)
+    assert "Okonkwo" not in stored and "Ruth" not in stored and "R*** O******" in stored

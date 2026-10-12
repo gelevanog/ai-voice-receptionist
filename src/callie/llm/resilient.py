@@ -5,7 +5,8 @@ backoff (or `Retry-After`), then moved to the next fallback model. Retries are o
 token reached the caller; after that an error ends the turn and the agent apologizes.
 
 Every real request, retries included, becomes one JSON line in the ledger (model ids, status, latency,
-time to first token, token counts; never prompts), so "how many calls did this cost" is read from a file.
+time to first token, token counts; never prompts; errors are masked), so "how many calls did this cost" is read
+from a file.
 """
 
 from __future__ import annotations
@@ -33,6 +34,7 @@ from callie.llm.base import (
     ToolCall,
 )
 from callie.logging_config import get_logger
+from callie.privacy import mask_text
 
 log = get_logger(__name__)
 
@@ -203,7 +205,7 @@ class ResilientChat:
                             model=model.label,
                             attempt=attempt + 1,
                             delay=round(delay, 1),
-                            error=str(exc)[:160],
+                            error=mask_text(str(exc))[:160],
                         )
                         await self._pause(delay)
                     continue
@@ -215,7 +217,7 @@ class ResilientChat:
                 if self.cache:
                     self.cache.put(key, recorded)
                 return
-            log.warning("llm.fallback", failed=model.label, error=str(last_error)[:160])
+            log.warning("llm.fallback", failed=model.label, error=mask_text(str(last_error))[:160])
         raise last_error or ProviderError("request failed")
 
     async def _pause(self, delay: float) -> None:
@@ -260,5 +262,6 @@ class ResilientChat:
             ttft_s=round(first_token, 2) if first_token is not None else None,
             input_tokens=completed.get("input_tokens", 0),
             output_tokens=completed.get("output_tokens", 0),
-            error=error[:300] if error else None,
+            # Upstream errors can quote the request (e.g. "Failed to parse JSON: {\"patient_name\": ...").
+            error=mask_text(error)[:300] if error else None,
         )

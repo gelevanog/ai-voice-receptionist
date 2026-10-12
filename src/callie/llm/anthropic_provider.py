@@ -131,10 +131,12 @@ class AnthropicChat:
         if final.stop_reason == "refusal":
             raise ProviderError("the model declined to answer (refusal)", 422)
         tool_uses = [block for block in final.content if isinstance(block, ToolUseBlock)]
-        if final.stop_reason == "max_tokens" and tool_uses:
-            raise ProviderError("tool input truncated at max_tokens", 502)
-        for block in tool_uses:
+        truncated = final.stop_reason == "max_tokens"
+        for index, block in enumerate(tool_uses):
             arguments = block.input if isinstance(block.input, dict) else {"_invalid_json": str(block.input)[:500]}
+            if truncated and index == len(tool_uses) - 1:
+                # The last tool input was cut off at max_tokens: the agent drops it and retries.
+                arguments = {"_invalid_json": "truncated at max_tokens"}
             yield ToolCall(id=block.id, name=block.name, arguments=arguments, raw_arguments=json.dumps(arguments))
         yield Completed(
             finish_reason="tool_calls" if tool_uses else "stop",
